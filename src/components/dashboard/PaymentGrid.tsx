@@ -37,14 +37,14 @@ export default function PaymentGrid({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">{title} {selectedYear}</h3>
           <select
             value={selectedYear}
             onChange={(e) => onYearChange(parseInt(e.target.value))}
-            className="border rounded px-3 py-1"
+            className="border rounded-sm px-3 py-1"
           >
             <option value={2024}>2024</option>
             <option value={2025}>2025</option>
@@ -80,11 +80,11 @@ export default function PaymentGrid({
                 {months.map(month => (
                   <td key={month} className="px-3 py-4 text-center">
                     {getPaymentStatus(lot.id, month) ? (
-                      <div className="w-6 h-6 bg-green-500 rounded mx-auto flex items-center justify-center">
+                      <div className="w-6 h-6 bg-green-500 rounded-sm mx-auto flex items-center justify-center">
                         <span className="text-white text-xs font-bold">✓</span>
                       </div>
                     ) : (
-                      <div className="w-6 h-6 bg-gray-200 rounded mx-auto"></div>
+                      <div className="w-6 h-6 bg-gray-200 rounded-sm mx-auto"></div>
                     )}
                   </td>
                 ))}

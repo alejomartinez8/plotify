@@ -16,7 +16,7 @@ export default function FinancialCard({ title, balance, color }: FinancialCardPr
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow-sm">
       <h3 className={`text-lg font-semibold mb-4 ${colorClasses[color]}`}>
         {title}
       </h3>

@@ -43,7 +43,7 @@ export default function QuickStats({ lots, contributions, expenses }: QuickStats
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {stats.map((stat, index) => (
-        <div key={index} className="bg-white p-6 rounded-lg shadow">
+        <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center">
             <stat.icon className={`w-8 h-8 ${stat.color}`} />
             <div className="ml-4">

@@ -64,7 +64,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
               <select
                 value={formData.lotId}
                 onChange={(e) => handleChange('lotId', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               >
                 <option value="">Select lot</option>
@@ -81,7 +81,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
               <select
                 value={formData.type}
                 onChange={(e) => handleChange('type', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               >
                 <option value="maintenance">Maintenance</option>
@@ -94,7 +94,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
               <select
                 value={formData.month}
                 onChange={(e) => handleChange('month', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               >
                 <option value="">Select month</option>
@@ -110,7 +110,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
                 type="number"
                 value={formData.amount}
                 onChange={(e) => handleChange('amount', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
                 min="0"
                 step="1000"
@@ -123,7 +123,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleChange('date', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               />
             </div>
@@ -134,7 +134,7 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
                 type="text"
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 placeholder="Optional description"
               />
             </div>
@@ -142,14 +142,14 @@ export default function ContributionModal({ isOpen, onClose, onSubmit, lots }: C
             <div className="flex space-x-3">
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                className="flex-1 bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700"
               >
                 Save Contribution
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 bg-gray-400 text-white py-2 rounded hover:bg-gray-500"
+                className="flex-1 bg-gray-400 text-white py-2 rounded-sm hover:bg-gray-500"
               >
                 Cancel
               </button>

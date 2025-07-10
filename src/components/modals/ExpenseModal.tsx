@@ -58,7 +58,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
               <select
                 value={formData.type}
                 onChange={(e) => handleChange('type', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               >
                 <option value="maintenance">Maintenance</option>
@@ -72,7 +72,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
                 type="number"
                 value={formData.amount}
                 onChange={(e) => handleChange('amount', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
                 min="0"
                 step="1000"
@@ -85,7 +85,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleChange('date', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 required
               />
             </div>
@@ -96,7 +96,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
                 type="text"
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 placeholder="Expense description"
                 required
               />
@@ -108,7 +108,7 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
                 type="text"
                 value={formData.category}
                 onChange={(e) => handleChange('category', e.target.value)}
-                className="w-full border rounded px-3 py-2"
+                className="w-full border rounded-sm px-3 py-2"
                 placeholder="e.g. Gardening, Security, Utilities"
               />
             </div>
@@ -116,14 +116,14 @@ export default function ExpenseModal({ isOpen, onClose, onSubmit }: ExpenseModal
             <div className="flex space-x-3">
               <button
                 type="submit"
-                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
+                className="flex-1 bg-red-600 text-white py-2 rounded-sm hover:bg-red-700"
               >
                 Save Expense
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 bg-gray-400 text-white py-2 rounded hover:bg-gray-500"
+                className="flex-1 bg-gray-400 text-white py-2 rounded-sm hover:bg-gray-500"
               >
                 Cancel
               </button>
