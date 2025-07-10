@@ -2,6 +2,24 @@
 
 A comprehensive management system for residential plot communities, designed to efficiently handle maintenance fees, improvement contributions, and expense tracking with full transparency and accountability.
 
+## 🎯 Project Goals
+
+This project serves two primary objectives:
+
+1. **IA Tool Exploration**  
+   As a senior developer, I'm actively experimenting with next-generation AI development tools like:
+   - Cline (AI software engineer assistant)
+   - Claude Sonnet/Opus models
+   - AI-powered development workflows
+   - Emerging code generation paradigms
+
+2. **Real-World Implementation**  
+   While serving as a testbed for AI tools, the application maintains:
+   - Production-grade code quality
+   - Full functional requirements
+   - Real user value for personal financial management
+   - Modern architecture patterns
+
 ## 🚀 Key Features
 
 * **Separate Fund Management**: Independent handling of maintenance and improvement funds
@@ -53,7 +71,7 @@ A comprehensive management system for residential plot communities, designed to 
 
 ### Backend (Next iteration)
 
-* **Next.js 14** with App Router
+* **Next.js 15** with App Router
 * **PostgreSQL** as database
 * **Prisma ORM** for data management
 * **NextAuth.js** for authentication

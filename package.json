@@ -1,0 +1,41 @@
+{
+  "name": "plotify",
+  "version": "1.0.0",
+  "description": "A comprehensive management system for residential plot communities, designed to efficiently handle maintenance fees, improvement contributions, and expense tracking with full transparency and accountability.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alejomartinez8/plotify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alejomartinez8/plotify/issues"
+  },
+  "homepage": "https://github.com/alejomartinez8/plotify#readme",
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^24.0.12",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.30.1",
+    "eslint-config-next": "^15.3.5",
+    "lucide-react": "^0.525.0",
+    "next": "^15.3.5",
+    "postcss": "^8.5.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}
