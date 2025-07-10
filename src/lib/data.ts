@@ -1,41 +1,41 @@
 export function getLotsData() {
   // Return static data to avoid file system issues during build
   return [
-    { "id": 0, "owner": "JUDITH" },
-    { "id": 3, "owner": "JAMER" },
-    { "id": 4, "owner": "ALEXANDER" },
-    { "id": 5, "owner": "EDISSON" },
-    { "id": 6, "owner": "MARIBEL VALDEZ" },
-    { "id": 7, "owner": "JORGE GOMEZ" },
-    { "id": 8, "owner": "SERGIO QUINTERO" },
-    { "id": 9, "owner": "KELLY QUINTERO" },
-    { "id": 10, "owner": "ALEX" },
-    { "id": 11, "owner": "SERGIO ROLDAN" },
-    { "id": 12, "owner": "ADRIANA VILLADA" },
-    { "id": 13, "owner": "MIRYAM" },
-    { "id": 14, "owner": "STYLACHO" },
-    { "id": 15, "owner": "DARLY" },
-    { "id": 16, "owner": "LUISA OLARTE" },
-    { "id": 17, "owner": "GLORIA" },
-    { "id": 18, "owner": "JUAN ALEJANDRO" },
-    { "id": 20, "owner": "JUAN OLARTE" },
-    { "id": 21, "owner": "KEVIN" },
-    { "id": 22, "owner": "ALEJANDRO MARTINEZ" },
-    { "id": 23, "owner": "JESSICA" },
-    { "id": 24, "owner": "DIANA" },
-    { "id": 25, "owner": "WILMAR" },
-    { "id": 26, "owner": "MILENA" },
-    { "id": 27, "owner": "AGUSTIN" },
-    { "id": 29, "owner": "LUIS CARVAJAL" },
-    { "id": 31, "owner": "YESICA" },
-    { "id": "E2-1", "owner": "RICARDO/LILIANA" },
-    { "id": "E2-2", "owner": "CAMILA" },
-    { "id": "E2-3", "owner": "EDGAR" },
-    { "id": "E2-4", "owner": "LEIDY" },
-    { "id": "E2-5", "owner": "LEWIS" },
-    { "id": "E2-6", "owner": "EDISON" },
-    { "id": "E2-7", "owner": "JORGE" },
-    { "id": "E2-8", "owner": "MONICA RAMIREZ" }
+    { "id": 0, "owner": "JOHN DOE" },
+    { "id": 3, "owner": "JANE SMITH" },
+    { "id": 4, "owner": "MIKE JOHNSON" },
+    { "id": 5, "owner": "SARAH WILSON" },
+    { "id": 6, "owner": "DAVID BROWN" },
+    { "id": 7, "owner": "LISA GARCIA" },
+    { "id": 8, "owner": "ROBERT DAVIS" },
+    { "id": 9, "owner": "MARIA RODRIGUEZ" },
+    { "id": 10, "owner": "JAMES MILLER" },
+    { "id": 11, "owner": "ANNA TAYLOR" },
+    { "id": 12, "owner": "CARLOS ANDERSON" },
+    { "id": 13, "owner": "EMMA THOMAS" },
+    { "id": 14, "owner": "DANIEL JACKSON" },
+    { "id": 15, "owner": "SOPHIA WHITE" },
+    { "id": 16, "owner": "MATTHEW HARRIS" },
+    { "id": 17, "owner": "OLIVIA MARTIN" },
+    { "id": 18, "owner": "ANDREW THOMPSON" },
+    { "id": 20, "owner": "ISABELLA GARCIA" },
+    { "id": 21, "owner": "WILLIAM MARTINEZ" },
+    { "id": 22, "owner": "CHARLOTTE ROBINSON" },
+    { "id": 23, "owner": "BENJAMIN CLARK" },
+    { "id": 24, "owner": "AMELIA RODRIGUEZ" },
+    { "id": 25, "owner": "LUCAS LEWIS" },
+    { "id": 26, "owner": "HARPER LEE" },
+    { "id": 27, "owner": "HENRY WALKER" },
+    { "id": 29, "owner": "EVELYN HALL" },
+    { "id": 31, "owner": "SEBASTIAN ALLEN" },
+    { "id": "E2-1", "owner": "NOAH/GRACE YOUNG" },
+    { "id": "E2-2", "owner": "LIAM HERNANDEZ" },
+    { "id": "E2-3", "owner": "AVA KING" },
+    { "id": "E2-4", "owner": "MASON WRIGHT" },
+    { "id": "E2-5", "owner": "MIA LOPEZ" },
+    { "id": "E2-6", "owner": "ETHAN HILL" },
+    { "id": "E2-7", "owner": "LUNA SCOTT" },
+    { "id": "E2-8", "owner": "JACOB GREEN" }
   ]
 }
 
@@ -56,18 +56,38 @@ export async function getContributions(): Promise<Contribution[]> {
       amount: 150000,
       month: 'JAN',
       year: 2024,
-      date: '2024-01-15',
-      description: 'Monthly maintenance payment'
+      date: '2024-01-05',
+      description: 'Basic maintenance fee'
     },
     {
       id: 2,
       lotId: 'E2-1',
       type: 'works' as const,
-      amount: 300000,
-      month: 'FEB',
+      amount: 500000,
+      month: 'MAR',
       year: 2024,
-      date: '2024-02-20',
-      description: 'Contribution for new entrance'
+      date: '2024-03-15',
+      description: 'Street lighting installation'
+    },
+    {
+      id: 3,
+      lotId: '14',
+      type: 'maintenance' as const,
+      amount: 180000,
+      month: 'APR',
+      year: 2024,
+      date: '2024-04-22',
+      description: 'Garden maintenance and cleaning'
+    },
+    {
+      id: 4,
+      lotId: 'E2-3',
+      type: 'works' as const,
+      amount: 320000,
+      month: 'MAY',
+      year: 2024,
+      date: '2024-05-10',
+      description: 'Security gate installation'
     }
   ]
 }
@@ -78,18 +98,34 @@ export async function getExpenses(): Promise<Expense[]> {
     {
       id: 1,
       type: 'maintenance' as const,
-      amount: 80000,
-      date: '2024-01-10',
-      description: 'Garden maintenance',
+      amount: 120000,
+      date: '2024-01-08',
+      description: 'Landscaping and tree trimming',
       category: 'Gardening'
     },
     {
       id: 2,
       type: 'works' as const,
-      amount: 250000,
-      date: '2024-02-15',
-      description: 'Security gate repair',
-      category: 'Security'
+      amount: 450000,
+      date: '2024-03-10',
+      description: 'Playground equipment installation',
+      category: 'Community'
+    },
+    {
+      id: 3,
+      type: 'maintenance' as const,
+      amount: 180000,
+      date: '2024-04-05',
+      description: 'Water system maintenance',
+      category: 'Infrastructure'
+    },
+    {
+      id: 4,
+      type: 'works' as const,
+      amount: 320000,
+      date: '2024-05-12',
+      description: 'Street paving project',
+      category: 'Infrastructure'
     }
   ]
 }
