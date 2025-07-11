@@ -1,12 +1,13 @@
 'use client';
 
 import { Expense } from '@/types/expenses.types';
+import { ContributionType } from '@/types/contributions.types';
 import { formatCurrency } from '@/lib/utils';
 
 interface ExpenseListProps {
   title: string;
   expenses: Expense[];
-  type: 'maintenance' | 'works';
+  type: ContributionType;
   color: 'blue' | 'orange';
 }
 

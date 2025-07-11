@@ -1,38 +1,36 @@
-'use client';
+"use client";
 
-import { Lot } from '@/types/lots.types';
-import { Contribution } from '@/types/contributions.types';
+import { Lot } from "@/types/lots.types";
+import { Contribution, ContributionType } from "@/types/contributions.types";
+import { useState } from "react";
+import { months } from "@/lib/constants";
 
 interface PaymentGridProps {
   title: string;
   lots: Lot[];
   contributions: Contribution[];
-  selectedYear: number;
-  onYearChange: (year: number) => void;
-  type: 'maintenance' | 'works';
+  type: ContributionType;
   headerColor: string;
   cellColor: string;
 }
 
-const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-
-export default function PaymentGrid({ 
-  title, 
-  lots, 
-  contributions, 
-  selectedYear, 
-  onYearChange, 
+export default function PaymentGrid({
+  title,
+  lots,
+  contributions,
   type,
   headerColor,
-  cellColor
+  cellColor,
 }: PaymentGridProps) {
-  
+  const [selectedYear, setSelectedYear] = useState(2024);
+
   const getPaymentStatus = (lotId: string | number, month: string) => {
-    return contributions.some(c => 
-      c.lotId === lotId && 
-      c.month === month && 
-      c.year === selectedYear && 
-      c.type === type
+    return contributions.some(
+      (c) =>
+        c.lotId === lotId &&
+        c.month === month &&
+        c.year === selectedYear &&
+        c.type === type
     );
   };
 
@@ -40,10 +38,12 @@ export default function PaymentGrid({
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{title} {selectedYear}</h3>
+          <h3 className="text-lg font-semibold">
+            {title} {selectedYear}
+          </h3>
           <select
             value={selectedYear}
-            onChange={(e) => onYearChange(parseInt(e.target.value))}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
             className="border rounded-sm px-3 py-1"
           >
             <option value={2024}>2024</option>
@@ -61,23 +61,28 @@ export default function PaymentGrid({
               <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Owner
               </th>
-              {months.map(month => (
-                <th key={month} className="px-3 py-3 text-center text-xs font-medium text-black uppercase tracking-wider">
+              {months.map((month) => (
+                <th
+                  key={month}
+                  className="px-3 py-3 text-center text-xs font-medium text-black uppercase tracking-wider"
+                >
                   {month}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {lots.map(lot => (
+            {lots.map((lot) => (
               <tr key={lot.id} className="hover:bg-gray-50">
-                <td className={`px-4 py-4 text-sm font-medium text-gray-900 ${cellColor}`}>
+                <td
+                  className={`px-4 py-4 text-sm font-medium text-gray-900 ${cellColor}`}
+                >
                   {lot.id}
                 </td>
                 <td className={`px-4 py-4 text-sm text-gray-900 ${cellColor}`}>
                   {lot.owner}
                 </td>
-                {months.map(month => (
+                {months.map((month) => (
                   <td key={month} className="px-3 py-4 text-center">
                     {getPaymentStatus(lot.id, month) ? (
                       <div className="w-6 h-6 bg-green-500 rounded-sm mx-auto flex items-center justify-center">
