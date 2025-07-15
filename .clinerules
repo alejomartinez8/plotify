@@ -2,11 +2,11 @@
 
 ## Tech Stack
 
--   Next.js 14+ with App Router
--   Tailwind CSS for styling
--   Supabase for backend
--   Vercel for deployment
--   GitHub for version control
+- Next.js 15+ with App Router
+- Tailwind CSS for styling
+- Vercel for deployment
+- GitHub for version control
+- Supabase for backend
 
 ## Project Structure
 
@@ -24,21 +24,52 @@
 
 SQL files in /supabase/migrations should:
 
--   Use sequential numbering: 001, 002, etc.
--   Include descriptive names
--   Be reviewed by Cline before execution
-    Example: 001_create_users_table.sql
+- Use sequential numbering: 001, 002, etc.
+- Include descriptive names
+- Be reviewed by Cline before execution
+  Example: 001_create_users_table.sql
 
 ## Development Workflow
 
--   Cline helps write and review code changes
--   Vercel automatically deploys from main branch
--   Database migrations reviewed by Cline before execution
+- Cline helps write and review code changes
+- Vercel automatically deploys from main branch
+- Database migrations reviewed by Cline before execution
 
 ## Security
 
 DO NOT read or modify:
 
--   .env files
--   \*_/config/secrets._
--   Any file containing API keys or credentials
+- .env files
+- \*_/config/secrets._
+- Any file containing API keys or credentials
+
+# Dependencies
+
+node_modules/
+\*\*/node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+
+/build/
+/dist/
+/.next/
+/out/
+
+# Testing
+
+/coverage/
+
+# Environment variables
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Large data files
+
+_.csv
+_.xlsx
