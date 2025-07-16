@@ -1,6 +1,6 @@
 # Plotify - Development Backlog
 
-## 🚀 Current Sprint - Internationalization & Database Migration
+## 🚀 Current Sprint - Database Setup & Core Functionality
 
 ### ✅ Completed
 
@@ -11,30 +11,15 @@
 
 ### 🔄 In Progress
 
-- [ ] **Internationalization (i18n) Setup**
-  - [ ] Install next-intl dependencies
-  - [ ] Configure i18n middleware
-  - [ ] Create translation files (en/es)
-  - [ ] Update components to use translations
+- [ ] **Database Setup (Prisma + PostgreSQL)**
+  - [ ] Install Prisma dependencies
+  - [ ] Configure database provider
+  - [ ] Create Prisma schema
+  - [ ] Setup initial migrations
 
 ### 📋 To Do - High Priority
 
-#### 1. Internationalization (i18n)
-
-- [ ] **Next-intl Configuration**
-  - [ ] Install and configure next-intl
-  - [ ] Setup middleware for locale detection
-  - [ ] Create locale switcher component
-- [ ] **Translation Files**
-  - [ ] Create en.json (English - default)
-  - [ ] Create es.json (Spanish)
-  - [ ] Translate all UI text
-- [ ] **Component Updates**
-  - [ ] Update all components to use useTranslations
-  - [ ] Format numbers and dates by locale
-  - [ ] Update navigation and forms
-
-#### 2. Database Setup (Prisma + PostgreSQL)
+#### 1. Database Setup (Prisma + PostgreSQL)
 
 - [ ] **Prisma Configuration**
   - [ ] Install Prisma dependencies (@prisma/client, prisma)
@@ -56,7 +41,7 @@
   - [ ] Create database utility functions
   - [ ] Implement CRUD operations with type safety
 
-#### 3. Core Functionality
+#### 2. Core Functionality
 
 - [ ] **Authentication**
   - [ ] Setup NextAuth.js or Clerk
@@ -74,7 +59,7 @@
 
 ### 📋 Backlog - Medium Priority
 
-#### 4. UX/UI Improvements
+#### 3. UX/UI Improvements
 
 - [ ] **Form Validation**
   - [ ] Integrate Zod for validation
@@ -89,7 +74,7 @@
   - [ ] Advanced metrics
   - [ ] Report exports
 
-#### 5. Advanced Features
+#### 4. Advanced Features
 
 - [ ] **Notification System**
   - [ ] Email notifications
@@ -106,7 +91,7 @@
 
 ### 📋 Backlog - Low Priority
 
-#### 6. Technical Optimizations
+#### 5. Technical Optimizations
 
 - [ ] **Performance**
   - [ ] React Query/SWR for caching
@@ -121,7 +106,7 @@
   - [ ] Integration tests
   - [ ] E2E tests with Playwright
 
-#### 7. DevOps and Deployment
+#### 6. DevOps and Deployment
 
 - [ ] **CI/CD**
   - [ ] GitHub Actions
@@ -131,6 +116,23 @@
   - [ ] Error tracking (Sentry)
   - [ ] Analytics
   - [ ] Performance monitoring
+
+### 📋 End of Project - Internationalization
+
+#### 7. Internationalization (i18n)
+
+- [ ] **Next-intl Configuration**
+  - [ ] Install and configure next-intl
+  - [ ] Setup middleware for locale detection
+  - [ ] Create locale switcher component
+- [ ] **Translation Files**
+  - [ ] Create en.json (English - default)
+  - [ ] Create es.json (Spanish)
+  - [ ] Translate all UI text
+- [ ] **Component Updates**
+  - [ ] Update all components to use useTranslations
+  - [ ] Format numbers and dates by locale
+  - [ ] Update navigation and forms
 
 ---
 
@@ -158,9 +160,9 @@
 
 ### Immediate Next Steps
 
-1. Setup internationalization (i18n)
-2. Configure Prisma + PostgreSQL
-3. Create Prisma schema and models
-4. Setup database migrations
-5. Migrate mock data to seed file
-6. Implement data functions with Prisma Client
+1. Configure Prisma + PostgreSQL
+2. Create Prisma schema and models
+3. Setup database migrations
+4. Migrate mock data to seed file
+5. Implement data functions with Prisma Client
+6. Setup authentication system
