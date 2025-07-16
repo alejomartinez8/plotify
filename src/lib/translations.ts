@@ -2,10 +2,8 @@
 export const translations = {
   // App metadata
   app: {
-    title: "Plotify",
-    description:
-      "Sistema integral de gestión para comunidades residenciales de lotes",
-    subtitle: "Sistema de Gestión de Cobros",
+    title: "Parcela Jaslico",
+    subtitle: "Sistema de Gestión de Aportes",
   },
 
   // Navigation
@@ -18,9 +16,9 @@ export const translations = {
 
   // Buttons
   buttons: {
-    newContribution: "Nueva Contribución",
+    newContribution: "Nuevo Aporte",
     newExpense: "Nuevo Gasto",
-    saveContribution: "Guardar Contribución",
+    saveContribution: "Guardar Aporte",
     saveExpense: "Guardar Gasto",
     cancel: "Cancelar",
   },
@@ -37,16 +35,16 @@ export const translations = {
   // Quick stats
   stats: {
     totalLots: "Total de Lotes",
-    contributionsThisMonth: "Contribuciones Este Mes",
-    expensesThisMonth: "Gastos Este Mes",
+    contributionsThisMonth: "Aportes este mes",
+    expensesThisMonth: "Gastos este mes",
   },
 
   // Payment grid
   grid: {
     lotNo: "No. Lote",
     owner: "Propietario",
-    maintenanceContributions: "Contribuciones de Mantenimiento",
-    worksContributions: "Contribuciones de Obras",
+    maintenanceContributions: "Aportes de Mantenimiento",
+    worksContributions: "Aportes de Obras",
   },
 
   // Expense list
@@ -59,7 +57,7 @@ export const translations = {
   // Modals
   modals: {
     // Contribution modal
-    registerNewContribution: "Registrar Nueva Contribución",
+    registerNewContribution: "Registrar Nuevo Aporte",
     lot: "Lote",
     selectLot: "Seleccionar lote",
     fundType: "Tipo de Fondo",
