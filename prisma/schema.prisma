@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lot {
+  id           String        @id
+  owner        String
+  contributions Contribution[]
+  
+  @@map("lots")
+}
+
+model Contribution {
+  id          Int      @id @default(autoincrement())
+  lotId       String
+  type        String   // 'maintenance' or 'works'
+  amount      Int
+  month       String
+  year        Int
+  date        String
+  description String
+  
+  lot         Lot      @relation(fields: [lotId], references: [id])
+  
+  @@map("contributions")
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  type        String   // 'maintenance' or 'works'
+  amount      Int
+  date        String
+  description String
+  category    String
+  
+  @@map("expenses")
+}
