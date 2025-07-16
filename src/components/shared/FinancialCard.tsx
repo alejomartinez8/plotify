@@ -1,5 +1,6 @@
 import { formatCurrency } from "@/lib/utils";
 import { FundBalance } from "@/types/common.types";
+import { translations } from "@/lib/translations";
 
 interface FinancialCardProps {
   title: string;
@@ -24,20 +25,26 @@ export default async function FinancialCard({
       </h3>
       <div className="space-y-3">
         <div className="flex justify-between">
-          <span className="text-gray-600">Income:</span>
+          <span className="text-gray-600">
+            {translations.financial.income}:
+          </span>
           <span className="font-semibold text-green-600">
             {formatCurrency(balance.income)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600">Expenses:</span>
+          <span className="text-gray-600">
+            {translations.financial.expenses}:
+          </span>
           <span className="font-semibold text-red-600">
             {formatCurrency(balance.expenses)}
           </span>
         </div>
         <div className="border-t pt-3">
           <div className="flex justify-between">
-            <span className="text-gray-900 font-semibold">Balance:</span>
+            <span className="text-gray-900 font-semibold">
+              {translations.financial.balance}:
+            </span>
             <span
               className={`font-bold ${
                 balance.balance >= 0 ? "text-green-600" : "text-red-600"

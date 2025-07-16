@@ -3,6 +3,7 @@ import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { Expense } from "@/types/expenses.types";
 import { getCurrentMonth } from "@/lib/utils";
+import { translations } from "@/lib/translations";
 
 interface QuickStatsProps {
   lots: Lot[];
@@ -26,19 +27,19 @@ export default async function QuickStats({
   const stats = [
     {
       icon: Users,
-      label: "Total Lots",
+      label: translations.stats.totalLots,
       value: lots.length,
       color: "text-blue-600",
     },
     {
       icon: DollarSign,
-      label: "Contributions This Month",
+      label: translations.stats.contributionsThisMonth,
       value: currentMonthContributions.length,
       color: "text-green-600",
     },
     {
       icon: Calendar,
-      label: "Expenses This Month",
+      label: translations.stats.expensesThisMonth,
       value: currentMonthExpenses.length,
       color: "text-orange-600",
     },

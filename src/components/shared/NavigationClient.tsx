@@ -9,12 +9,21 @@ import { useState } from "react";
 import { Contribution } from "@/types/contributions.types";
 import { Expense } from "@/types/expenses.types";
 import { Lot } from "@/types/lots.types";
+import { translations } from "@/lib/translations";
 
 const navigationItems = [
-  { href: "/", label: "Dashboard", icon: TrendingUp },
-  { href: "/maintenance", label: "Maintenance", icon: Calendar },
-  { href: "/works", label: "Works", icon: Users },
-  { href: "/expenses", label: "Expenses", icon: TrendingDown },
+  { href: "/", label: translations.navigation.dashboard, icon: TrendingUp },
+  {
+    href: "/maintenance",
+    label: translations.navigation.maintenance,
+    icon: Calendar,
+  },
+  { href: "/works", label: translations.navigation.works, icon: Users },
+  {
+    href: "/expenses",
+    label: translations.navigation.expenses,
+    icon: TrendingDown,
+  },
 ];
 
 interface NavigationClientProps {
@@ -71,14 +80,14 @@ export default function NavigationClient({ lots }: NavigationClientProps) {
             className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" />
-            <span>New Contribution</span>
+            <span>{translations.buttons.newContribution}</span>
           </button>
           <button
             onClick={() => setShowExpenseModal(true)}
             className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-red-700"
           >
             <Plus className="w-4 h-4" />
-            <span>New Expense</span>
+            <span>{translations.buttons.newExpense}</span>
           </button>
         </div>
       </div>

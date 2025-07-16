@@ -1,6 +1,7 @@
 import { Expense } from "@/types/expenses.types";
 import { ContributionType } from "@/types/contributions.types";
 import { formatCurrency } from "@/lib/utils";
+import { translations } from "@/lib/translations";
 
 interface ExpenseListProps {
   title: string;
@@ -43,7 +44,9 @@ export default async function ExpenseList({
           </div>
         ))}
         {filteredExpenses.length === 0 && (
-          <p className="text-gray-500 text-center py-4">No expenses recorded</p>
+          <p className="text-gray-500 text-center py-4">
+            {translations.expenseList.noExpensesRecorded}
+          </p>
         )}
       </div>
     </div>

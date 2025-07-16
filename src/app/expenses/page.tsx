@@ -1,6 +1,7 @@
 import { getLotsData, getExpenses } from "@/lib/data";
 import NavigationClient from "@/components/shared/NavigationClient";
 import ExpenseList from "@/components/shared/ExpenseList";
+import { translations } from "@/lib/translations";
 
 export default async function ExpensesPage() {
   try {
@@ -13,13 +14,13 @@ export default async function ExpensesPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ExpenseList
-                title="Maintenance Expenses"
+                title={translations.expenseList.maintenanceExpenses}
                 expenses={expenses}
                 type="maintenance"
                 color="blue"
               />
               <ExpenseList
-                title="Works Expenses"
+                title={translations.expenseList.worksExpenses}
                 expenses={expenses}
                 type="works"
                 color="orange"
@@ -34,10 +35,16 @@ export default async function ExpensesPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Expenses</h1>
-          <p className="text-gray-600">Error loading expenses data</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {translations.navigation.expenses}
+          </h1>
+          <p className="text-gray-600">
+            {translations.errors.errorLoadingExpenses}
+          </p>
           <p className="text-sm text-red-600 mt-2">
-            {error instanceof Error ? error.message : "Unknown error"}
+            {error instanceof Error
+              ? error.message
+              : translations.errors.unknownError}
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { getLotsData, getContributions } from "@/lib/data";
 import PaymentGrid from "@/components/shared/PaymentGrid";
 import NavigationClient from "@/components/shared/NavigationClient";
+import { translations } from "@/lib/translations";
 
 export default async function WorksPage() {
   try {
@@ -14,7 +15,7 @@ export default async function WorksPage() {
         <NavigationClient lots={lots} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <PaymentGrid
-            title="Works Contributions"
+            title={translations.grid.worksContributions}
             lots={lots}
             contributions={contributions}
             type="works"
@@ -29,10 +30,16 @@ export default async function WorksPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Works</h1>
-          <p className="text-gray-600">Error loading works data</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {translations.navigation.works}
+          </h1>
+          <p className="text-gray-600">
+            {translations.errors.errorLoadingWorks}
+          </p>
           <p className="text-sm text-red-600 mt-2">
-            {error instanceof Error ? error.message : "Unknown error"}
+            {error instanceof Error
+              ? error.message
+              : translations.errors.unknownError}
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { Dialog } from "@headlessui/react";
 import { Lot } from "@/types/lots.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { months } from "@/lib/constants";
+import { translations } from "@/lib/translations";
 
 interface ContributionModalProps {
   isOpen: boolean;
@@ -62,13 +63,13 @@ export default function ContributionModal({
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="bg-white rounded-lg p-6 w-full max-w-md">
           <Dialog.Title className="text-lg font-semibold mb-4">
-            Register New Contribution
+            {translations.modals.registerNewContribution}
           </Dialog.Title>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Lot
+                {translations.modals.lot}
               </label>
               <select
                 value={formData.lotId}
@@ -76,7 +77,7 @@ export default function ContributionModal({
                 className="w-full border rounded-sm px-3 py-2"
                 required
               >
-                <option value="">Select lot</option>
+                <option value="">{translations.modals.selectLot}</option>
                 {lots.map((lot) => (
                   <option key={lot.id} value={lot.id}>
                     {lot.id} - {lot.owner}
@@ -87,7 +88,7 @@ export default function ContributionModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Fund Type
+                {translations.modals.fundType}
               </label>
               <select
                 value={formData.type}
@@ -95,14 +96,16 @@ export default function ContributionModal({
                 className="w-full border rounded-sm px-3 py-2"
                 required
               >
-                <option value="maintenance">Maintenance</option>
-                <option value="works">Works</option>
+                <option value="maintenance">
+                  {translations.modals.maintenance}
+                </option>
+                <option value="works">{translations.modals.works}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Month
+                {translations.modals.month}
               </label>
               <select
                 value={formData.month}
@@ -110,7 +113,7 @@ export default function ContributionModal({
                 className="w-full border rounded-sm px-3 py-2"
                 required
               >
-                <option value="">Select month</option>
+                <option value="">{translations.modals.selectMonth}</option>
                 {months.map((month) => (
                   <option key={month} value={month}>
                     {month}
@@ -121,7 +124,7 @@ export default function ContributionModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Amount
+                {translations.modals.amount}
               </label>
               <input
                 type="number"
@@ -136,7 +139,7 @@ export default function ContributionModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date
+                {translations.modals.date}
               </label>
               <input
                 type="date"
@@ -149,14 +152,14 @@ export default function ContributionModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                {translations.modals.description}
               </label>
               <input
                 type="text"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 className="w-full border rounded-sm px-3 py-2"
-                placeholder="Optional description"
+                placeholder={translations.modals.optionalDescription}
               />
             </div>
 
@@ -165,14 +168,14 @@ export default function ContributionModal({
                 type="submit"
                 className="flex-1 bg-blue-600 text-white py-2 rounded-sm hover:bg-blue-700"
               >
-                Save Contribution
+                {translations.buttons.saveContribution}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="flex-1 bg-gray-400 text-white py-2 rounded-sm hover:bg-gray-500"
               >
-                Cancel
+                {translations.buttons.cancel}
               </button>
             </div>
           </form>

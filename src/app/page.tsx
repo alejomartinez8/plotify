@@ -3,6 +3,7 @@ import { calculateBalance } from "@/lib/utils";
 import NavigationClient from "@/components/shared/NavigationClient";
 import FinancialCard from "@/components/shared/FinancialCard";
 import QuickStats from "@/components/shared/QuickStats";
+import { translations } from "@/lib/translations";
 
 export default async function HomePage() {
   try {
@@ -27,12 +28,12 @@ export default async function HomePage() {
             {/* Financial Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FinancialCard
-                title="Maintenance Fund"
+                title={translations.financial.maintenanceFund}
                 balance={maintenanceBalance}
                 color="blue"
               />
               <FinancialCard
-                title="Works Fund"
+                title={translations.financial.worksFund}
                 balance={worksBalance}
                 color="orange"
               />
@@ -53,10 +54,16 @@ export default async function HomePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Plotify</h1>
-          <p className="text-gray-600">Error loading application data</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {translations.app.title}
+          </h1>
+          <p className="text-gray-600">
+            {translations.errors.errorLoadingData}
+          </p>
           <p className="text-sm text-red-600 mt-2">
-            {error instanceof Error ? error.message : "Unknown error"}
+            {error instanceof Error
+              ? error.message
+              : translations.errors.unknownError}
           </p>
         </div>
       </div>

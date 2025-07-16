@@ -4,6 +4,7 @@ import { Lot } from "@/types/lots.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { useState } from "react";
 import { months } from "@/lib/constants";
+import { translations } from "@/lib/translations";
 
 interface PaymentGridProps {
   title: string;
@@ -56,10 +57,10 @@ export default function PaymentGrid({
           <thead className={headerColor}>
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Lot No.
+                {translations.grid.lotNo}
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Owner
+                {translations.grid.owner}
               </th>
               {months.map((month) => (
                 <th
