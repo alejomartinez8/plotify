@@ -139,14 +139,16 @@
 ### Technical Decisions
 
 - **Framework**: Next.js 15 with App Router
-- **Database**: PostgreSQL with Prisma ORM
-- **Database Provider**: Neon (recommended) / Railway / Local PostgreSQL
+- **Frontend**: React 19 with hooks and TypeScript
+- **Database**: Vercel Postgres with Prisma ORM
 - **Styling**: Tailwind CSS 4
-- **Deployment**: Vercel
+- **Deployment**: Vercel (with integrated Postgres)
 - **Authentication**: NextAuth.js or Clerk
 - **Internationalization**: next-intl
 - **Languages**: English (default), Spanish
 - **Validation**: Zod (for type-safe validation)
+- **Icons**: Lucide React
+- **Testing**: Jest, React Testing Library, Playwright
 
 ### Data Structure
 

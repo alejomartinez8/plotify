@@ -6,20 +6,11 @@ A comprehensive management system for residential plot communities, designed to 
 
 This project serves two primary objectives:
 
-1. **IA Tool Exploration**  
-   As a senior developer, I'm actively experimenting with next-generation AI development tools like:
-
-   - Cline (AI software engineer assistant)
-   - Claude Sonnet/Opus models
-   - AI-powered development workflows
-   - Emerging code generation paradigms
+1. **AI Tool Exploration**  
+   As a senior developer, I'm actively experimenting with next-generation AI development tools like Cline (AI software engineer assistant), Claude Sonnet/Opus models, and AI-powered development workflows.
 
 2. **Real-World Implementation**  
-   While serving as a testbed for AI tools, the application maintains:
-   - Production-grade code quality
-   - Full functional requirements
-   - Real user value for personal financial management
-   - Modern architecture patterns
+   While serving as a testbed for AI tools, the application maintains production-grade code quality, full functional requirements, and real user value for community financial management.
 
 ## 🚀 Key Features
 
@@ -29,71 +20,17 @@ This project serves two primary objectives:
 - **Expense Recording**: Detailed control of expenditures by category
 - **Intuitive Interface**: Responsive design optimized for desktop and mobile
 - **Visual Reports**: Status indicators with color-coded system
-
-## 📋 Functionality
-
-### Main Dashboard
-
-- Financial summary of both funds
-- Monthly contribution and expense metrics
-- General balance per fund
-- Compliance statistics
-
-### Contribution Management
-
-- Plot-by-plot and month-by-month contribution recording
-- Separation between maintenance and improvement funds
-- Payment status tracking
-- Historical contribution records
-
-### Expense Control
-
-- Detailed expense recording by fund
-- Expenditure categorization
-- Available balance tracking
-- Transaction history
-
-### Visualization
-
-- Excel-like tracking tables
-- Visual status indicators
-- Year and month filters
-- Color codes for easy identification
+- **Multi-language Support**: English and Spanish with extensible i18n system
 
 ## 🛠️ Tech Stack
 
-### Frontend
+- **Frontend**: React 19, TypeScript, Tailwind CSS 4
+- **Backend**: Next.js 15 with App Router
+- **Database**: Vercel Postgres with Prisma ORM
+- **Deployment**: Vercel
+- **Authentication**: NextAuth.js or Clerk
 
-- **React 18** with hooks
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **Lucide React** for iconography
-- **Responsive Design** for all devices
-
-### Backend
-
-- **Next.js 15** with App Router
-- **PostgreSQL** as database
-- **Prisma ORM** for data management
-- **NextAuth.js** or **Clerk** for authentication
-- **next-intl** for internationalization
-
-### Deployment
-
-- **Vercel** for hosting
-- **Neon/Railway** for PostgreSQL database
-- **GitHub Actions** for CI/CD
-
-## 🏗️ Installation & Setup
-
-### Current Version (Pure React)
-
-```bash
-# Current version works as a demo without backend
-# Code is contained in a single React file
-```
-
-### Next.js Version (Next iteration)
+## 🚀 Quick Start
 
 ```bash
 # Clone the repository
@@ -106,143 +43,21 @@ npm install
 # Setup environment variables
 cp .env.example .env.local
 
-# Run database migrations
+# Setup database
+npx prisma generate
 npx prisma migrate dev
 
 # Start development server
 npm run dev
 ```
 
-## 🔧 Environment Variables
-
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/plotify"
-
-# Authentication
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-
-# App Configuration
-NEXT_PUBLIC_APP_NAME="Plotify"
-NEXT_PUBLIC_COMMUNITY_NAME="Your Community Name"
-```
-
-## 📊 Data Model
-
-### Main Entities
-
-#### Plots
-
-- Plot ID
-- Owner name
-- Active/inactive status
-- Contact information
-
-#### Contributions
-
-- Plot ID
-- Fund type (maintenance/improvements)
-- Amount
-- Month and year
-- Payment date
-- Description/notes
-
-#### Expenses
-
-- Fund type
-- Amount
-- Date
-- Description
-- Category
-- Receipt/reference
-
-## 🎯 Development Roadmap
-
-### Phase 1: MVP (Current)
-
-- [x] Functional basic interface
-- [x] Contribution management
-- [x] Expense control
-- [x] Dashboard with metrics
-- [x] Tracking tables
-
-### Phase 2: Backend & Persistence
-
-- [ ] Migration to Next.js
-- [ ] PostgreSQL implementation
-- [ ] Complete REST API
-- [ ] User authentication
-- [ ] Roles and permissions
-
-### Phase 3: Advanced Features
-
-- [ ] PDF report generation
-- [ ] Automatic notifications
-- [ ] Excel export
-- [ ] Advanced search and filters
-- [ ] Change history
-
-### Phase 4: Optimizations
-
-- [ ] PWA for offline use
-- [ ] Intelligent caching
-- [ ] Performance optimization
-- [ ] Analytics and metrics
-- [ ] Automatic backup
-
-## 🏘️ Community Configuration
-
-### Configurable Elements
-
-- **Community Name**: Customizable for any residential community
-- **Plot Numbering**: Flexible system (numbers, letters, mixed)
-- **Fund Types**: Configurable categories (maintenance, improvements, emergency)
-- **Payment Periods**: Monthly, quarterly, or annual
-- **Currency**: Multi-currency support
-
-### Example Communities
-
-- **Residential Plots**: Gated communities, subdivisions
-- **Rural Communities**: Agricultural or countryside developments
-- **Urban Complexes**: Apartment complexes, condominiums
-- **Mixed-Use**: Commercial and residential combinations
-
-## 🤝 Contributing
-
-### How to Contribute
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Code Standards
-
-- Use TypeScript for new features
-- Maintain test coverage
-- Document significant changes
-- Follow naming conventions
-
-## 🐛 Reporting Issues
-
-If you find a bug or have a suggestion:
-
-1. Check if a similar issue already exists
-2. Create a new issue with:
-
-   - Clear problem description
-   - Steps to reproduce
-   - Expected behavior
-   - Screenshots if applicable
+For detailed technical documentation, see [TECHNICAL.md](./TECHNICAL.md).
 
 ## 📱 Usage
 
 ### System Access
 
-- **URL**: \[In development]
-- **Users**: Community administrators
+- **Users**: Community administrators, treasurers
 - **Roles**: Admin, Treasurer, Read-only
 
 ### Workflow
@@ -252,32 +67,53 @@ If you find a bug or have a suggestion:
 3. **Monitoring**: Review dashboard for general status
 4. **Reports**: Generate monthly/annual reports
 
-## 🔒 Security
+## 🏘️ Community Configuration
 
-- Mandatory authentication for access
-- Audit logs for changes
-- Automatic data backup
-- Sensitive information encryption
+The system is flexible and can be configured for various types of communities:
 
-## 📈 Metrics
+- **Residential Plots**: Gated communities, subdivisions
+- **Rural Communities**: Agricultural or countryside developments
+- **Urban Complexes**: Apartment complexes, condominiums
+- **Mixed-Use**: Commercial and residential combinations
 
-### System Objectives
+Configurable elements include community name, plot numbering systems, fund types, payment periods, and currency support.
 
-- Reduce administration time by 80%
-- Improve financial transparency
-- Facilitate delinquent tracking
-- Automate report generation
+## 🤝 Contributing
 
-### KPIs
+We welcome contributions! Here's how to get started:
 
-- Percentage of on-time payments
-- Balance per fund
-- Expenses by category
-- Monthly compliance
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 🌟 Project Name Suggestions
+### Code Standards
 
-Based on functionality and versatility:
+- All code, comments, and documentation must be in English
+- Use TypeScript for type safety
+- Follow ESLint and Prettier configurations
+- Maintain test coverage for new features
+
+## 🐛 Reporting Issues
+
+If you find a bug or have a suggestion:
+
+1. Check if a similar issue already exists
+2. Create a new issue with:
+   - Clear problem description
+   - Steps to reproduce
+   - Expected behavior
+   - Screenshots if applicable
+
+## 📈 Project Status
+
+- **Version**: 1.0.0
+- **Status**: Active development
+- **Last Update**: July 2025
+- **Location**: Medellín, Colombia
+
+For development roadmap and task tracking, see [BACKLOG.md](./BACKLOG.md).
 
 ## 👥 Team
 
@@ -296,13 +132,6 @@ This project is licensed under the MIT License. See `LICENSE` for more details.
 - Residential community administrators
 - Beta testers and early adopters
 - Open source community contributors
-
----
-
-**Version**: 1.0.0
-**Last Update**: July 2025
-**Status**: Active development
-**Location**: Medellín, Colombia
 
 ---
 

@@ -1,28 +1,20 @@
-# Project Configuration
+# Cline Configuration for Plotify
 
-## Tech Stack
+## Coding Standards
 
-- Next.js 15+ with App Router
-- Tailwind CSS for styling
-- Vercel for deployment
-- GitHub for version control
-- PostgreSQL with Prisma ORM for backend
-- NextAuth.js or Clerk for authentication
-- next-intl for internationalization
+- **Language**: All code, comments, documentation, and commit messages must be in English
+- **Variables & Functions**: Use English names for variables, functions, classes, and files
+- **Error Messages**: All error messages and logs in English
+- **Documentation**: All .md files, inline docs, and code comments in English
+- **Git**: Commit messages, branch names, and PR descriptions in English
+- **User Interface**: Initial development in English (i18n will handle translations for end-users)
 
-## Project Structure
+## Development Workflow
 
-/src
-/app # Next.js App Router pages
-/components # React components
-/lib # Utility functions
-/types # TypeScript types
-/prisma
-/schema.prisma # Database schema
-/migrations # Prisma migration files
-/seed.ts # Seed data script
-/public # Static assets
-/messages # i18n translation files
+- Cline helps write and review code changes
+- All code follows TypeScript and ESLint standards
+- Vercel automatically deploys from main branch
+- Database migrations must be reviewed by Cline before execution
 
 ## Database Migrations
 
@@ -32,21 +24,16 @@ Prisma migrations should:
 - Be reviewed by Cline before execution
 - Follow Prisma migration conventions
 - Include proper rollback considerations
-  Example: 20240101000000_create_users_table
+- Example: `20240101000000_create_users_table`
 
-## Development Workflow
-
-- Cline helps write and review code changes
-- Vercel automatically deploys from main branch
-- Database migrations reviewed by Cline before execution
-
-## Security
+## Security Restrictions
 
 DO NOT read or modify:
 
 - .env files
-- \*_/config/secrets._
 - Any file containing API keys or credentials
+- Database connection strings
+- Authentication secrets
 
 # Dependencies
 
