@@ -26,6 +26,40 @@ Prisma migrations should:
 - Include proper rollback considerations
 - Example: `20240101000000_create_users_table`
 
+## Token Optimization
+
+### Division of Responsibilities
+
+- **Cline**: Focus on creating/modifying files only
+- **User**: Execute all CLI commands (npm install, npx, git, etc.)
+- **Cline**: Provide specific CLI commands to execute
+- **User**: Confirm execution with minimal feedback (✅/❌ + brief description)
+
+### Communication Efficiency
+
+- Use specific, direct prompts
+- Group related tasks in single requests
+- Batch related files when logical
+- Use established abbreviations (i18n, CRUD, etc.)
+- Avoid redundant explanations of known concepts
+
+### Standard Communication Format
+
+```
+Task: [concise description]
+Files: [list of files to create/modify]
+CLI Commands: [commands for user to execute]
+Status: [✅/❌ + brief description]
+Next: [next step]
+```
+
+### Confirmation Protocol
+
+- ✅ Success: Brief confirmation only
+- ❌ Error: Error message + specific issue
+- No need for command output unless error occurs
+- No need to use read commands (cat, ls) - Cline has file access
+
 ## Security Restrictions
 
 DO NOT read or modify:
