@@ -16,6 +16,19 @@
 - Vercel automatically deploys from main branch
 - Database migrations must be reviewed by Cline before execution
 
+## React/Next.js Component Guidelines
+
+- **Server Components First**: Always prefer Server Components over Client Components
+- **Client Components Only When Necessary**: Use Client Components (`'use client'`) only when:
+  - Interactive features require browser APIs (onClick, onChange, useState, useEffect)
+  - Using browser-only APIs (localStorage, window, document)
+  - Using state management or event handlers
+  - Third-party libraries that require client-side execution
+- **Next.js 15.3.5 & React 19.1.0**: Leverage latest server component capabilities
+- **Performance**: Server Components reduce bundle size and improve initial page load
+- **SEO Benefits**: Server-rendered content improves search engine optimization
+- **Default Assumption**: All components are Server Components unless explicitly marked with `'use client'`
+
 ## Database Migrations
 
 Prisma migrations should:
