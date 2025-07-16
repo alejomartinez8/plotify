@@ -6,7 +6,9 @@
 - Tailwind CSS for styling
 - Vercel for deployment
 - GitHub for version control
-- Supabase for backend
+- PostgreSQL with Prisma ORM for backend
+- NextAuth.js or Clerk for authentication
+- next-intl for internationalization
 
 ## Project Structure
 
@@ -15,19 +17,22 @@
 /components # React components
 /lib # Utility functions
 /types # TypeScript types
-/supabase
-/migrations # SQL migration files
-/seed # Seed data files
+/prisma
+/schema.prisma # Database schema
+/migrations # Prisma migration files
+/seed.ts # Seed data script
 /public # Static assets
+/messages # i18n translation files
 
 ## Database Migrations
 
-SQL files in /supabase/migrations should:
+Prisma migrations should:
 
-- Use sequential numbering: 001, 002, etc.
-- Include descriptive names
+- Use descriptive names with timestamps
 - Be reviewed by Cline before execution
-  Example: 001_create_users_table.sql
+- Follow Prisma migration conventions
+- Include proper rollback considerations
+  Example: 20240101000000_create_users_table
 
 ## Development Workflow
 

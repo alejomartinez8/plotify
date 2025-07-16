@@ -34,31 +34,36 @@
   - [ ] Format numbers and dates by locale
   - [ ] Update navigation and forms
 
-#### 2. Database Setup (Supabase)
+#### 2. Database Setup (Prisma + PostgreSQL)
 
-- [ ] **Supabase Configuration**
-  - [ ] Install Supabase dependencies
-  - [ ] Initial client configuration
-  - [ ] Environment variables setup
-- [ ] **SQL Migrations**
-  - [ ] 001_create_lots_table.sql
-  - [ ] 002_create_contributions_table.sql
-  - [ ] 003_create_expenses_table.sql
-  - [ ] 004_create_indexes.sql
-- [ ] **Seed Data**
-  - [ ] Migrate mock data to seed files
-  - [ ] Initial population script
-- [ ] **Supabase Client**
-  - [ ] Configure client for Server Components
-  - [ ] Configure client for Client Components
-  - [ ] Implement real data functions
+- [ ] **Prisma Configuration**
+  - [ ] Install Prisma dependencies (@prisma/client, prisma)
+  - [ ] Initialize Prisma project
+  - [ ] Configure database provider (Neon/Railway/Local)
+  - [ ] Environment variables setup (.env)
+- [ ] **Prisma Schema**
+  - [ ] Create schema.prisma file
+  - [ ] Define Lot model
+  - [ ] Define Contribution model
+  - [ ] Define Expense model
+  - [ ] Setup relations and indexes
+- [ ] **Database Migrations**
+  - [ ] Run initial migration (prisma migrate dev)
+  - [ ] Create seed script (prisma/seed.ts)
+  - [ ] Migrate mock data to seed file
+- [ ] **Prisma Client**
+  - [ ] Configure Prisma Client for Next.js
+  - [ ] Create database utility functions
+  - [ ] Implement CRUD operations with type safety
 
 #### 3. Core Functionality
 
 - [ ] **Authentication**
-  - [ ] Setup Supabase Auth
+  - [ ] Setup NextAuth.js or Clerk
+  - [ ] Configure authentication providers
   - [ ] Login/register pages
   - [ ] Route protection middleware
+  - [ ] User session management
 - [ ] **Complete CRUD Operations**
   - [ ] Create contributions
   - [ ] Edit contributions
@@ -134,12 +139,14 @@
 ### Technical Decisions
 
 - **Framework**: Next.js 15 with App Router
-- **Database**: Supabase (PostgreSQL)
+- **Database**: PostgreSQL with Prisma ORM
+- **Database Provider**: Neon (recommended) / Railway / Local PostgreSQL
 - **Styling**: Tailwind CSS 4
 - **Deployment**: Vercel
-- **Authentication**: Supabase Auth
+- **Authentication**: NextAuth.js or Clerk
 - **Internationalization**: next-intl
 - **Languages**: English (default), Spanish
+- **Validation**: Zod (for type-safe validation)
 
 ### Data Structure
 
@@ -150,7 +157,8 @@
 ### Immediate Next Steps
 
 1. Setup internationalization (i18n)
-2. Configure Supabase
-3. Create SQL migrations
-4. Migrate mock data to real database
-5. Implement data functions with Supabase client
+2. Configure Prisma + PostgreSQL
+3. Create Prisma schema and models
+4. Setup database migrations
+5. Migrate mock data to seed file
+6. Implement data functions with Prisma Client
