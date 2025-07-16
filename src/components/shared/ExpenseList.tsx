@@ -1,22 +1,25 @@
-'use client';
-
-import { Expense } from '@/types/expenses.types';
-import { ContributionType } from '@/types/contributions.types';
-import { formatCurrency } from '@/lib/utils';
+import { Expense } from "@/types/expenses.types";
+import { ContributionType } from "@/types/contributions.types";
+import { formatCurrency } from "@/lib/utils";
 
 interface ExpenseListProps {
   title: string;
   expenses: Expense[];
   type: ContributionType;
-  color: 'blue' | 'orange';
+  color: "blue" | "orange";
 }
 
-export default function ExpenseList({ title, expenses, type, color }: ExpenseListProps) {
-  const filteredExpenses = expenses.filter(e => e.type === type);
-  
+export default async function ExpenseList({
+  title,
+  expenses,
+  type,
+  color,
+}: ExpenseListProps) {
+  const filteredExpenses = expenses.filter((e) => e.type === type);
+
   const colorClasses = {
-    blue: 'text-blue-600',
-    orange: 'text-orange-600'
+    blue: "text-blue-600",
+    orange: "text-orange-600",
   };
 
   return (
@@ -25,8 +28,11 @@ export default function ExpenseList({ title, expenses, type, color }: ExpenseLis
         {title}
       </h3>
       <div className="space-y-3">
-        {filteredExpenses.map(expense => (
-          <div key={expense.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-sm">
+        {filteredExpenses.map((expense) => (
+          <div
+            key={expense.id}
+            className="flex justify-between items-center p-3 bg-gray-50 rounded-sm"
+          >
             <div>
               <p className="font-medium">{expense.description}</p>
               <p className="text-sm text-gray-600">{expense.date}</p>

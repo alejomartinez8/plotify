@@ -1,14 +1,13 @@
-import { getLotsData, getContributions, getExpenses } from "@/lib/data";
+import { getLotsData, getContributions } from "@/lib/data";
 
 import PaymentGrid from "@/components/shared/PaymentGrid";
 import NavigationClient from "@/components/shared/NavigationClient";
 
 export default async function MaintenancePage() {
   try {
-    const [lots, contributions, expenses] = await Promise.all([
+    const [lots, contributions] = await Promise.all([
       getLotsData(),
       getContributions(),
-      getExpenses(),
     ]);
 
     return (

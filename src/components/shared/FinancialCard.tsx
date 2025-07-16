@@ -1,18 +1,20 @@
-'use client';
-
-import { formatCurrency } from '@/lib/utils';
-import { FundBalance } from '@/types/common.types';
+import { formatCurrency } from "@/lib/utils";
+import { FundBalance } from "@/types/common.types";
 
 interface FinancialCardProps {
   title: string;
   balance: FundBalance;
-  color: 'blue' | 'orange';
+  color: "blue" | "orange";
 }
 
-export default function FinancialCard({ title, balance, color }: FinancialCardProps) {
+export default async function FinancialCard({
+  title,
+  balance,
+  color,
+}: FinancialCardProps) {
   const colorClasses = {
-    blue: 'text-blue-600',
-    orange: 'text-orange-600'
+    blue: "text-blue-600",
+    orange: "text-orange-600",
   };
 
   return (
@@ -36,7 +38,11 @@ export default function FinancialCard({ title, balance, color }: FinancialCardPr
         <div className="border-t pt-3">
           <div className="flex justify-between">
             <span className="text-gray-900 font-semibold">Balance:</span>
-            <span className={`font-bold ${balance.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <span
+              className={`font-bold ${
+                balance.balance >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
               {formatCurrency(balance.balance)}
             </span>
           </div>

@@ -1,6 +1,4 @@
-import { Lot } from "@/types/lots.types";
-
-export default function Header() {
+export default async function Header() {
   return (
     <div className="bg-white shadow-xs border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

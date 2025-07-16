@@ -1,4 +1,4 @@
-import { getLotsData, getContributions, getExpenses } from "@/lib/data";
+import { getLotsData, getExpenses } from "@/lib/data";
 import NavigationClient from "@/components/shared/NavigationClient";
 import ExpenseList from "@/components/shared/ExpenseList";
 

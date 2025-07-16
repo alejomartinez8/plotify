@@ -1,10 +1,8 @@
-'use client';
-
-import { Users, DollarSign, Calendar } from 'lucide-react';
-import { Lot } from '@/types/lots.types';
-import { Contribution } from '@/types/contributions.types';
-import { Expense } from '@/types/expenses.types';
-import { getCurrentMonth } from '@/lib/utils';
+import { Users, DollarSign, Calendar } from "lucide-react";
+import { Lot } from "@/types/lots.types";
+import { Contribution } from "@/types/contributions.types";
+import { Expense } from "@/types/expenses.types";
+import { getCurrentMonth } from "@/lib/utils";
 
 interface QuickStatsProps {
   lots: Lot[];
@@ -12,32 +10,38 @@ interface QuickStatsProps {
   expenses: Expense[];
 }
 
-export default function QuickStats({ lots, contributions, expenses }: QuickStatsProps) {
+export default async function QuickStats({
+  lots,
+  contributions,
+  expenses,
+}: QuickStatsProps) {
   const currentMonth = getCurrentMonth();
-  const currentMonthContributions = contributions.filter(c => c.month === currentMonth);
-  const currentMonthExpenses = expenses.filter(e => 
-    new Date(e.date).getMonth() === new Date().getMonth()
+  const currentMonthContributions = contributions.filter(
+    (c) => c.month === currentMonth
+  );
+  const currentMonthExpenses = expenses.filter(
+    (e) => new Date(e.date).getMonth() === new Date().getMonth()
   );
 
   const stats = [
     {
       icon: Users,
-      label: 'Total Lots',
+      label: "Total Lots",
       value: lots.length,
-      color: 'text-blue-600'
+      color: "text-blue-600",
     },
     {
       icon: DollarSign,
-      label: 'Contributions This Month',
+      label: "Contributions This Month",
       value: currentMonthContributions.length,
-      color: 'text-green-600'
+      color: "text-green-600",
     },
     {
       icon: Calendar,
-      label: 'Expenses This Month',
+      label: "Expenses This Month",
       value: currentMonthExpenses.length,
-      color: 'text-orange-600'
-    }
+      color: "text-orange-600",
+    },
   ];
 
   return (
