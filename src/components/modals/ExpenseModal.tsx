@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog } from "@headlessui/react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Expense } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 
@@ -48,14 +48,10 @@ export default function ExpenseModal({
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50"
-        aria-hidden="true"
-      />
-
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white rounded-lg p-6 w-full max-w-md">
+    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-50" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 w-full max-w-md z-50">
           <Dialog.Title className="text-lg font-semibold mb-4">
             {translations.modals.registerNewExpense}
           </Dialog.Title>
@@ -149,8 +145,8 @@ export default function ExpenseModal({
               </button>
             </div>
           </form>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
