@@ -1,11 +1,12 @@
-import { getLotsData, getExpenses } from "@/lib/data";
+import { getLots } from "@/lib/database/lots";
+import { getExpenses } from "@/lib/database/expenses";
 import NavigationClient from "@/components/shared/NavigationClient";
 import ExpenseList from "@/components/shared/ExpenseList";
 import { translations } from "@/lib/translations";
 
 export default async function ExpensesPage() {
   try {
-    const [lots, expenses] = await Promise.all([getLotsData(), getExpenses()]);
+    const [lots, expenses] = await Promise.all([getLots(), getExpenses()]);
 
     return (
       <>

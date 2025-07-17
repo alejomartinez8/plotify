@@ -1,14 +1,16 @@
-import { getLotsData, getContributions, getExpenses } from "@/lib/data";
+import { getLots } from "@/lib/database/lots";
+import { getContributions } from "@/lib/database/contributions";
+import { getExpenses } from "@/lib/database/expenses";
 import { calculateBalance } from "@/lib/utils";
 import NavigationClient from "@/components/shared/NavigationClient";
 import FinancialCard from "@/components/shared/FinancialCard";
 import QuickStats from "@/components/shared/QuickStats";
 import { translations } from "@/lib/translations";
 
-export default async function HomePage() {
+export default async function Dashboard() {
   try {
     const [lots, contributions, expenses] = await Promise.all([
-      getLotsData(),
+      getLots(),
       getContributions(),
       getExpenses(),
     ]);

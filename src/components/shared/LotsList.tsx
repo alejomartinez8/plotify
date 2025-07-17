@@ -1,0 +1,145 @@
+"use client";
+
+import { useState } from "react";
+import { Edit, Trash2, Plus, User } from "lucide-react";
+import { Lot } from "@/types/lots.types";
+import LotModal from "@/components/modals/LotModal";
+
+interface LotsListProps {
+  lots: Lot[];
+}
+
+export default function LotsList({ lots }: LotsListProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredLots = lots.filter(
+    (lot) =>
+      lot.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lot.owner.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleEdit = (lot: Lot) => {
+    setSelectedLot(lot);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setSelectedLot(null);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (lot: Lot) => {
+    if (confirm(`Are you sure you want to delete lot ${lot.id}?`)) {
+      try {
+        const response = await fetch(`/api/lots/${lot.id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert("Error deleting lot");
+        }
+      } catch (error) {
+        console.error("Error deleting lot:", error);
+        alert("Error deleting lot");
+      }
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Lots</h2>
+          <button
+            onClick={handleAdd}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Lot
+          </button>
+        </div>
+
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search by lot ID or owner..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Lot ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Owner
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredLots.map((lot) => (
+              <tr key={lot.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      <User className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {lot.id}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="text-sm text-gray-900">{lot.owner}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => handleEdit(lot)}
+                      className="text-blue-600 hover:text-blue-900 p-1"
+                      title="Edit lot"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(lot)}
+                      className="text-red-600 hover:text-red-900 p-1"
+                      title="Delete lot"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {filteredLots.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No lots found</p>
+          </div>
+        )}
+      </div>
+
+      <LotModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        lot={selectedLot}
+      />
+    </div>
+  );
+}
