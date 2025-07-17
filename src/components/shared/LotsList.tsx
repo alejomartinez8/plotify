@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Edit, Trash2, Plus, User } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import LotModal from "@/components/modals/LotModal";
+import { translations } from "@/lib/translations";
 
 interface LotsListProps {
   lots: Lot[];
@@ -12,13 +13,6 @@ interface LotsListProps {
 export default function LotsList({ lots }: LotsListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredLots = lots.filter(
-    (lot) =>
-      lot.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lot.owner.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleEdit = (lot: Lot) => {
     setSelectedLot(lot);
@@ -59,38 +53,27 @@ export default function LotsList({ lots }: LotsListProps) {
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Lot
+            {translations.lotList.addLot}
           </button>
         </div>
-
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search by lot ID or owner..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
       </div>
-
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Lot ID
+                {translations.lotList.lotId}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Owner
+                {translations.lotList.owner}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+                {translations.lotList.actions}
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredLots.map((lot) => (
+            {lots.map((lot) => (
               <tr key={lot.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -127,14 +110,12 @@ export default function LotsList({ lots }: LotsListProps) {
             ))}
           </tbody>
         </table>
-
-        {filteredLots.length === 0 && (
+        {lots.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">No lots found</p>
+            <p className="text-gray-500">{translations.lotList.noLotsFound}</p>
           </div>
         )}
       </div>
-
       <LotModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -55,6 +55,15 @@ export const translations = {
     noExpensesRecorded: "No hay gastos registrados",
   },
 
+  // Lot list
+  lotList: {
+    addLot: "Agregar Lote",
+    lotId: "No. Lote",
+    owner: "Propietario",
+    actions: "Acciones",
+    noLotsFound: "No hay lotes",
+  },
+
   // Modals
   modals: {
     // Contribution modal
