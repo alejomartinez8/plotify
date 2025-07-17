@@ -3,10 +3,11 @@ import { getLotById, updateLot, deleteLot } from "@/lib/database/lots";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const lot = await getLotById(params.id);
+    const { id } = await params;
+    const lot = await getLotById(id);
 
     if (!lot) {
       return NextResponse.json({ error: "Lot not found" }, { status: 404 });
@@ -21,9 +22,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { owner } = body;
 
@@ -31,7 +33,7 @@ export async function PUT(
       return NextResponse.json({ error: "Owner is required" }, { status: 400 });
     }
 
-    const lot = await updateLot(params.id, { owner });
+    const lot = await updateLot(id, { owner });
 
     if (!lot) {
       return NextResponse.json(
@@ -52,10 +54,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const success = await deleteLot(params.id);
+    const { id } = await params;
+    const success = await deleteLot(id);
 
     if (!success) {
       return NextResponse.json(
