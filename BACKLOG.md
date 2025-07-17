@@ -12,32 +12,32 @@
 ### 🔄 In Progress
 
 - [ ] **Database Setup (Prisma + PostgreSQL)**
-  - [ ] Install Prisma dependencies
-  - [ ] Configure database provider
-  - [ ] Create Prisma schema
-  - [ ] Setup initial migrations
+  - [x] Install Prisma dependencies
+  - [x] Configure database provider
+  - [x] Create Prisma schema
+  - [x] Setup initial migrations
 
 ### 📋 To Do - High Priority
 
 #### 1. Database Setup (Prisma + PostgreSQL)
 
-- [ ] **Prisma Configuration**
-  - [ ] Install Prisma dependencies (@prisma/client, prisma)
-  - [ ] Initialize Prisma project
-  - [ ] Configure database provider (Neon/Railway/Local)
-  - [ ] Environment variables setup (.env)
-- [ ] **Prisma Schema**
-  - [ ] Create schema.prisma file
-  - [ ] Define Lot model
-  - [ ] Define Contribution model
-  - [ ] Define Expense model
-  - [ ] Setup relations and indexes
+- [x] **Prisma Configuration**
+  - [x] Install Prisma dependencies (@prisma/client, prisma)
+  - [x] Initialize Prisma project
+  - [x] Configure database provider
+  - [x] Environment variables setup (.env)
+- [x] **Prisma Schema**
+  - [x] Create schema.prisma file
+  - [x] Define Lot model
+  - [x] Define Contribution model
+  - [x] Define Expense model
+  - [x] Setup relations and indexes
 - [ ] **Database Migrations**
-  - [ ] Run initial migration (prisma migrate dev)
-  - [ ] Create seed script (prisma/seed.ts)
-  - [ ] Migrate mock data to seed file
+  - [x] Run initial migration (prisma migrate dev)
+  - [x] Create seed script (prisma/seed.ts)
+  - [x] Migrate mock data to seed file
 - [ ] **Prisma Client**
-  - [ ] Configure Prisma Client for Next.js
+  - [x] Configure Prisma Client for Next.js
   - [ ] Create database utility functions
   - [ ] Implement CRUD operations with type safety
 
