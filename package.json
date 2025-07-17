@@ -8,9 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "db:generate",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate --no-engine",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio"
   },
