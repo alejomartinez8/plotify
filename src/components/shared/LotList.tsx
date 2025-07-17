@@ -6,11 +6,11 @@ import { Lot } from "@/types/lots.types";
 import LotModal from "@/components/modals/LotModal";
 import { translations } from "@/lib/translations";
 
-interface LotsListProps {
+interface LotListProps {
   lots: Lot[];
 }
 
-export default function LotsList({ lots }: LotsListProps) {
+export default function LotList({ lots }: LotListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
 

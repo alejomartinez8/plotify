@@ -1,6 +1,6 @@
 import { getLots } from "@/lib/database/lots";
 import NavigationClient from "@/components/shared/NavigationClient";
-import LotsList from "@/components/shared/LotsList";
+import LotList from "@/components/shared/LotList";
 
 export default async function LotsPage() {
   const lots = await getLots();
@@ -9,7 +9,7 @@ export default async function LotsPage() {
     <>
       <NavigationClient lots={lots} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <LotsList lots={lots} />
+        <LotList lots={lots} />
       </div>
     </>
   );
