@@ -24,6 +24,11 @@ const navigationItems = [
     label: translations.navigation.expenses,
     icon: TrendingDown,
   },
+  {
+    href: "/lots",
+    label: translations.navigation.lots,
+    icon: Users,
+  },
 ];
 
 interface NavigationClientProps {

@@ -1,4 +1,5 @@
-import { getLotsData, getContributions } from "@/lib/data";
+import { getLots } from "@/lib/database/lots";
+import { getContributions } from "@/lib/database/contributions";
 
 import PaymentGrid from "@/components/shared/PaymentGrid";
 import NavigationClient from "@/components/shared/NavigationClient";
@@ -7,7 +8,7 @@ import { translations } from "@/lib/translations";
 export default async function MaintenancePage() {
   try {
     const [lots, contributions] = await Promise.all([
-      getLotsData(),
+      getLots(),
       getContributions(),
     ]);
 

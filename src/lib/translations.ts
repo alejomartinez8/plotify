@@ -12,6 +12,7 @@ export const translations = {
     maintenance: "Mantenimiento",
     works: "Obras",
     expenses: "Gastos",
+    lots: "Lotes",
   },
 
   // Buttons
