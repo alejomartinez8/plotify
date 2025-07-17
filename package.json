@@ -8,9 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --no-engine",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate --no-engine",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio"
   },
@@ -41,11 +41,18 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "prisma": "^6.12.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "typescript": "^5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
