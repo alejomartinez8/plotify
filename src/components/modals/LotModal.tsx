@@ -8,6 +8,7 @@ import {
   updateLotAction,
   State,
 } from "@/lib/actions/lot-actions";
+import { translations } from "@/lib/translations";
 
 interface LotModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {lot ? "Edit Lot" : "Add New Lot"}
+            {lot ? translations.modals.editLot : translations.modals.addNewLot}
           </h2>
           <button
             onClick={onClose}
@@ -54,7 +55,7 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Lot ID
+              {translations.modals.lotId}
             </label>
             <input
               type="text"
@@ -63,21 +64,21 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={!!lot}
-              placeholder="e.g., 22, E2-1"
+              placeholder={translations.modals.lotIdPlaceholder}
             />
             {state.errors?.id && (
               <div className="text-red-500 text-sm mt-1">{state.errors.id}</div>
             )}
             {lot && (
               <p className="text-xs text-gray-500 mt-1">
-                Lot ID cannot be changed
+                {translations.modals.lotIdCannotBeChanged}
               </p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Owner Name
+              {translations.modals.ownerName}
             </label>
             <input
               type="text"
@@ -85,7 +86,7 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
               defaultValue={lot?.owner || ""}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
-              placeholder="Enter owner name"
+              placeholder={translations.modals.ownerNamePlaceholder}
             />
             {state.errors?.owner && (
               <div className="text-red-500 text-sm mt-1">
@@ -100,13 +101,13 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
               onClick={onClose}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {translations.buttons.cancel}
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {lot ? "Update" : "Create"}
+              {lot ? translations.modals.update : translations.modals.create}
             </button>
           </div>
         </form>

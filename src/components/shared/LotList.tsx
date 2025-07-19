@@ -4,6 +4,7 @@ import { useState, useOptimistic, useTransition } from "react";
 import { Edit, Trash2, Plus, User } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import LotModal from "@/components/modals/LotModal";
+import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import { translations } from "@/lib/translations";
 import { deleteLotAction } from "@/lib/actions/lot-actions";
 
@@ -17,12 +18,13 @@ export default function LotList({ lots }: LotListProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [lotToDelete, setLotToDelete] = useState<Lot | null>(null);
+
   const [optimisticLots, deleteOptimisticLot] = useOptimistic(
     lots,
     (state, lotId: string | number) => state.filter((lot) => lot.id !== lotId)
   );
-
-  console.log({ isPending, optimisticLots, selectedLot });
 
   const handleEdit = (lot: Lot) => {
     setSelectedLot(lot);
@@ -34,17 +36,31 @@ export default function LotList({ lots }: LotListProps) {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (lot: Lot) => {
-    if (confirm(`Are you sure you want to delete lot ${lot.id}?`)) {
-      setError(null);
-      startTransition(async () => {
-        deleteOptimisticLot(lot.id);
-        const result = await deleteLotAction(lot.id.toString());
-        if (result?.message && !result.message.includes("successfully")) {
-          setError(result.message);
-        }
-      });
-    }
+  const handleDelete = (lot: Lot) => {
+    setLotToDelete(lot);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!lotToDelete) return;
+
+    setError(null);
+    setIsConfirmModalOpen(false);
+
+    startTransition(async () => {
+      deleteOptimisticLot(lotToDelete.id);
+      const result = await deleteLotAction(lotToDelete.id.toString());
+      if (result?.message && !result.message.includes("successfully")) {
+        setError(result.message);
+      }
+    });
+
+    setLotToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmModalOpen(false);
+    setLotToDelete(null);
   };
 
   return (
@@ -128,10 +144,21 @@ export default function LotList({ lots }: LotListProps) {
           </div>
         )}
       </div>
+
       <LotModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         lot={selectedLot}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={translations.confirmations.deleteLot.title}
+        message={translations.confirmations.deleteLot.message}
+        variant="danger"
+        isLoading={isPending}
       />
     </div>
   );

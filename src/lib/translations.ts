@@ -22,6 +22,17 @@ export const translations = {
     saveContribution: "Guardar Aporte",
     saveExpense: "Guardar Gasto",
     cancel: "Cancelar",
+    delete: "Eliminar",
+    confirm: "Confirmar",
+  },
+
+  // Confirmation dialogs
+  confirmations: {
+    deleteLot: {
+      title: "Confirmar Eliminación",
+      message:
+        "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
+    },
   },
 
   // Financial cards
@@ -85,6 +96,22 @@ export const translations = {
     expenseDescription: "Descripción del gasto",
     category: "Categoría",
     categoryPlaceholder: "ej. Jardinería, Seguridad, Servicios",
+
+    // Lot modal
+    editLot: "Editar Lote",
+    addNewLot: "Agregar Nuevo Lote",
+    lotId: "No. de Lote",
+    ownerName: "Nombre del Propietario",
+    lotIdPlaceholder: "ej. 22, E2-1",
+    ownerNamePlaceholder: "Ingrese el nombre del propietario",
+    lotIdCannotBeChanged: "El No. de Lote no se puede cambiar",
+    update: "Actualizar",
+    create: "Crear",
+  },
+
+  // Status messages
+  status: {
+    processing: "Procesando...",
   },
 
   // Error messages
