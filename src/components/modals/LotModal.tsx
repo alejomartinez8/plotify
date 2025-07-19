@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
+import { useEffect, useActionState, useTransition } from "react";
 import { X } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import {
@@ -20,16 +20,21 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
   const initialState: State = { message: null, errors: {} };
   const action = lot ? updateLotAction : createLotAction;
   const [state, formAction] = useActionState(action, initialState);
+  const [isPending, startTransition] = useTransition();
 
+  // Close modal on success
   useEffect(() => {
-    if (
-      state?.message &&
-      !state.message.includes("Failed") &&
-      !state.message.includes("Error")
-    ) {
+    if (state?.message && state.message.includes("successfully")) {
       onClose();
     }
   }, [state, onClose]);
+
+  // Enhanced form submission
+  const handleSubmit = (formData: FormData) => {
+    startTransition(() => {
+      formAction(formData);
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -42,39 +47,66 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            disabled={isPending}
+            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <form action={formAction} className="space-y-4">
+        <form action={handleSubmit} className="space-y-4">
           {state.message && (
-            <div className="text-red-500 text-sm mb-4">{state.message}</div>
+            <div
+              className={`text-sm mb-4 ${
+                state.message.includes("successfully")
+                  ? "text-green-600"
+                  : "text-red-500"
+              }`}
+            >
+              {state.message}
+            </div>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.lotId}
-            </label>
-            <input
-              type="text"
-              name="id"
-              defaultValue={lot?.id || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-              disabled={!!lot}
-              placeholder={translations.modals.lotIdPlaceholder}
-            />
-            {state.errors?.id && (
-              <div className="text-red-500 text-sm mt-1">{state.errors.id}</div>
-            )}
-            {lot && (
-              <p className="text-xs text-gray-500 mt-1">
-                {translations.modals.lotIdCannotBeChanged}
-              </p>
-            )}
-          </div>
+          {lot ? (
+            <>
+              <input type="hidden" name="id" value={lot.id} />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {translations.modals.lotId}
+                </label>
+                <input
+                  type="text"
+                  value={lot.id}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                  disabled
+                  readOnly
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {translations.modals.lotIdCannotBeChanged}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {translations.modals.lotId}
+              </label>
+              <input
+                type="text"
+                name="id"
+                defaultValue=""
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+                disabled={isPending}
+                placeholder={translations.modals.lotIdPlaceholder}
+              />
+              {state.errors?.id && (
+                <div className="text-red-500 text-sm mt-1">
+                  {state.errors.id}
+                </div>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -86,6 +118,7 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
               defaultValue={lot?.owner || ""}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              disabled={isPending}
               placeholder={translations.modals.ownerNamePlaceholder}
             />
             {state.errors?.owner && (
@@ -99,15 +132,21 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              disabled={isPending}
+              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
               {translations.buttons.cancel}
             </button>
             <button
               type="submit"
+              disabled={isPending}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {lot ? translations.modals.update : translations.modals.create}
+              {isPending
+                ? translations.status.processing
+                : lot
+                ? translations.modals.update
+                : translations.modals.create}
             </button>
           </div>
         </form>
