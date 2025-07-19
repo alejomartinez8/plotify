@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useOptimistic, useTransition } from "react";
 import { Edit, Trash2, Plus, User } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import LotModal from "@/components/modals/LotModal";
 import { translations } from "@/lib/translations";
+import { deleteLotAction } from "@/lib/actions/lot-actions";
 
 interface LotListProps {
   lots: Lot[];
@@ -13,6 +14,15 @@ interface LotListProps {
 export default function LotList({ lots }: LotListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const [optimisticLots, deleteOptimisticLot] = useOptimistic(
+    lots,
+    (state, lotId: string | number) => state.filter((lot) => lot.id !== lotId)
+  );
+
+  console.log({ isPending, optimisticLots, selectedLot });
 
   const handleEdit = (lot: Lot) => {
     setSelectedLot(lot);
@@ -26,20 +36,14 @@ export default function LotList({ lots }: LotListProps) {
 
   const handleDelete = async (lot: Lot) => {
     if (confirm(`Are you sure you want to delete lot ${lot.id}?`)) {
-      try {
-        const response = await fetch(`/api/lots/${lot.id}`, {
-          method: "DELETE",
-        });
-
-        if (response.ok) {
-          window.location.reload();
-        } else {
-          alert("Error deleting lot");
+      setError(null);
+      startTransition(async () => {
+        deleteOptimisticLot(lot.id);
+        const result = await deleteLotAction(lot.id.toString());
+        if (result?.message && !result.message.includes("successfully")) {
+          setError(result.message);
         }
-      } catch (error) {
-        console.error("Error deleting lot:", error);
-        alert("Error deleting lot");
-      }
+      });
     }
   };
 
@@ -51,11 +55,17 @@ export default function LotList({ lots }: LotListProps) {
           <button
             onClick={handleAdd}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            disabled={isPending}
           >
             <Plus className="w-4 h-4" />
             {translations.lotList.addLot}
           </button>
         </div>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -73,7 +83,7 @@ export default function LotList({ lots }: LotListProps) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {lots.map((lot) => (
+            {optimisticLots.map((lot) => (
               <tr key={lot.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -92,15 +102,17 @@ export default function LotList({ lots }: LotListProps) {
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => handleEdit(lot)}
-                      className="text-blue-600 hover:text-blue-900 p-1"
+                      className="text-blue-600 hover:text-blue-900 p-1 disabled:opacity-50"
                       title="Edit lot"
+                      disabled={isPending}
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(lot)}
-                      className="text-red-600 hover:text-red-900 p-1"
+                      className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
                       title="Delete lot"
+                      disabled={isPending}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -110,7 +122,7 @@ export default function LotList({ lots }: LotListProps) {
             ))}
           </tbody>
         </table>
-        {lots.length === 0 && (
+        {optimisticLots.length === 0 && (
           <div className="text-center py-8">
             <p className="text-gray-500">{translations.lotList.noLotsFound}</p>
           </div>

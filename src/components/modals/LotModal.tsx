@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useActionState } from "react";
 import { X } from "lucide-react";
 import { Lot } from "@/types/lots.types";
+import {
+  createLotAction,
+  updateLotAction,
+  State,
+} from "@/lib/actions/lot-actions";
 
 interface LotModalProps {
   isOpen: boolean;
@@ -11,56 +16,19 @@ interface LotModalProps {
 }
 
 export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
-  const [formData, setFormData] = useState({
-    id: "",
-    owner: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const initialState: State = { message: null, errors: {} };
+  const action = lot ? updateLotAction : createLotAction;
+  const [state, formAction] = useActionState(action, initialState);
 
   useEffect(() => {
-    if (lot) {
-      setFormData({
-        id: lot.id.toString(),
-        owner: lot.owner,
-      });
-    } else {
-      setFormData({
-        id: "",
-        owner: "",
-      });
+    if (
+      state?.message &&
+      !state.message.includes("Failed") &&
+      !state.message.includes("Error")
+    ) {
+      onClose();
     }
-  }, [lot]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const url = lot ? `/api/lots/${lot.id}` : "/api/lots";
-      const method = lot ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        onClose();
-        window.location.reload();
-      } else {
-        const error = await response.json();
-        alert(error.message || "Error saving lot");
-      }
-    } catch (error) {
-      console.error("Error saving lot:", error);
-      alert("Error saving lot");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [state, onClose]);
 
   if (!isOpen) return null;
 
@@ -79,20 +47,27 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={formAction} className="space-y-4">
+          {state.message && (
+            <div className="text-red-500 text-sm mb-4">{state.message}</div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Lot ID
             </label>
             <input
               type="text"
-              value={formData.id}
-              onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+              name="id"
+              defaultValue={lot?.id || ""}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={!!lot}
               placeholder="e.g., 22, E2-1"
             />
+            {state.errors?.id && (
+              <div className="text-red-500 text-sm mt-1">{state.errors.id}</div>
+            )}
             {lot && (
               <p className="text-xs text-gray-500 mt-1">
                 Lot ID cannot be changed
@@ -106,14 +81,17 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
             </label>
             <input
               type="text"
-              value={formData.owner}
-              onChange={(e) =>
-                setFormData({ ...formData, owner: e.target.value })
-              }
+              name="owner"
+              defaultValue={lot?.owner || ""}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               placeholder="Enter owner name"
             />
+            {state.errors?.owner && (
+              <div className="text-red-500 text-sm mt-1">
+                {state.errors.owner}
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
@@ -121,16 +99,14 @@ export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
               type="button"
               onClick={onClose}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              disabled={isLoading}
             >
-              {isLoading ? "Saving..." : lot ? "Update" : "Create"}
+              {lot ? "Update" : "Create"}
             </button>
           </div>
         </form>

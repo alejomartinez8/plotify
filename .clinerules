@@ -29,6 +29,102 @@
 - **SEO Benefits**: Server-rendered content improves search engine optimization
 - **Default Assumption**: All components are Server Components unless explicitly marked with `'use client'`
 
+## Modern React Hooks Best Practices
+
+### `useTransition` - For Responsive UI
+
+```javascript
+const [isPending, startTransition] = useTransition();
+
+// Use for operations that shouldn't block UI
+startTransition(async () => {
+  await serverAction();
+});
+```
+
+**When to use**: Server calls, heavy computations, non-urgent updates
+**Benefit**: UI remains responsive during operations
+
+### `useOptimistic` - For Instant Feedback
+
+```javascript
+const [optimisticData, updateOptimistic] = useOptimistic(
+  serverData,
+  (state, action) => applyOptimisticUpdate(state, action)
+);
+
+// Updates UI immediately, reverts if server action fails
+updateOptimistic(newData);
+await serverAction();
+```
+
+**When to use**: CRUD operations, list updates, user feedback
+**Benefit**: Instant UI updates with automatic rollback on failure
+
+### `useActionState` - For Form Handling
+
+```javascript
+const [state, formAction] = useActionState(serverAction, initialState);
+
+// Connects forms directly to Server Actions
+<form action={formAction}>
+  <input name="field" />
+  {state.errors?.field && <span>{state.errors.field[0]}</span>}
+</form>;
+```
+
+**When to use**: Forms with server validation, progressive enhancement
+**Benefit**: Simplified form state management with built-in error handling
+
+### Hook Combination Patterns
+
+```javascript
+// Complete CRUD operation with modern hooks
+const [isPending, startTransition] = useTransition();
+const [optimisticItems, deleteOptimisticItem] = useOptimistic(items, reducer);
+const [formState, formAction] = useActionState(createAction, initialState);
+
+const handleDelete = (item) => {
+  startTransition(async () => {
+    deleteOptimisticItem(item.id);
+    await deleteAction(item.id);
+  });
+};
+```
+
+### Server Actions Standards
+
+```javascript
+// Always include proper error handling and revalidation
+export async function createItemAction(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
+  // 1. Validate with Zod
+  const validated = schema.safeParse(Object.fromEntries(formData));
+
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors,
+      message: "Validation failed",
+    };
+  }
+
+  try {
+    // 2. Database operation
+    await createItem(validated.data);
+
+    // 3. Revalidate cache
+    revalidatePath("/items");
+
+    // 4. Success response
+    return { message: "Item created successfully", errors: {} };
+  } catch (error) {
+    return { message: "Database error", errors: {} };
+  }
+}
+```
+
 ## Database Migrations
 
 Prisma migrations should:
