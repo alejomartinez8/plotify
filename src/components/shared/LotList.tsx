@@ -21,9 +21,29 @@ export default function LotList({ lots }: LotListProps) {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [lotToDelete, setLotToDelete] = useState<Lot | null>(null);
 
-  const [optimisticLots, deleteOptimisticLot] = useOptimistic(
+  const [optimisticLots, updateOptimisticLots] = useOptimistic(
     lots,
-    (state, lotId: string | number) => state.filter((lot) => lot.id !== lotId)
+    (
+      state,
+      action: {
+        type: "delete" | "update" | "create";
+        lot?: Lot;
+        lotId?: string | number;
+      }
+    ) => {
+      switch (action.type) {
+        case "delete":
+          return state.filter((lot) => lot.id !== action.lotId);
+        case "update":
+          return state.map((lot) =>
+            lot.id === action.lot?.id ? { ...lot, ...action.lot } : lot
+          );
+        case "create":
+          return action.lot ? [...state, action.lot] : state;
+        default:
+          return state;
+      }
+    }
   );
 
   const handleEdit = (lot: Lot) => {
@@ -48,7 +68,7 @@ export default function LotList({ lots }: LotListProps) {
     setIsConfirmModalOpen(false);
 
     startTransition(async () => {
-      deleteOptimisticLot(lotToDelete.id);
+      updateOptimisticLots({ type: "delete", lotId: lotToDelete.id });
       const result = await deleteLotAction(lotToDelete.id.toString());
       if (result?.message && !result.message.includes("successfully")) {
         setError(result.message);
@@ -61,6 +81,14 @@ export default function LotList({ lots }: LotListProps) {
   const handleCancelDelete = () => {
     setIsConfirmModalOpen(false);
     setLotToDelete(null);
+  };
+
+  const handleLotSuccess = (updatedLot: Lot, isUpdate: boolean) => {
+    if (isUpdate) {
+      updateOptimisticLots({ type: "update", lot: updatedLot });
+    } else {
+      updateOptimisticLots({ type: "create", lot: updatedLot });
+    }
   };
 
   return (
@@ -145,11 +173,13 @@ export default function LotList({ lots }: LotListProps) {
         )}
       </div>
 
-      <LotModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        lot={selectedLot}
-      />
+      {isModalOpen && (
+        <LotModal
+          onClose={() => setIsModalOpen(false)}
+          lot={selectedLot}
+          onSuccess={handleLotSuccess}
+        />
+      )}
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen}

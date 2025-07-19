@@ -11,32 +11,33 @@ import {
 import { translations } from "@/lib/translations";
 
 interface LotModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   lot?: Lot | null;
+  onClose: () => void;
+  onSuccess: (lot: Lot, isUpdate: boolean) => void;
 }
 
-export default function LotModal({ isOpen, onClose, lot }: LotModalProps) {
+export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
   const initialState: State = { message: null, errors: {} };
   const action = lot ? updateLotAction : createLotAction;
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
 
-  // Close modal on success
   useEffect(() => {
     if (state?.message && state.message.includes("successfully")) {
       onClose();
     }
   }, [state, onClose]);
 
-  // Enhanced form submission
   const handleSubmit = (formData: FormData) => {
     startTransition(() => {
+      const updatedLot: Lot = {
+        id: lot?.id || (formData.get("id") as string),
+        owner: formData.get("owner") as string,
+      };
+      onSuccess(updatedLot, !!lot);
       formAction(formData);
     });
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

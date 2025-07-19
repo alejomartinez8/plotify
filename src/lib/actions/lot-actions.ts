@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createLot, updateLot, deleteLot } from "@/lib/database/lots";
 
 // Zod schema for validation
@@ -49,7 +48,7 @@ export async function createLotAction(
   }
 
   revalidatePath("/lots");
-  redirect("/lots");
+  return { message: "Created lot successfully." };
 }
 
 export async function updateLotAction(
@@ -79,7 +78,7 @@ export async function updateLotAction(
   }
 
   revalidatePath("/lots");
-  redirect("/lots");
+  return { message: "Updated lot successfully." };
 }
 
 export async function deleteLotAction(id: string) {
