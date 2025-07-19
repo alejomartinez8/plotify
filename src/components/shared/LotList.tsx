@@ -116,7 +116,7 @@ export default function LotList({ lots }: LotListProps) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {translations.lotList.lotId}
+                {translations.lotList.lotNumber}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {translations.lotList.owner}
@@ -135,7 +135,7 @@ export default function LotList({ lots }: LotListProps) {
                       <User className="w-4 h-4 text-blue-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-900">
-                      {lot.id}
+                      {lot.lotNumber}
                     </span>
                   </div>
                 </td>

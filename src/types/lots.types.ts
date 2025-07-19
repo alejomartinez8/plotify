@@ -1,4 +1,5 @@
 export interface Lot {
-  id: string | number;
+  id: string;
+  lotNumber: string;
   owner: string;
 }

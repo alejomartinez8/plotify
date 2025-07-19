@@ -5,7 +5,7 @@ export async function getLots(): Promise<Lot[]> {
   try {
     const lots = await prisma.lot.findMany({
       orderBy: {
-        id: "asc",
+        lotNumber: "asc",
       },
     });
     return lots;
@@ -28,13 +28,13 @@ export async function getLotById(id: string): Promise<Lot | null> {
 }
 
 export async function createLot(data: {
-  id: string;
+  lotNumber: string;
   owner: string;
 }): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.create({
       data: {
-        id: data.id,
+        lotNumber: data.lotNumber,
         owner: data.owner,
       },
     });
@@ -47,13 +47,14 @@ export async function createLot(data: {
 
 export async function updateLot(
   id: string,
-  data: { owner: string }
+  data: { lotNumber?: string; owner?: string }
 ): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.update({
       where: { id },
       data: {
-        owner: data.owner,
+        ...(data.lotNumber && { lotNumber: data.lotNumber }),
+        ...(data.owner && { owner: data.owner }),
       },
     });
     return lot;

@@ -69,7 +69,7 @@ export const translations = {
   // Lot list
   lotList: {
     addLot: "Agregar Lote",
-    lotId: "No. Lote",
+    lotNumber: "No. Lote",
     owner: "Propietario",
     actions: "Acciones",
     noLotsFound: "No hay lotes",
@@ -102,9 +102,8 @@ export const translations = {
     addNewLot: "Agregar Nuevo Lote",
     lotId: "No. de Lote",
     ownerName: "Nombre del Propietario",
-    lotIdPlaceholder: "ej. 22, E2-1",
+    lotIdPlaceholder: "ej. 22, E2-1, 18 y 19",
     ownerNamePlaceholder: "Ingrese el nombre del propietario",
-    lotIdCannotBeChanged: "El No. de Lote no se puede cambiar",
     update: "Actualizar",
     create: "Crear",
   },

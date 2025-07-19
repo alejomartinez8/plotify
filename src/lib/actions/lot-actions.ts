@@ -6,15 +6,18 @@ import { createLot, updateLot, deleteLot } from "@/lib/database/lots";
 
 // Zod schema for validation
 const LotSchema = z.object({
-  id: z.string().min(1, "Lot ID is required"),
+  lotNumber: z.string().min(1, "Lot number is required"),
   owner: z.string().min(1, "Owner name is required"),
 });
 
 const CreateLot = LotSchema;
+const UpdateLot = LotSchema.extend({
+  id: z.string().min(1, "Lot ID is required"),
+});
 
 export type State = {
   errors?: {
-    id?: string[];
+    lotNumber?: string[];
     owner?: string[];
   };
   message?: string | null;
@@ -26,7 +29,7 @@ export async function createLotAction(
 ): Promise<State> {
   // Extract and validate data
   const validatedFields = CreateLot.safeParse({
-    id: formData.get("id"),
+    lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
   });
 
@@ -37,10 +40,10 @@ export async function createLotAction(
     };
   }
 
-  const { id, owner } = validatedFields.data;
+  const { lotNumber, owner } = validatedFields.data;
 
   try {
-    await createLot({ id, owner });
+    await createLot({ lotNumber, owner });
   } catch (error) {
     return {
       message: "Database Error: Failed to create lot.",
@@ -55,8 +58,9 @@ export async function updateLotAction(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const validatedFields = LotSchema.safeParse({
+  const validatedFields = UpdateLot.safeParse({
     id: formData.get("id"),
+    lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
   });
 
@@ -67,10 +71,10 @@ export async function updateLotAction(
     };
   }
 
-  const { id, owner } = validatedFields.data;
+  const { id, lotNumber, owner } = validatedFields.data;
 
   try {
-    await updateLot(id, { owner });
+    await updateLot(id, { lotNumber, owner });
   } catch (error) {
     return {
       message: "Database Error: Failed to update lot.",

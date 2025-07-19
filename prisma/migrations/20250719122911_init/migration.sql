@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "lots" (
     "id" TEXT NOT NULL,
+    "lotNumber" TEXT NOT NULL,
     "owner" TEXT NOT NULL,
 
     CONSTRAINT "lots_pkey" PRIMARY KEY ("id")
@@ -31,6 +32,9 @@ CREATE TABLE "expenses" (
 
     CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "lots_lotNumber_key" ON "lots"("lotNumber");
 
 -- AddForeignKey
 ALTER TABLE "contributions" ADD CONSTRAINT "contributions_lotId_fkey" FOREIGN KEY ("lotId") REFERENCES "lots"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
