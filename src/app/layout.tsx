@@ -4,6 +4,8 @@ import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
 import { translations } from "@/lib/translations";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: translations.app.title,
   description: translations.app.subtitle,
