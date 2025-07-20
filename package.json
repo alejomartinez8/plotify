@@ -7,12 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "prisma generate --no-engine",
-    "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate --no-engine",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "lint": "next lint"
   },
   "repository": {
     "type": "git",
@@ -30,6 +25,7 @@
     "@prisma/client": "^6.12.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@radix-ui/react-dialog": "^1.1.2",
+    "@supabase/supabase-js": "^2.52.0",
     "lucide-react": "^0.525.0",
     "next": "^15.3.5",
     "react": "^19.1.0",

@@ -4,7 +4,6 @@ import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Lot } from "@/types/lots.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
-import { months } from "@/lib/constants";
 import { translations } from "@/lib/translations";
 
 interface ContributionModalProps {
@@ -24,8 +23,6 @@ export default function ContributionModal({
     lotId: "",
     type: "maintenance" as ContributionType,
     amount: "",
-    month: "",
-    year: 2024,
     date: "",
     description: "",
   });
@@ -41,8 +38,6 @@ export default function ContributionModal({
       lotId: "",
       type: "maintenance",
       amount: "",
-      month: "",
-      year: 2024,
       date: "",
       description: "",
     });
@@ -96,25 +91,6 @@ export default function ContributionModal({
                   {translations.modals.maintenance}
                 </option>
                 <option value="works">{translations.modals.works}</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translations.modals.month}
-              </label>
-              <select
-                value={formData.month}
-                onChange={(e) => handleChange("month", e.target.value)}
-                className="w-full border rounded-sm px-3 py-2"
-                required
-              >
-                <option value="">{translations.modals.selectMonth}</option>
-                {months.map((month) => (
-                  <option key={month} value={month}>
-                    {month}
-                  </option>
-                ))}
               </select>
             </div>
 

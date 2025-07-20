@@ -1,12 +1,10 @@
-export type ContributionType = 'maintenance' | 'works';
+export type ContributionType = "maintenance" | "works";
 
 export interface Contribution {
   id: number;
-  lotId: string | number;
-  type: ContributionType;
+  lotId: string;
+  type: string;
   amount: number;
-  month: string;
-  year: number;
   date: string;
   description: string;
 }
