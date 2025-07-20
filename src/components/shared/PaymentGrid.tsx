@@ -27,11 +27,17 @@ export default function PaymentGrid({
 
   const getPaymentStatus = (lotId: string | number, month: string) => {
     return contributions.some(
-      (c) =>
-        c.lotId === lotId &&
-        c.month === month &&
-        c.year === selectedYear &&
-        c.type === type
+      (c) => {
+        const contributionDate = new Date(c.date);
+        const contributionMonth = contributionDate.toLocaleString('en-US', { month: 'short' });
+        const contributionYear = contributionDate.getFullYear();
+        return (
+          c.lotId === lotId &&
+          contributionMonth === month &&
+          contributionYear === selectedYear &&
+          c.type === type
+        );
+      }
     );
   };
 

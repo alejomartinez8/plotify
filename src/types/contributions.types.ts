@@ -5,8 +5,6 @@ export interface Contribution {
   lotId: string | number;
   type: ContributionType;
   amount: number;
-  month: string;
-  year: number;
-  date: string;
+  date: Date;
   description: string;
 }

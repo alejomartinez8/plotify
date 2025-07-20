@@ -33,9 +33,7 @@ export async function createContribution(data: {
   lotId: string;
   type: string;
   amount: number;
-  month: string;
-  year: number;
-  date: string;
+  date: Date;
   description: string;
 }): Promise<Contribution | null> {
   try {
@@ -55,9 +53,7 @@ export async function updateContribution(
     lotId?: string;
     type?: string;
     amount?: number;
-    month?: string;
-    year?: number;
-    date?: string;
+    date?: Date;
     description?: string;
   }
 ): Promise<Contribution | null> {

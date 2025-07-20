@@ -17,15 +17,13 @@ model Lot {
 }
 
 model Contribution {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   lotId       String
   type        String
   amount      Int
-  month       String
-  year        Int
-  date        String
+  date        DateTime @default(now())
   description String
-  lot         Lot    @relation(fields: [lotId], references: [id])
+  lot         Lot      @relation(fields: [lotId], references: [id])
 
   @@map("contributions")
 }
