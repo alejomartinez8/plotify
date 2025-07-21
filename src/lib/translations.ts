@@ -24,6 +24,9 @@ export const translations = {
     cancel: "Cancelar",
     delete: "Eliminar",
     confirm: "Confirmar",
+    edit: "Editar",
+    gridView: "Vista por Lote",
+    listView: "Vista Lista",
   },
 
   // Confirmation dialogs
@@ -32,6 +35,14 @@ export const translations = {
       title: "Confirmar Eliminación",
       message:
         "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
+    },
+    deleteExpense: {
+      title: "Confirmar Eliminación",
+      message: "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
+    },
+    deleteContribution: {
+      title: "Confirmar Eliminación", 
+      message: "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
     },
   },
 
@@ -142,6 +153,19 @@ export const translations = {
     createSuccess: "Creado exitosamente",
     updateSuccess: "Actualizado exitosamente",
     deleteSuccess: "Eliminado exitosamente",
+  },
+
+  // Tooltips and titles
+  tooltips: {
+    editExpense: "Editar gasto",
+    deleteExpense: "Eliminar gasto", 
+    editContribution: "Editar contribución",
+    deleteContribution: "Eliminar contribución",
+  },
+
+  // Messages
+  messages: {
+    noContributionsRecorded: "No hay contribuciones registradas",
   },
 
   // Months in Spanish
