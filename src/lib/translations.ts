@@ -111,6 +111,7 @@ export const translations = {
   // Status messages
   status: {
     processing: "Procesando...",
+    loading: "Cargando...",
   },
 
   // Error messages

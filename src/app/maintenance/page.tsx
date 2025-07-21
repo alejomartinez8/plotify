@@ -2,7 +2,6 @@ import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
 
 import PaymentGrid from "@/components/shared/PaymentGrid";
-import NavigationClient from "@/components/shared/NavigationClient";
 import { translations } from "@/lib/translations";
 
 export default async function MaintenancePage() {
@@ -13,19 +12,16 @@ export default async function MaintenancePage() {
     ]);
 
     return (
-      <>
-        <NavigationClient lots={lots} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <PaymentGrid
-            title={translations.grid.maintenanceContributions}
-            lots={lots}
-            contributions={contributions}
-            type="maintenance"
-            headerColor="bg-yellow-400"
-            cellColor="bg-blue-100"
-          />
-        </div>
-      </>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PaymentGrid
+          title={translations.grid.maintenanceContributions}
+          lots={lots}
+          contributions={contributions}
+          type="maintenance"
+          headerColor="bg-yellow-400"
+          cellColor="bg-blue-100"
+        />
+      </div>
     );
   } catch (error) {
     console.error("Error loading data:", error);

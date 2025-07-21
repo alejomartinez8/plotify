@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { inter } from "@/app/ui/fonts";
 import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
+import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${inter.className} antialiased`}>
         <Header />
+        <Navigation />
         <div className="min-h-screen bg-gray-50">{children}</div>
       </body>
     </html>

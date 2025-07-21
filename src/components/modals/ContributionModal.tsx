@@ -12,6 +12,7 @@ interface ContributionModalProps {
   onClose: () => void;
   onSubmit: (contribution: Omit<Contribution, "id">) => void;
   lots: Lot[];
+  lotsLoading?: boolean;
 }
 
 export default function ContributionModal({
@@ -19,6 +20,7 @@ export default function ContributionModal({
   onClose,
   onSubmit,
   lots,
+  lotsLoading = false,
 }: ContributionModalProps) {
   const [formData, setFormData] = useState({
     lotId: "",
@@ -72,11 +74,14 @@ export default function ContributionModal({
                 onChange={(e) => handleChange("lotId", e.target.value)}
                 className="w-full border rounded-sm px-3 py-2"
                 required
+                disabled={lotsLoading}
               >
-                <option value="">{translations.modals.selectLot}</option>
+                <option value="">
+                  {lotsLoading ? translations.status.loading : translations.modals.selectLot}
+                </option>
                 {lots.map((lot) => (
                   <option key={lot.id} value={lot.id}>
-                    {lot.id} - {lot.owner}
+                    {lot.lotNumber} - {lot.owner}
                   </option>
                 ))}
               </select>
