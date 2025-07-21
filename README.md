@@ -41,11 +41,12 @@ cd plotify
 npm install
 
 # Setup environment variables
-cp .env.example .env.local
+cp .env.example .env
 
 # Setup database
-npx prisma generate
-npx prisma migrate dev
+npm run bd:generate
+npm run bd:migrate
+npm run bd:seed
 
 # Start development server
 npm run dev
