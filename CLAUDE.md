@@ -1,0 +1,119 @@
+# Plotify - Personal Expense Tracking Application
+
+A Next.js application for personal expense tracking and visualization with PostgreSQL database.
+
+## Project Structure
+
+- **Frontend**: Next.js 15.3.5 with React 19.1.0, TypeScript, TailwindCSS
+- **Backend**: Next.js Server Actions with PostgreSQL
+- **Database**: PostgreSQL with Prisma ORM
+- **Deployment**: Vercel (auto-deploy from main branch)
+- **UI**: Shadcn/ui components with Lucide icons
+
+## Coding Standards
+
+### Language Requirements
+
+- **All code, comments, documentation, and commit messages must be in English**
+- Variables, functions, classes, and files use English names
+- Error messages and logs in English
+- All .md files, inline docs, and code comments in English
+- Git commit messages, branch names, and PR descriptions in English
+
+### React/Next.js Guidelines
+
+#### Server Components First
+
+- **Default**: All components are Server Components unless explicitly marked with `'use client'`
+- **Client Components Only When Necessary**:
+  - Interactive features requiring browser APIs (onClick, onChange, useState, useEffect)
+  - Browser-only APIs (localStorage, window, document)
+  - State management or event handlers
+  - Third-party libraries requiring client-side execution
+
+#### Modern React Hooks (Client Components)
+
+**useTransition** - For responsive UI during server operations:
+
+```typescript
+const [isPending, startTransition] = useTransition();
+
+startTransition(async () => {
+  await serverAction();
+});
+```
+
+**useOptimistic** - For instant UI feedback:
+
+```typescript
+const [optimisticData, updateOptimistic] = useOptimistic(
+  serverData,
+  (state, action) => applyOptimisticUpdate(state, action)
+);
+```
+
+**useActionState** - For form handling with server actions:
+
+```typescript
+const [state, formAction] = useActionState(serverAction, initialState);
+```
+
+### Server Actions Standards
+
+```typescript
+export async function createItemAction(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
+  // 1. Validate with Zod
+  const validated = schema.safeParse(Object.fromEntries(formData));
+
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors,
+      message: "Validation failed",
+    };
+  }
+
+  try {
+    // 2. Database operation
+    await createItem(validated.data);
+
+    // 3. Revalidate cache
+    revalidatePath("/items");
+
+    // 4. Success response
+    return { message: "Item created successfully", errors: {} };
+  } catch (error) {
+    return { message: "Database error", errors: {} };
+  }
+}
+```
+
+## Database
+
+### Prisma Migrations
+
+- Use descriptive names with timestamps
+- Review migrations before execution
+- Example: `20240101000000_create_users_table`
+
+### Commands
+
+- Run linting: `npm run lint`
+- Type checking: `npm run type-check`
+- Database migrations: `npm run db:migrate`
+- Generate Prisma client: `npm run db:generate`
+
+## Security
+
+- Never commit .env files or secrets
+- All environment variables in .env.local for development
+- Use proper validation on all server actions
+
+## Development Workflow
+
+- TypeScript strict mode enabled
+- ESLint and Prettier for code formatting
+- Server-first approach with progressive enhancement
+- Modern React patterns with Server Actions for data mutations
