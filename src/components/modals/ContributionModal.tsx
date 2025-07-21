@@ -38,6 +38,7 @@ export default function ContributionModal({
       ...formData,
       lotId: formData.lotId,
       amount: parseFloat(formData.amount),
+      date: new Date(formData.date),
     });
     setFormData({
       lotId: "",

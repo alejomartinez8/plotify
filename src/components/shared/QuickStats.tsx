@@ -2,7 +2,6 @@ import { Users, DollarSign, Calendar } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { Expense } from "@/types/expenses.types";
-import { getCurrentMonth } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 
 interface QuickStatsProps {
@@ -16,9 +15,8 @@ export default async function QuickStats({
   contributions,
   expenses,
 }: QuickStatsProps) {
-  const currentMonth = getCurrentMonth();
   const currentMonthContributions = contributions.filter(
-    (c) => c.month === currentMonth
+    (c) => new Date(c.date).getMonth() === new Date().getMonth()
   );
   const currentMonthExpenses = expenses.filter(
     (e) => new Date(e.date).getMonth() === new Date().getMonth()
