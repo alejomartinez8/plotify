@@ -16,29 +16,29 @@ export default function ActionButtons() {
   const [lots, setLots] = useState<Lot[]>([]);
   const [lotsLoading, setLotsLoading] = useState(false);
 
-  const handleContributionSubmit = (contribution: Omit<Contribution, "id">) => {
-    const newContribution: Contribution = {
-      id: Date.now(),
-      ...contribution,
-    };
-    // TODO: POST new contribution
+  const handleContributionSuccess = (
+    contribution: Contribution,
+    isUpdate: boolean
+  ) => {
+    console.log(
+      isUpdate ? "Updated contribution:" : "Created contribution:",
+      contribution
+    );
+    // The server action handles the database update and revalidation
   };
 
-  const handleExpenseSubmit = (expense: Omit<Expense, "id">) => {
-    const newExpense: Expense = {
-      id: Date.now(),
-      ...expense,
-    };
-    // TODO: POST new expense
+  const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
+    console.log(isUpdate ? "Updated expense:" : "Created expense:", expense);
+    // The server action handles the database update and revalidation
   };
 
   const loadLots = async () => {
-    if (lots.length > 0) return; // Ya están cargados
-    
+    if (lots.length > 0) return;
+
     setLotsLoading(true);
     try {
-      const response = await fetch("/api/lots");
-      const data = await response.json();
+      const { getLotsAction } = await import("@/lib/actions/lot-actions");
+      const data = await getLotsAction();
       setLots(data);
     } catch (error) {
       console.error("Error loading lots:", error);
@@ -74,19 +74,21 @@ export default function ActionButtons() {
       </div>
 
       {/* Modals */}
-      <ContributionModal
-        isOpen={showContributionModal}
-        onClose={() => setShowContributionModal(false)}
-        onSubmit={handleContributionSubmit}
-        lots={lots}
-        lotsLoading={lotsLoading}
-      />
+      {showContributionModal && (
+        <ContributionModal
+          onClose={() => setShowContributionModal(false)}
+          onSuccess={handleContributionSuccess}
+          lots={lots}
+          lotsLoading={lotsLoading}
+        />
+      )}
 
-      <ExpenseModal
-        isOpen={showExpenseModal}
-        onClose={() => setShowExpenseModal(false)}
-        onSubmit={handleExpenseSubmit}
-      />
+      {showExpenseModal && (
+        <ExpenseModal
+          onClose={() => setShowExpenseModal(false)}
+          onSuccess={handleExpenseSuccess}
+        />
+      )}
     </>
   );
 }

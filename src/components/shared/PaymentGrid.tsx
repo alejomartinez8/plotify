@@ -84,7 +84,7 @@ export default function PaymentGrid({
                 <td
                   className={`px-4 py-4 text-sm font-medium text-gray-900 ${cellColor}`}
                 >
-                  {lot.id}
+                  {lot.lotNumber}
                 </td>
                 <td className={`px-4 py-4 text-sm text-gray-900 ${cellColor}`}>
                   {lot.owner}

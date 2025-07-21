@@ -2,17 +2,18 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { createLot, updateLot, deleteLot } from "@/lib/database/lots";
+import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
+import { translations } from "@/lib/translations";
 
 // Zod schema for validation
 const LotSchema = z.object({
-  lotNumber: z.string().min(1, "Lot number is required"),
-  owner: z.string().min(1, "Owner name is required"),
+  lotNumber: z.string().min(1, translations.validation.lotNumberRequired),
+  owner: z.string().min(1, translations.validation.ownerRequired),
 });
 
 const CreateLot = LotSchema;
 const UpdateLot = LotSchema.extend({
-  id: z.string().min(1, "Lot ID is required"),
+  id: z.string().min(1, translations.validation.lotIdRequired),
 });
 
 export type State = {
@@ -36,7 +37,7 @@ export async function createLotAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to create lot.",
+      message: `${translations.validation.missingFields}. Failed to create lot.`,
     };
   }
 
@@ -46,12 +47,12 @@ export async function createLotAction(
     await createLot({ lotNumber, owner });
   } catch (error) {
     return {
-      message: "Database Error: Failed to create lot.",
+      message: `${translations.validation.databaseError}: Failed to create lot.`,
     };
   }
 
   revalidatePath("/lots");
-  return { message: "Created lot successfully." };
+  return { message: `${translations.validation.createSuccess}.` };
 }
 
 export async function updateLotAction(
@@ -67,7 +68,7 @@ export async function updateLotAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to update lot.",
+      message: `${translations.validation.missingFields}. Failed to update lot.`,
     };
   }
 
@@ -77,22 +78,32 @@ export async function updateLotAction(
     await updateLot(id, { lotNumber, owner });
   } catch (error) {
     return {
-      message: "Database Error: Failed to update lot.",
+      message: `${translations.validation.databaseError}: Failed to update lot.`,
     };
   }
 
   revalidatePath("/lots");
-  return { message: "Updated lot successfully." };
+  return { message: `${translations.validation.updateSuccess}.` };
 }
 
 export async function deleteLotAction(id: string) {
   try {
     await deleteLot(id);
     revalidatePath("/lots");
-    return { message: "Deleted lot successfully." };
+    return { message: `${translations.validation.deleteSuccess}.` };
   } catch (error) {
     return {
-      message: "Database Error: Failed to delete lot.",
+      message: `${translations.validation.databaseError}: Failed to delete lot.`,
     };
+  }
+}
+
+export async function getLotsAction() {
+  try {
+    const lots = await getLots();
+    return lots;
+  } catch (error) {
+    console.error("Error fetching lots:", error);
+    return [];
   }
 }

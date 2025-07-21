@@ -123,6 +123,27 @@ export const translations = {
     unknownError: "Error desconocido",
   },
 
+  // Validation messages
+  validation: {
+    lotRequired: "El lote es requerido",
+    typeRequired: "El tipo debe ser mantenimiento u obras",
+    amountPositive: "El monto debe ser positivo",
+    dateRequired: "La fecha es requerida",
+    dateValid: "Fecha válida es requerida",
+    descriptionOptional: "La descripción es opcional",
+    categoryRequired: "La categoría es requerida",
+    lotNumberRequired: "El número de lote es requerido",
+    ownerRequired: "El nombre del propietario es requerido",
+    lotIdRequired: "ID de lote válido es requerido",
+    contributionIdRequired: "ID de aporte válido es requerido",
+    expenseIdRequired: "ID de gasto válido es requerido",
+    missingFields: "Campos faltantes",
+    databaseError: "Error de base de datos",
+    createSuccess: "Creado exitosamente",
+    updateSuccess: "Actualizado exitosamente",
+    deleteSuccess: "Eliminado exitosamente",
+  },
+
   // Months in Spanish
   months: [
     "ENE",
