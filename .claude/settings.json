@@ -1,0 +1,71 @@
+{
+  "hooks": {
+    "preToolUse": {
+      "bash": {
+        "command": ".claude/hooks/pre-tool-use.sh",
+        "description": "Validates commands before execution"
+      }
+    },
+    "postToolUse": {
+      "edit": {
+        "command": ".claude/hooks/post-edit.sh",
+        "description": "Runs linting and type checking after file edits"
+      }
+    },
+    "userPromptSubmit": {
+      "command": ".claude/hooks/coding-rules.sh",
+      "description": "Reminds about coding standards and patterns"
+    }
+  },
+  "tools": {
+    "disabled": [],
+    "allowed": ["Read", "Edit", "MultiEdit", "Bash", "Grep", "Glob", "LS"]
+  },
+  "project": {
+    "name": "Plotify",
+    "description": "Residential plot community management system",
+    "lintCommand": "npm run lint",
+    "testCommand": "npm test",
+    "buildCommand": "npm run build",
+    "codingStandards": {
+      "language": "english",
+      "description": "All code, comments, documentation, and commit messages must be in English"
+    }
+  },
+  "react": {
+    "version": "19.1.0",
+    "nextjs": "15.3.5",
+    "serverComponentsFirst": true,
+    "clientComponentsOnlyWhen": [
+      "Interactive features require browser APIs (onClick, onChange, useState, useEffect)",
+      "Using browser-only APIs (localStorage, window, document)",
+      "Using state management or event handlers",
+      "Third-party libraries that require client-side execution"
+    ],
+    "modernHooks": {
+      "useTransition": "For responsive UI during server calls and heavy computations",
+      "useOptimistic": "For instant feedback in CRUD operations with automatic rollback",
+      "useActionState": "For form handling with server validation and progressive enhancement",
+      "hookCombination": "Combine multiple hooks for complete CRUD operations"
+    },
+    "serverActions": {
+      "required": ["validation with Zod", "proper error handling", "revalidatePath calls"],
+      "pattern": "validate -> database operation -> revalidate -> return state"
+    }
+  },
+  "security": {
+    "forbiddenFiles": [".env", "API keys", "credentials", "database connection strings", "authentication secrets"],
+    "description": "DO NOT read or modify sensitive configuration files"
+  },
+  "workflow": {
+    "divisionOfResponsibilities": {
+      "claude": "Focus on creating/modifying files only",
+      "user": "Execute CLI commands (npm install, npx, git, etc.)",
+      "confirmation": "Use ✅/❌ + brief description format"
+    },
+    "communication": {
+      "format": "Task -> Files -> CLI Commands -> Status -> Next",
+      "efficiency": "Use specific prompts, group related tasks, batch files when logical"
+    }
+  }
+}
