@@ -69,7 +69,9 @@ export default function ExpenseModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {expense ? translations.titles.editExpense : translations.titles.registerExpense}
+            {expense
+              ? translations.titles.editExpense
+              : translations.titles.registerExpense}
           </DialogTitle>
         </DialogHeader>
 
@@ -77,7 +79,7 @@ export default function ExpenseModal({
           {state.message && (
             <div
               className={cn(
-                "text-sm mb-4",
+                "mb-4 text-sm",
                 state.message.includes("successfully")
                   ? "text-emerald-600"
                   : "text-destructive"
@@ -152,7 +154,9 @@ export default function ExpenseModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">{translations.labels.description}</Label>
+            <Label htmlFor="description">
+              {translations.labels.description}
+            </Label>
             <Input
               type="text"
               name="description"
@@ -185,7 +189,6 @@ export default function ExpenseModal({
               </div>
             )}
           </div>
-
         </form>
         <DialogFooter>
           <Button
@@ -205,8 +208,8 @@ export default function ExpenseModal({
             {isPending
               ? translations.status.processing
               : expense
-              ? translations.actions.update
-              : translations.actions.save}
+                ? translations.actions.update
+                : translations.actions.save}
           </Button>
         </DialogFooter>
       </DialogContent>

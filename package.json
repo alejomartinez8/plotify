@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate --no-engine",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -21,13 +23,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/alejomartinez8/plotify/issues"
   },
   "homepage": "https://github.com/alejomartinez8/plotify#readme",
   "dependencies": {
-    "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.12.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -42,7 +42,6 @@
     "next": "^15.3.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-hook-form": "^7.60.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.0.5"
   },
@@ -56,6 +55,8 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "prisma": "^6.12.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",

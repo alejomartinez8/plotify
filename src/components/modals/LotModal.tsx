@@ -63,7 +63,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
           {state.message && (
             <div
               className={cn(
-                "text-sm mb-4",
+                "mb-4 text-sm",
                 state.message.includes("successfully")
                   ? "text-emerald-600"
                   : "text-destructive"
@@ -110,7 +110,6 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               </div>
             )}
           </div>
-
         </form>
         <DialogFooter>
           <Button
@@ -121,16 +120,12 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
           >
             {translations.actions.cancel}
           </Button>
-          <Button
-            type="submit"
-            form="lot-form"
-            disabled={isPending}
-          >
+          <Button type="submit" form="lot-form" disabled={isPending}>
             {isPending
               ? translations.status.processing
               : lot
-              ? translations.actions.update
-              : translations.actions.create}
+                ? translations.actions.update
+                : translations.actions.create}
           </Button>
         </DialogFooter>
       </DialogContent>

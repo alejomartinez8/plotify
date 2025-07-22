@@ -62,11 +62,11 @@ export default function ActionButtons() {
           disabled={lotsLoading}
           variant="default"
         >
-          {lotsLoading ? <Spinner size="sm" /> : <Plus className="w-4 h-4" />}
+          {lotsLoading ? <Spinner size="sm" /> : <Plus className="h-4 w-4" />}
           <span>{translations.titles.newContribution}</span>
         </Button>
         <Button onClick={() => setShowExpenseModal(true)} variant="secondary">
-          <Plus className="w-4 h-4" />
+          <Plus className="h-4 w-4" />
           <span>{translations.titles.newExpense}</span>
         </Button>
       </div>

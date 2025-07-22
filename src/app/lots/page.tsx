@@ -14,7 +14,9 @@ export default async function LotsPage() {
       <ErrorLayout
         title={translations.navigation.lots}
         message={translations.errors.loadingLots}
-        error={error instanceof Error ? error.message : translations.errors.unknown}
+        error={
+          error instanceof Error ? error.message : translations.errors.unknown
+        }
       />
     );
   }

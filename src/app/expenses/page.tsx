@@ -19,7 +19,9 @@ export default async function ExpensesPage() {
       <ErrorLayout
         title={translations.navigation.expenses}
         message={translations.errors.loadingExpenses}
-        error={error instanceof Error ? error.message : translations.errors.unknown}
+        error={
+          error instanceof Error ? error.message : translations.errors.unknown
+        }
       />
     );
   }
