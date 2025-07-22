@@ -1,6 +1,6 @@
 import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
-import ContributionViews from "@/components/shared/ContributionViews";
+import WorksView from "@/components/works/WorksView";
 import { translations } from "@/lib/translations";
 
 export default async function WorksPage() {
@@ -11,14 +11,10 @@ export default async function WorksPage() {
     ]);
 
     return (
-      <ContributionViews
+      <WorksView
         title={translations.grid.worksContributions}
         lots={lots}
         contributions={contributions}
-        type="works"
-        headerColor="bg-orange-400"
-        cellColor="bg-orange-100"
-        listColor="orange"
       />
     );
   } catch (error) {
