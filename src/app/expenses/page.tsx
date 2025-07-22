@@ -1,5 +1,5 @@
 import { getExpenses } from "@/lib/database/expenses";
-import ExpensePageList from "@/components/shared/ExpensePageList";
+import ExpenseList from "@/components/shared/ExpenseList";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
@@ -8,7 +8,7 @@ export default async function ExpensesPage() {
     const expenses = await getExpenses();
 
     return (
-      <ExpensePageList
+      <ExpenseList
         title={translations.navigation.expenses}
         expenses={expenses}
       />
