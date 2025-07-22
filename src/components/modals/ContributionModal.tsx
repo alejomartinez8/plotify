@@ -97,7 +97,7 @@ export default function ContributionModal({
             <Label htmlFor="lotId">{translations.labels.lot}</Label>
             <Select
               name="lotId"
-              defaultValue={contribution?.lotId || ""}
+              defaultValue={contribution?.lotId?.toString() || ""}
               required
               disabled={lotsLoading || isPending}
             >
