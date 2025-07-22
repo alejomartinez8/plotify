@@ -1,16 +1,23 @@
-# Plotify - Community Plot Management System
+# Plotify - AI-Powered Community Management System
 
-A comprehensive management system for residential plot communities, designed to efficiently handle maintenance fees, improvement contributions, and expense tracking with full transparency and accountability.
+A comprehensive management system for residential plot communities, built as an exploration of cutting-edge AI development tools. This project demonstrates how modern AI assistants like Claude Code and Cline can accelerate development while maintaining production-quality code for real-world community financial management.
 
 ## 🎯 Project Goals
 
-This project serves two primary objectives:
+This project serves as both a practical application and an exploration laboratory for AI-powered development:
 
-1. **AI Tool Exploration**  
-   As a senior developer, I'm actively experimenting with next-generation AI development tools like Cline (AI software engineer assistant), Claude Sonnet/Opus models, and AI-powered development workflows.
+1. **AI Development Tools Research**  
+   As a senior developer, I'm actively experimenting with cutting-edge AI coding assistants to understand their capabilities, limitations, and impact on development workflows:
 
-2. **Real-World Implementation**  
-   While serving as a testbed for AI tools, the application maintains production-grade code quality, full functional requirements, and real user value for community financial management.
+   - **Cline**: AI software engineer assistant for autonomous coding
+   - **Claude Code**: Anthropic's official CLI for development assistance
+   - **AI-Driven Development**: Exploring how AI can accelerate development, improve code quality, and handle complex refactoring
+
+2. **Production-Grade Implementation**  
+   While serving as an AI tools testbed, this application maintains enterprise-level standards with real functionality for community management. Every feature is built to production quality, demonstrating how AI assistance can create valuable, maintainable software.
+
+3. **Learning & Documentation**  
+   Documenting the experience of building with AI tools, comparing different approaches, and sharing insights about the future of AI-assisted development.
 
 ## 🚀 Key Features
 
@@ -24,11 +31,20 @@ This project serves two primary objectives:
 
 ## 🛠️ Tech Stack
 
+### Core Technologies
+
 - **Frontend**: React 19, TypeScript, Tailwind CSS 4
 - **Backend**: Next.js 15 with App Router
-- **Database**: Vercel Postgres with Prisma ORM
+- **Database**: PostgreSQL with Prisma ORM
 - **Deployment**: Vercel
 - **Authentication**: NextAuth.js or Clerk
+
+### AI Development Tools
+
+- **Claude Code**: Anthropic's CLI for AI-assisted development
+- **Cline**: VSCode extension for autonomous AI coding
+- **Claude Sonnet 4**: Latest AI model for advanced code generation and refactoring
+- **AI Workflow**: Prompt engineering, iterative development, and AI-human collaboration patterns
 
 ## 🚀 Quick Start
 
@@ -107,12 +123,36 @@ If you find a bug or have a suggestion:
    - Expected behavior
    - Screenshots if applicable
 
+## 🤖 AI Development Insights
+
+This project serves as a real-world case study for AI-assisted development. Key learnings include:
+
+### Tools Comparison
+
+- **Cline**: Excellent for autonomous feature development and complex refactoring tasks
+- **Claude Code**: Superior for interactive development, code review, and iterative improvements
+- **Combined Approach**: Using multiple AI tools in different phases yields optimal results
+
+### AI Development Benefits
+
+- ⚡ **Speed**: Rapid prototyping and feature implementation
+- 🔍 **Code Quality**: AI-assisted refactoring and best practices application
+- 📚 **Learning**: Discovering new patterns and modern development techniques
+- 🔄 **Iteration**: Quick pivots and architectural changes
+
+### Challenges & Limitations
+
+- Context management for large codebases
+- Balancing AI suggestions with domain expertise
+- Maintaining code consistency across AI-generated sections
+
 ## 📈 Project Status
 
 - **Version**: 1.0.0
-- **Status**: Active development
+- **Status**: Active development with AI tools exploration
 - **Last Update**: July 2025
 - **Location**: Medellín, Colombia
+- **AI Tools Used**: Cline, Claude Code, Claude Sonnet 4
 
 For development roadmap and task tracking, see [BACKLOG.md](./BACKLOG.md).
 
@@ -130,10 +170,12 @@ This project is licensed under the MIT License. See `LICENSE` for more details.
 
 ## 🙏 Acknowledgments
 
-- Residential community administrators
-- Beta testers and early adopters
+- Residential community administrators and beta testers
+- **Anthropic** for Claude Code and Claude Sonnet 4 model
+- **Cline** development team for the autonomous coding assistant
 - Open source community contributors
+- Early AI development pioneers sharing insights and best practices
 
 ---
 
-_Developed with ❤️ for residential communities worldwide_
+_Exploring the future of AI-powered software development_
