@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useActionState, useTransition } from "react";
-import { X } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
 import {
   createExpenseAction,
@@ -9,6 +8,24 @@ import {
   ExpenseState,
 } from "@/lib/actions/expense-actions";
 import { translations } from "@/lib/translations";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface ExpenseModalProps {
   expense?: Expense | null;
@@ -48,160 +65,151 @@ export default function ExpenseModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>
             {expense ? translations.titles.editExpense : translations.titles.registerExpense}
-          </h2>
-          <button
-            onClick={onClose}
-            disabled={isPending}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        <form action={handleSubmit} className="space-y-4">
+        <form id="expense-form" action={handleSubmit} className="space-y-4">
           {state.message && (
             <div
-              className={`text-sm mb-4 ${
+              className={cn(
+                "text-sm mb-4",
                 state.message.includes("successfully")
-                  ? "text-green-600"
-                  : "text-red-500"
-              }`}
+                  ? "text-emerald-600"
+                  : "text-destructive"
+              )}
             >
               {state.message}
             </div>
           )}
 
           {expense && <input type="hidden" name="id" value={expense.id} />}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.type}
-            </label>
-            <select
+          <div className="space-y-2">
+            <Label htmlFor="type">{translations.labels.type}</Label>
+            <Select
               name="type"
               defaultValue={expense?.type || "maintenance"}
-              className="w-full border rounded-sm px-3 py-2"
               required
               disabled={isPending}
             >
-              <option value="maintenance">
-                {translations.labels.maintenance}
-              </option>
-              <option value="works">{translations.labels.works}</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="maintenance">
+                  {translations.labels.maintenance}
+                </SelectItem>
+                <SelectItem value="works">
+                  {translations.labels.works}
+                </SelectItem>
+              </SelectContent>
+            </Select>
             {state.errors?.type && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.type}
               </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.amount}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="amount">{translations.labels.amount}</Label>
+            <Input
               type="number"
               name="amount"
+              id="amount"
               defaultValue={expense?.amount || ""}
-              className="w-full border rounded-sm px-3 py-2"
               required
               min="0"
               step="1"
               disabled={isPending}
             />
             {state.errors?.amount && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.amount}
               </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.date}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="date">{translations.labels.date}</Label>
+            <Input
               type="date"
               name="date"
+              id="date"
               defaultValue={expense?.date || ""}
-              className="w-full border rounded-sm px-3 py-2"
               required
               disabled={isPending}
             />
             {state.errors?.date && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.date}
               </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.description}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="description">{translations.labels.description}</Label>
+            <Input
               type="text"
               name="description"
+              id="description"
               defaultValue={expense?.description || ""}
-              className="w-full border rounded-sm px-3 py-2"
               placeholder={translations.placeholders.optionalDescription}
               disabled={isPending}
             />
             {state.errors?.description && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.description}
               </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.category}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="category">{translations.labels.category}</Label>
+            <Input
               type="text"
               name="category"
+              id="category"
               defaultValue={expense?.category || ""}
-              className="w-full border rounded-sm px-3 py-2"
               placeholder={translations.placeholders.categoryExample}
               required
               disabled={isPending}
             />
             {state.errors?.category && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.category}
               </div>
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-            >
-              {translations.actions.cancel}
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-            >
-              {isPending
-                ? translations.status.processing
-                : expense
-                ? translations.actions.update
-                : translations.actions.save}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            {translations.actions.cancel}
+          </Button>
+          <Button
+            type="submit"
+            form="expense-form"
+            variant="secondary"
+            disabled={isPending}
+          >
+            {isPending
+              ? translations.status.processing
+              : expense
+              ? translations.actions.update
+              : translations.actions.save}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

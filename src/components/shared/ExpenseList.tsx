@@ -4,32 +4,31 @@ import { useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
 import { ContributionType } from "@/types/contributions.types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ExpenseListProps {
   title: string;
   expenses: Expense[];
   type: ContributionType;
-  color: "blue" | "orange";
+  variant: "default" | "secondary";
 }
 
 export default function ExpenseList({
   title,
   expenses,
   type,
-  color,
+  variant = "default",
 }: ExpenseListProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const filteredExpenses = expenses.filter((e) => e.type === type);
 
-  const colorClasses = {
-    blue: "text-blue-600",
-    orange: "text-orange-600",
-  };
+  // Remove color classes - using semantic variants instead
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
     console.log(isUpdate ? "Updated expense:" : "Created expense:", expense);
@@ -51,10 +50,13 @@ export default function ExpenseList({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-      <h3 className={`text-lg font-semibold mb-4 ${colorClasses[color]}`}>
-        {title}
-      </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
       <div className="space-y-3">
         {filteredExpenses.map((expense) => (
           <div
@@ -66,34 +68,38 @@ export default function ExpenseList({
               <p className="text-sm text-gray-600">{expense.date}</p>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="font-semibold text-red-600">
+              <span className="font-semibold text-destructive">
                 {formatCurrency(expense.amount)}
               </span>
               <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setEditingExpense(expense)}
-                  className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                   title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
                 >
                   <Edit className="w-4 h-4" />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setDeletingExpense(expense)}
-                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                  className="text-destructive hover:text-destructive"
                   title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         ))}
         {filteredExpenses.length === 0 && (
-          <p className="text-gray-500 text-center py-4">
+          <p className="text-muted-foreground text-center py-4">
             {translations.messages.noExpenses}
           </p>
         )}
       </div>
+      </CardContent>
 
       {/* Edit Modal */}
       {editingExpense && (
@@ -113,6 +119,6 @@ export default function ExpenseList({
         onClose={() => setDeletingExpense(null)}
         variant="danger"
       />
-    </div>
+    </Card>
   );
 }

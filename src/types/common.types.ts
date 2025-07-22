@@ -3,5 +3,3 @@ export interface FundBalance {
   expenses: number;
   balance: number;
 }
-
-export type TabType = 'dashboard' | 'maintenance' | 'works' | 'expenses';

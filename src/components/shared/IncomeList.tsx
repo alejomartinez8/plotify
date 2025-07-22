@@ -9,6 +9,15 @@ import { formatCurrency } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface IncomeListProps {
   title: string;
@@ -63,11 +72,12 @@ export default function IncomeList({
 
   // Update URL when filters change
   const handleLotFilterChange = (lotId: string) => {
-    setSelectedLotId(lotId);
+    const actualLotId = lotId === "__all__" ? "" : lotId;
+    setSelectedLotId(actualLotId);
     
     const params = new URLSearchParams(searchParams.toString());
-    if (lotId) {
-      params.set("lot", lotId);
+    if (actualLotId) {
+      params.set("lot", actualLotId);
     } else {
       params.delete("lot");
     }
@@ -180,67 +190,79 @@ export default function IncomeList({
       {/* Header with unified filters and actions */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+          <h1 className="text-2xl font-bold">{title}</h1>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             {/* Income Type Filter */}
             <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <select
-                value={incomeFilter}
-                onChange={(e) => handleIncomeFilterChange(e.target.value as IncomeType)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <Select 
+                value={incomeFilter} 
+                onValueChange={(value) => handleIncomeFilterChange(value as IncomeType)}
               >
-                <option value="all">{translations.filters.allIncome}</option>
-                <option value="maintenance">{translations.labels.maintenance}</option>
-                <option value="works">{translations.labels.works}</option>
-              </select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{translations.filters.allIncome}</SelectItem>
+                  <SelectItem value="maintenance">{translations.labels.maintenance}</SelectItem>
+                  <SelectItem value="works">{translations.labels.works}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             {/* Lot Filter */}
             <div className="flex items-center space-x-2">
-              <select
-                value={selectedLotId}
-                onChange={(e) => handleLotFilterChange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              <Select
+                value={selectedLotId || "__all__"}
+                onValueChange={(value) => handleLotFilterChange(value || "")}
               >
-                <option value="">{translations.filters.allLots}</option>
-                {lots.map((lot) => (
-                  <option key={lot.id} value={lot.id}>
-                    Lote {lot.lotNumber} - {lot.owner}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder={translations.filters.allLots} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">{translations.filters.allLots}</SelectItem>
+                  {lots.map((lot) => (
+                    <SelectItem key={lot.id} value={lot.id}>
+                      Lote {lot.lotNumber} - {lot.owner}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
       </div>
 
       {/* Income List Card */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-
-        {/* Lot Summary - appears when a lot is selected */}
-        {lotSummary && selectedLot && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-orange-50 rounded-lg border border-gray-200">
-            <h4 className="font-semibold text-gray-800 mb-3">
-              📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} ({selectedLot.owner})
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div className="bg-white p-3 rounded-lg">
-                <p className="text-gray-600 mb-1">{translations.labels.maintenance}:</p>
-                <p className="font-semibold text-blue-600">
-                  {lotSummary.maintenance.count} {translations.labels.payments} - {formatCurrency(lotSummary.maintenance.total)}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg">
-                <p className="text-gray-600 mb-1">{translations.labels.works}:</p>
-                <p className="font-semibold text-orange-600">
-                  {lotSummary.works.count} {translations.labels.payments} - {formatCurrency(lotSummary.works.total)}
-                </p>
+      <Card>
+        <CardContent className="p-6">
+          {/* Lot Summary - appears when a lot is selected */}
+          {lotSummary && selectedLot && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border">
+              <h4 className="font-semibold mb-3">
+                📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} ({selectedLot.owner})
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">{translations.labels.maintenance}:</p>
+                    <p className="font-semibold text-primary">
+                      {lotSummary.maintenance.count} {translations.labels.payments} - {formatCurrency(lotSummary.maintenance.total)}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">{translations.labels.works}:</p>
+                    <p className="font-semibold text-secondary-foreground">
+                      {lotSummary.works.count} {translations.labels.payments} - {formatCurrency(lotSummary.works.total)}
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Results Header */}
         <div className="flex justify-between items-center mb-4">
@@ -264,7 +286,7 @@ export default function IncomeList({
             return (
               <div
                 key={contribution.id}
-                className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
+                className="flex justify-between items-center p-4 bg-muted/30 rounded-lg border hover:bg-muted/50 transition-colors group"
               >
                 <div className="flex-1">
                   <div className="flex items-center space-x-4">
@@ -275,12 +297,12 @@ export default function IncomeList({
                       <div className="flex items-center space-x-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           contribution.type === "maintenance" 
-                            ? "bg-blue-100 text-blue-800" 
-                            : "bg-orange-100 text-orange-800"
+                            ? "bg-primary/10 text-primary" 
+                            : "bg-secondary/10 text-secondary-foreground"
                         }`}>
                           {contribution.type === "maintenance" ? translations.labels.maintenance : translations.labels.works}
                         </span>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {new Date(contribution.date).toLocaleDateString("es-ES", {
                             year: "numeric",
                             month: "long",
@@ -292,24 +314,27 @@ export default function IncomeList({
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-emerald-600">
                     {formatCurrency(contribution.amount)}
                   </span>
                   <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setEditingContribution(contribution)}
-                      className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                       title={translations.actions.edit}
                     >
                       <Edit className="w-4 h-4" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setDeletingContribution(contribution)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded"
+                      className="text-destructive hover:text-destructive"
                       title={translations.actions.delete}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -317,20 +342,21 @@ export default function IncomeList({
           })}
           {filteredContributions.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">📊</div>
-              <p className="text-gray-500 text-lg mb-2">
+              <div className="text-muted-foreground text-6xl mb-4">📊</div>
+              <p className="text-muted-foreground text-lg mb-2">
                 {selectedLotId 
                   ? translations.messages.noContributionsForLot
                   : translations.messages.noContributions
                 }
               </p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 {incomeFilter !== "all" && translations.messages.changeFilter}
               </p>
             </div>
           )}
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Edit Modal */}
       {editingContribution && (

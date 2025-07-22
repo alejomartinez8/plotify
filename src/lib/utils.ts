@@ -1,6 +1,12 @@
 import { FundBalance } from "@/types/common.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { Expense } from "@/types/expenses.types";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-CO", {

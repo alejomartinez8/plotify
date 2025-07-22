@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import ContributionModal from "../modals/ContributionModal";
 import ExpenseModal from "../modals/ExpenseModal";
 import Spinner from "../ui/Spinner";
+import { Button } from "@/components/ui/button";
 import { Contribution } from "@/types/contributions.types";
 import { Expense } from "@/types/expenses.types";
 import { Lot } from "@/types/lots.types";
@@ -56,21 +57,18 @@ export default function ActionButtons() {
   return (
     <>
       <div className="flex space-x-2 py-2">
-        <button
+        <Button
           onClick={handleOpenContributionModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700 disabled:opacity-50"
           disabled={lotsLoading}
+          variant="default"
         >
           {lotsLoading ? <Spinner size="sm" /> : <Plus className="w-4 h-4" />}
           <span>{translations.titles.newContribution}</span>
-        </button>
-        <button
-          onClick={() => setShowExpenseModal(true)}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-red-700"
-        >
+        </Button>
+        <Button onClick={() => setShowExpenseModal(true)} variant="secondary">
           <Plus className="w-4 h-4" />
           <span>{translations.titles.newExpense}</span>
-        </button>
+        </Button>
       </div>
 
       {/* Modals */}

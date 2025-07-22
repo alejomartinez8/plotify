@@ -1,7 +1,7 @@
 import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
-
 import IncomeList from "@/components/shared/IncomeList";
+import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function IncomePage() {
@@ -21,21 +21,11 @@ export default async function IncomePage() {
   } catch (error) {
     console.error("Error loading data:", error);
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {translations.navigation.income}
-          </h1>
-          <p className="text-gray-600">
-            {translations.errors.loadingIncome}
-          </p>
-          <p className="text-sm text-red-600 mt-2">
-            {error instanceof Error
-              ? error.message
-              : translations.errors.unknown}
-          </p>
-        </div>
-      </div>
+      <ErrorLayout
+        title={translations.navigation.income}
+        message={translations.errors.loadingIncome}
+        error={error instanceof Error ? error.message : translations.errors.unknown}
+      />
     );
   }
 }
