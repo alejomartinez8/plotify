@@ -56,49 +56,37 @@ async function main() {
   const lots = await prisma.lot.findMany();
   const maintenanceContributions = [];
 
-  const paymentRecords = {
-    "04": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03"],
-    "05": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
-    "07": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
-    "08": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"],
-    "09": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03"],
-    "10": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
-    "11": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-04", "2025-05", "2025-06"],
-    "12": ["2024-09"],
-    "13": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
-    "14": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05"],
-    "15": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
-    "16": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
-    "17": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
-    "18 Y 19": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-06", "2025-07"],
-    "20": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"],
-    "22": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
-    "23": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
-    "24": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
-    "25": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
-    "26": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
-    "27 Y 28": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
-    "29": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
-    "31": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
-    "E2-2": ["2025-03"]
-  };
+  const lot22 = lots.find((l) => l.lotNumber === "22");
+  if (lot22) {
+    maintenanceContributions.push({
+      lotId: lot22.id,
+      type: "maintenance",
+      amount: 100000,
+      date: new Date(2025, 0, 23),
+      description: "Mantenimiento enero y febrero 2025",
+    });
+  }
 
-  for (const [lotNumber, monthsList] of Object.entries(paymentRecords)) {
-    const lot = lots.find((l) => l.lotNumber === lotNumber);
+  const lot08 = lots.find((l) => l.lotNumber === "08");
+  const lot20 = lots.find((l) => l.lotNumber === "20");
+
+  for (const lot of [lot08, lot20]) {
     if (lot) {
-      for (const monthStr of monthsList) {
-        const [year, month] = monthStr.split("-").map(Number);
-        const amount = year === 2024 ? 50000 : 60000;
-        const monthName = new Date(year, month - 1).toLocaleString('es-ES', { month: 'long' });
-        
-        maintenanceContributions.push({
-          lotId: lot.id,
-          type: "maintenance",
-          amount: amount,
-          date: new Date(year, month - 1, Math.floor(Math.random() * 28) + 1),
-          description: `Maintenance fee ${monthName} ${year}`,
-        });
-      }
+      maintenanceContributions.push({
+        lotId: lot.id,
+        type: "works",
+        amount: 500000,
+        date: new Date(2025, 0, 15),
+        description: "Works contribution 2025",
+      });
+
+      maintenanceContributions.push({
+        lotId: lot.id,
+        type: "maintenance",
+        amount: 720000,
+        date: new Date(2025, 0, 15),
+        description: "Annual maintenance payment 2025 (12 months)",
+      });
     }
   }
 
@@ -111,42 +99,6 @@ async function main() {
   console.log(
     `Created ${maintenanceContributions.length} maintenance contributions for 2025`
   );
-
-  const lot22 = lots.find((l) => l.lotNumber === "22");
-  if (lot22) {
-    maintenanceContributions.push({
-      lotId: lot22.id,
-      type: "maintenance",
-      amount: 100000,
-      date: new Date(2024, 9, 21),
-      description: "Advanced payment maintenance nov/dec 2024",
-    });
-  }
-
-  const lot08 = lots.find((l) => l.lotNumber === "08");
-  const lot20 = lots.find((l) => l.lotNumber === "20");
-  
-  for (const lot of [lot08, lot20]) {
-    if (lot) {
-      maintenanceContributions.push({
-        lotId: lot.id,
-        type: "works",
-        amount: 500000,
-        date: new Date(2025, 0, 15),
-        description: "Works contribution 2025",
-      });
-      
-      maintenanceContributions.push({
-        lotId: lot.id,
-        type: "maintenance",
-        amount: 720000,
-        date: new Date(2025, 0, 15),
-        description: "Annual maintenance payment 2025 (12 months)",
-      });
-    }
-  }
-
-  console.log("Maintenance contributions created successfully");
 
   const expenses = [
     {
@@ -349,7 +301,8 @@ async function main() {
       type: "works",
       amount: 7236200,
       date: "2025-02-16",
-      description: "Motor, cremallera, tar wifi, controles, regulador, matrix, fotoceldas",
+      description:
+        "Motor, cremallera, tar wifi, controles, regulador, matrix, fotoceldas",
       category: "Automatización",
     },
     {
