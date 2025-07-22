@@ -140,7 +140,7 @@ export default function ContributionList({
             onChange={(e) => handleLotFilterChange(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">Todos los lotes</option>
+            <option value="">{translations.messages.allLots}</option>
             {lots.map((lot) => (
               <option key={lot.id} value={lot.id}>
                 Lote {lot.lotNumber} - {lot.owner}
@@ -224,7 +224,7 @@ export default function ContributionList({
         {filteredContributions.length === 0 && (
           <p className="text-gray-500 text-center py-4">
             {selectedLotId 
-              ? `No hay contribuciones registradas para este lote` 
+              ? translations.messages.noContributionsForLot
               : translations.messages.noContributionsRecorded
             }
           </p>

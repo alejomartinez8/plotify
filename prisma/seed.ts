@@ -66,8 +66,6 @@ async function main() {
   const lots = await prisma.lot.findMany();
   const maintenanceContributions = [];
 
-  // Payment records based on actual table data (Sept 2024 - Dec 2025)
-  // 2024: 50,000 COP, 2025: 60,000 COP
   const paymentRecords = {
     "04": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03"],
     "05": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
@@ -95,7 +93,6 @@ async function main() {
     "E2-2": ["2025-03"]
   };
 
-  // Generate contributions based on payment records
   for (const [lotNumber, monthsList] of Object.entries(paymentRecords)) {
     const lot = lots.find((l) => l.lotNumber === lotNumber);
     if (lot) {
@@ -125,40 +122,35 @@ async function main() {
     `Created ${maintenanceContributions.length} maintenance contributions for 2025`
   );
 
-  // Add advance payment example - Alejandro Martinez (lot 22) paid 100k on 2024-10-21 for Nov/Dec 2024
   const lot22 = lots.find((l) => l.lotNumber === "22");
   if (lot22) {
     maintenanceContributions.push({
       lotId: lot22.id,
       type: "maintenance",
       amount: 100000,
-      date: new Date(2024, 9, 21), // October 21, 2024
+      date: new Date(2024, 9, 21),
       description: "Pago anticipado mantenimiento nov/dic 2024",
     });
   }
 
-  // Add full annual payments for lots 8 and 20 (January 2025)
-  // Each paid: 500,000 (works) + 720,000 (12 months maintenance) = 1,220,000
   const lot08 = lots.find((l) => l.lotNumber === "08");
   const lot20 = lots.find((l) => l.lotNumber === "20");
   
   for (const lot of [lot08, lot20]) {
     if (lot) {
-      // Works contribution
       maintenanceContributions.push({
         lotId: lot.id,
         type: "works",
         amount: 500000,
-        date: new Date(2025, 0, 15), // January 15, 2025
+        date: new Date(2025, 0, 15),
         description: "Aporte obras 2025",
       });
       
-      // Full year maintenance payment
       maintenanceContributions.push({
         lotId: lot.id,
         type: "maintenance",
-        amount: 720000, // 12 months × 60,000
-        date: new Date(2025, 0, 15), // January 15, 2025
+        amount: 720000,
+        date: new Date(2025, 0, 15),
         description: "Pago anual mantenimiento 2025 (12 meses)",
       });
     }
@@ -265,7 +257,6 @@ async function main() {
       description: "Mano obra cambio lámparas",
       category: "Iluminación",
     },
-    // Gastos de obras
     {
       type: "works",
       amount: 1566000,

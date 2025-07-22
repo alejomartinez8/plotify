@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createOrUpdateQuota } from "@/lib/database/quotas";
+import { translations } from "@/lib/translations";
 
 const quotaSchema = z.object({
   year: z.number().min(2020).max(2050),
@@ -41,7 +42,7 @@ export async function createOrUpdateQuotaAction(
     revalidatePath("/");
 
     return {
-      message: "Cuota mensual de mantenimiento actualizada exitosamente",
+      message: translations.messages.quotaUpdatedSuccessfully,
       errors: {},
       success: true,
     };

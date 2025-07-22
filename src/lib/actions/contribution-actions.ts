@@ -9,7 +9,6 @@ import {
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 
-// Zod schema for validation
 const ContributionSchema = z.object({
   lotId: z.string().min(1, translations.validation.lotRequired),
   type: z.enum(["maintenance", "works"], {
@@ -43,7 +42,6 @@ export async function createContributionAction(
   prevState: ContributionState,
   formData: FormData
 ): Promise<ContributionState> {
-  // Extract and validate data
   const validatedFields = CreateContribution.safeParse({
     lotId: formData.get("lotId"),
     type: formData.get("type"),

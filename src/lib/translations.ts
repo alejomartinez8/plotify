@@ -179,6 +179,9 @@ export const translations = {
   // Messages
   messages: {
     noContributionsRecorded: "No hay contribuciones registradas",
+    noContributionsForLot: "No hay contribuciones registradas para este lote",
+    allLots: "Todos los lotes",
+    quotaUpdatedSuccessfully: "Cuota mensual de mantenimiento actualizada exitosamente",
   },
 
   // Months in Spanish
