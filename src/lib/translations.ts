@@ -27,6 +27,8 @@ export const translations = {
     edit: "Editar",
     gridView: "Vista por Lote",
     listView: "Vista Lista",
+    quotaConfiguration: "Configurar Cuotas",
+    saveQuota: "Guardar Cuota",
   },
 
   // Confirmation dialogs
@@ -117,6 +119,17 @@ export const translations = {
     ownerNamePlaceholder: "Ingrese el nombre del propietario",
     update: "Actualizar",
     create: "Crear",
+
+    // Quota modal - only for maintenance
+    maintenanceQuotaConfiguration: "Configuración de Cuota de Mantenimiento",
+    maintenanceQuotaDescription: "Define la cuota mensual de mantenimiento por año",
+    year: "Año",
+    quotasDefinedByYear: "Cuotas Definidas por Año",
+    monthlyMaintenanceQuota: "Cuota Mensual de Mantenimiento",
+    monthlyAmount: "Cuota Mensual (COP)",
+    monthlyAmountPlaceholder: "60000",
+    notDefined: "No definida",
+    addOrUpdateQuota: "Agregar/Actualizar Cuota",
   },
 
   // Status messages
@@ -166,6 +179,9 @@ export const translations = {
   // Messages
   messages: {
     noContributionsRecorded: "No hay contribuciones registradas",
+    noContributionsForLot: "No hay contribuciones registradas para este lote",
+    allLots: "Todos los lotes",
+    quotaUpdatedSuccessfully: "Cuota mensual de mantenimiento actualizada exitosamente",
   },
 
   // Months in Spanish

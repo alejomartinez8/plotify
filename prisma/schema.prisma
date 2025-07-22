@@ -38,3 +38,13 @@ model Expense {
 
   @@map("expenses")
 }
+
+model MonthlyMaintenanceQuota {
+  id             Int      @id @default(autoincrement())
+  year           Int      @unique
+  monthlyAmount  Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("monthly_maintenance_quotas")
+}

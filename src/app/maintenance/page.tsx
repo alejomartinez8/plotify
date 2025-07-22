@@ -1,25 +1,24 @@
 import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
+import { getAllQuotas } from "@/lib/database/quotas";
 
-import ContributionViews from "@/components/shared/ContributionViews";
+import MaintenanceView from "@/components/maintenance/MaintenanceView";
 import { translations } from "@/lib/translations";
 
 export default async function MaintenancePage() {
   try {
-    const [lots, contributions] = await Promise.all([
+    const [lots, contributions, quotas] = await Promise.all([
       getLots(),
       getContributions(),
+      getAllQuotas(),
     ]);
 
     return (
-      <ContributionViews
+      <MaintenanceView
         title={translations.grid.maintenanceContributions}
         lots={lots}
         contributions={contributions}
-        type="maintenance"
-        headerColor="bg-yellow-400"
-        cellColor="bg-blue-100"
-        listColor="blue"
+        quotas={quotas}
       />
     );
   } catch (error) {

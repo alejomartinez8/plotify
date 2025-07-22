@@ -34,6 +34,7 @@ export type ExpenseState = {
     category?: string[];
   };
   message?: string | null;
+  success?: boolean;
 };
 
 export async function createExpenseAction(
@@ -53,6 +54,7 @@ export async function createExpenseAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to create expense.`,
+      success: false,
     };
   }
 
@@ -70,17 +72,19 @@ export async function createExpenseAction(
     if (!result) {
       return {
         message: "Database Error: Failed to create expense.",
+      success: false,
       };
     }
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to create expense.`,
+      success: false,
     };
   }
 
   revalidatePath("/expenses");
   revalidatePath("/");
-  return { message: `${translations.validation.createSuccess}.` };
+  return { message: `${translations.validation.createSuccess}.`, success: true };
 }
 
 export async function updateExpenseAction(
@@ -100,6 +104,7 @@ export async function updateExpenseAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to update expense.`,
+      success: false,
     };
   }
 
@@ -117,17 +122,19 @@ export async function updateExpenseAction(
     if (!result) {
       return {
         message: "Database Error: Failed to update expense.",
+      success: false,
       };
     }
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to update expense.`,
+      success: false,
     };
   }
 
   revalidatePath("/expenses");
   revalidatePath("/");
-  return { message: `${translations.validation.updateSuccess}.` };
+  return { message: `${translations.validation.updateSuccess}.`, success: true };
 }
 
 export async function deleteExpenseAction(id: number) {
@@ -137,15 +144,17 @@ export async function deleteExpenseAction(id: number) {
     if (!result) {
       return {
         message: `${translations.validation.databaseError}: Failed to delete expense.`,
+      success: false,
       };
     }
 
     revalidatePath("/expenses");
     revalidatePath("/");
-    return { message: `${translations.validation.deleteSuccess}.` };
+    return { message: `${translations.validation.deleteSuccess}.`, success: true };
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to delete expense.`,
+      success: false,
     };
   }
 }

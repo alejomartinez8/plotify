@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.contribution.deleteMany();
   await prisma.expense.deleteMany();
+  await prisma.monthlyMaintenanceQuota.deleteMany();
   await prisma.lot.deleteMany();
 
   const lotsData = [
@@ -53,86 +54,453 @@ async function main() {
 
   console.log(`Created ${lotsData.length} lots`);
 
-  const contributionsData = [
-    {
-      lotNumber: "22",
-      type: "maintenance",
-      amount: 150000,
-      date: "2024-01-05T00:00:00.000Z",
-      description: "Basic maintenance fee",
+  await prisma.monthlyMaintenanceQuota.create({
+    data: {
+      year: 2025,
+      monthlyAmount: 60000,
     },
-    {
-      lotNumber: "E2-1",
-      type: "works",
-      amount: 500000,
-      date: "2024-03-15T00:00:00.000Z",
-      description: "Street lighting installation",
-    },
-    {
-      lotNumber: "14",
-      type: "maintenance",
-      amount: 180000,
-      date: "2024-04-22T00:00:00.000Z",
-      description: "Garden maintenance and cleaning",
-    },
-    {
-      lotNumber: "E2-3",
-      type: "works",
-      amount: 320000,
-      date: "2024-05-10T00:00:00.000Z",
-      description: "Security gate installation",
-    },
-  ];
+  });
 
-  for (const contributionData of contributionsData) {
-    const lot = await prisma.lot.findUnique({
-      where: { lotNumber: contributionData.lotNumber },
-    });
+  console.log("Created 2025 maintenance quota: 60.000 COP/month");
 
+  const lots = await prisma.lot.findMany();
+  const maintenanceContributions = [];
+
+  const paymentRecords = {
+    "04": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03"],
+    "05": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
+    "07": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
+    "08": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"],
+    "09": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03"],
+    "10": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
+    "11": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-04", "2025-05", "2025-06"],
+    "12": ["2024-09"],
+    "13": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    "14": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05"],
+    "15": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    "16": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
+    "17": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
+    "18 Y 19": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-06", "2025-07"],
+    "20": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"],
+    "22": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    "23": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
+    "24": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    "25": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06"],
+    "26": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08"],
+    "27 Y 28": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"],
+    "29": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
+    "31": ["2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02"],
+    "E2-2": ["2025-03"]
+  };
+
+  for (const [lotNumber, monthsList] of Object.entries(paymentRecords)) {
+    const lot = lots.find((l) => l.lotNumber === lotNumber);
     if (lot) {
-      await prisma.contribution.create({
-        data: {
+      for (const monthStr of monthsList) {
+        const [year, month] = monthStr.split("-").map(Number);
+        const amount = year === 2024 ? 50000 : 60000;
+        const monthName = new Date(year, month - 1).toLocaleString('es-ES', { month: 'long' });
+        
+        maintenanceContributions.push({
           lotId: lot.id,
-          type: contributionData.type,
-          amount: contributionData.amount,
-          description: contributionData.description,
-        },
-      });
-    } else {
-      console.warn(`Lot with number ${contributionData.lotNumber} not found`);
+          type: "maintenance",
+          amount: amount,
+          date: new Date(year, month - 1, Math.floor(Math.random() * 28) + 1),
+          description: `Cuota de mantenimiento ${monthName} ${year}`,
+        });
+      }
     }
   }
 
-  console.log(`Created ${contributionsData.length} contributions`);
+  for (const contribution of maintenanceContributions) {
+    await prisma.contribution.create({
+      data: contribution,
+    });
+  }
+
+  console.log(
+    `Created ${maintenanceContributions.length} maintenance contributions for 2025`
+  );
+
+  const lot22 = lots.find((l) => l.lotNumber === "22");
+  if (lot22) {
+    maintenanceContributions.push({
+      lotId: lot22.id,
+      type: "maintenance",
+      amount: 100000,
+      date: new Date(2024, 9, 21),
+      description: "Pago anticipado mantenimiento nov/dic 2024",
+    });
+  }
+
+  const lot08 = lots.find((l) => l.lotNumber === "08");
+  const lot20 = lots.find((l) => l.lotNumber === "20");
+  
+  for (const lot of [lot08, lot20]) {
+    if (lot) {
+      maintenanceContributions.push({
+        lotId: lot.id,
+        type: "works",
+        amount: 500000,
+        date: new Date(2025, 0, 15),
+        description: "Aporte obras 2025",
+      });
+      
+      maintenanceContributions.push({
+        lotId: lot.id,
+        type: "maintenance",
+        amount: 720000,
+        date: new Date(2025, 0, 15),
+        description: "Pago anual mantenimiento 2025 (12 meses)",
+      });
+    }
+  }
+
+  console.log("Maintenance contributions created successfully");
 
   const expenses = [
     {
       type: "maintenance",
-      amount: 120000,
-      date: "2024-01-08",
-      description: "Landscaping and tree trimming",
-      category: "Gardening",
-    },
-    {
-      type: "works",
-      amount: 450000,
-      date: "2024-03-10",
-      description: "Playground equipment installation",
-      category: "Community",
+      amount: 380000,
+      date: "2024-10-02",
+      description: "Reemplazo cámara averiada",
+      category: "Seguridad",
     },
     {
       type: "maintenance",
-      amount: 180000,
-      date: "2024-04-05",
-      description: "Water system maintenance",
-      category: "Infrastructure",
+      amount: 290000,
+      date: "2024-10-05",
+      description: "Mantenimiento cunetas Miguel",
+      category: "Infraestructura",
+    },
+    {
+      type: "maintenance",
+      amount: 130000,
+      date: "2024-10-15",
+      description: "Pago mano obra 14 y 15 octubre",
+      category: "Mano de obra",
+    },
+    {
+      type: "maintenance",
+      amount: 426000,
+      date: "2024-10-20",
+      description: "Compra 3 lámparas iluminación externa",
+      category: "Iluminación",
+    },
+    {
+      type: "maintenance",
+      amount: 260000,
+      date: "2024-10-22",
+      description: "Cambio lámparas externas",
+      category: "Iluminación",
+    },
+    {
+      type: "maintenance",
+      amount: 350000,
+      date: "2024-11-10",
+      description: "Poda vías internas y externas",
+      category: "Jardinería",
+    },
+    {
+      type: "maintenance",
+      amount: 440000,
+      date: "2024-11-15",
+      description: "Reintegro dinero lámparas Alejandro Martinez",
+      category: "Reembolso",
+    },
+    {
+      type: "maintenance",
+      amount: 240000,
+      date: "2024-12-07",
+      description: "Mantenimiento cunetas Miguel - 4 días",
+      category: "Infraestructura",
+    },
+    {
+      type: "maintenance",
+      amount: 350000,
+      date: "2024-12-14",
+      description: "Mantenimiento cunetas Miguel - 6 días",
+      category: "Infraestructura",
+    },
+    {
+      type: "maintenance",
+      amount: 689500,
+      date: "2024-12-20",
+      description: "Materiales lámpara inferior y cámara portón abajo",
+      category: "Seguridad",
+    },
+    {
+      type: "maintenance",
+      amount: 700000,
+      date: "2024-12-21",
+      description: "Mano obra instalación lámpara y cámara portón abajo",
+      category: "Seguridad",
+    },
+    {
+      type: "maintenance",
+      amount: 426000,
+      date: "2025-01-31",
+      description: "Compra 3 lámparas iluminación externa",
+      category: "Iluminación",
+    },
+    {
+      type: "maintenance",
+      amount: 350000,
+      date: "2025-02-05",
+      description: "Mantenimiento prados ingreso a Jalisco",
+      category: "Jardinería",
+    },
+    {
+      type: "maintenance",
+      amount: 240000,
+      date: "2025-02-11",
+      description: "Mano obra cambio lámparas",
+      category: "Iluminación",
     },
     {
       type: "works",
-      amount: 320000,
-      date: "2024-05-12",
-      description: "Street paving project",
-      category: "Infrastructure",
+      amount: 1566000,
+      date: "2025-01-25",
+      description: "Material portón inferior",
+      category: "Infraestructura",
+    },
+    {
+      type: "works",
+      amount: 680000,
+      date: "2025-01-26",
+      description: "Mano de obra portón inferior",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 127600,
+      date: "2025-01-27",
+      description: "Pago tubería electricidad y taladro",
+      category: "Herramientas",
+    },
+    {
+      type: "works",
+      amount: 1800000,
+      date: "2025-01-29",
+      description: "Compra material electricidad",
+      category: "Electricidad",
+    },
+    {
+      type: "works",
+      amount: 315000,
+      date: "2025-01-30",
+      description: "Alquiler formaletas y pulidora",
+      category: "Herramientas",
+    },
+    {
+      type: "works",
+      amount: 1000000,
+      date: "2025-01-30",
+      description: "Pago mano obra Joan/Angel portón inf",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 80000,
+      date: "2025-01-31",
+      description: "Pago mano obra muro falso",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 1024500,
+      date: "2025-02-01",
+      description: "Material ferretería",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 600000,
+      date: "2025-02-01",
+      description: "Mano obra electricidad portón",
+      category: "Electricidad",
+    },
+    {
+      type: "works",
+      amount: 410000,
+      date: "2025-02-03",
+      description: "Material cambio portón a corredizo",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 610000,
+      date: "2025-02-04",
+      description: "2 ángulos y 2 tubos cuadrados con acarreo",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 500000,
+      date: "2025-02-05",
+      description: "Mano de obra portón inferior cambio a corredizo",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 20000,
+      date: "2025-02-05",
+      description: "Compra 4 metros tubo faltante",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 100000,
+      date: "2025-02-06",
+      description: "Visita de instrucción instalador motor",
+      category: "Servicios",
+    },
+    {
+      type: "works",
+      amount: 7236200,
+      date: "2025-02-16",
+      description: "Motor, cremallera, tar wifi, controles, regulador, matrix, fotoceldas",
+      category: "Automatización",
+    },
+    {
+      type: "works",
+      amount: 750000,
+      date: "2025-02-16",
+      description: "Mano obra instalación motor",
+      category: "Automatización",
+    },
+    {
+      type: "works",
+      amount: 800000,
+      date: "2025-02-17",
+      description: "Material y mano obra extensión internet al portón",
+      category: "Telecomunicaciones",
+    },
+    {
+      type: "works",
+      amount: 256000,
+      date: "2025-02-15",
+      description: "Caja intemperie + domicilio",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 200000,
+      date: "2025-03-01",
+      description: "Pago mano obra ayudante portón inf",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 636500,
+      date: "2025-03-16",
+      description: "Pago material ferretería muros inferior",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 520000,
+      date: "2025-03-16",
+      description: "Pago mano obra muros portón inferior",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 60000,
+      date: "2025-03-20",
+      description: "Pago visita mantenimiento portón",
+      category: "Mantenimiento",
+    },
+    {
+      type: "works",
+      amount: 32500,
+      date: "2025-03-20",
+      description: "Recarga sim tigo portón",
+      category: "Telecomunicaciones",
+    },
+    {
+      type: "works",
+      amount: 180000,
+      date: "2025-04-28",
+      description: "Pago mano obra pendiente portón inferior",
+      category: "Mano de obra",
+    },
+    {
+      type: "works",
+      amount: 160000,
+      date: "2025-05-09",
+      description: "Mantenimiento cámaras",
+      category: "Seguridad",
+    },
+    {
+      type: "works",
+      amount: 32500,
+      date: "2025-05-15",
+      description: "Recarga sim tigo portón",
+      category: "Telecomunicaciones",
+    },
+    {
+      type: "works",
+      amount: 200000,
+      date: "2025-06-01",
+      description: "Mano de obra reja seguridad portón chucho",
+      category: "Seguridad",
+    },
+    {
+      type: "works",
+      amount: 158800,
+      date: "2025-06-04",
+      description: "Materiales ferretería Jalisco",
+      category: "Materiales",
+    },
+    {
+      type: "works",
+      amount: 160000,
+      date: "2025-06-10",
+      description: "Internet porterial / config DVR",
+      category: "Telecomunicaciones",
+    },
+    {
+      type: "works",
+      amount: 160000,
+      date: "2025-06-09",
+      description: "Técnico motor config tarj wifi y tarj SMS",
+      category: "Automatización",
+    },
+    {
+      type: "works",
+      amount: 300000,
+      date: "2025-06-19",
+      description: "Mantenimiento poda de vías",
+      category: "Mantenimiento",
+    },
+    {
+      type: "works",
+      amount: 150000,
+      date: "2025-06-28",
+      description: "Cambio lámpara",
+      category: "Iluminación",
+    },
+    {
+      type: "works",
+      amount: 58000,
+      date: "2025-07-17",
+      description: "Compra alambre cuchilla",
+      category: "Seguridad",
+    },
+    {
+      type: "works",
+      amount: 4341300,
+      date: "2025-07-21",
+      description: "Material vía inferior",
+      category: "Infraestructura",
+    },
+    {
+      type: "works",
+      amount: 240000,
+      date: "2025-07-21",
+      description: "Pago ayudante obra vía inferior",
+      category: "Mano de obra",
     },
   ];
 

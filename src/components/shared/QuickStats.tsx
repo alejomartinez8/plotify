@@ -15,12 +15,21 @@ export default async function QuickStats({
   contributions,
   expenses,
 }: QuickStatsProps) {
-  const currentMonthContributions = contributions.filter(
-    (c) => new Date(c.date).getMonth() === new Date().getMonth()
-  );
-  const currentMonthExpenses = expenses.filter(
-    (e) => new Date(e.date).getMonth() === new Date().getMonth()
-  );
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+
+  const currentMonthContributions = contributions.filter((c) => {
+    const contributionDate = new Date(c.date);
+    return contributionDate.getMonth() === currentMonth && 
+           contributionDate.getFullYear() === currentYear;
+  });
+  
+  const currentMonthExpenses = expenses.filter((e) => {
+    const expenseDate = new Date(e.date);
+    return expenseDate.getMonth() === currentMonth && 
+           expenseDate.getFullYear() === currentYear;
+  });
 
   const stats = [
     {

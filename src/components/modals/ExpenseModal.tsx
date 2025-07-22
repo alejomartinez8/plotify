@@ -27,7 +27,7 @@ export default function ExpenseModal({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (state?.message && state.message.includes("successfully")) {
+    if (state?.success) {
       onClose();
     }
   }, [state, onClose]);

@@ -9,7 +9,6 @@ import {
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 
-// Zod schema for validation
 const ContributionSchema = z.object({
   lotId: z.string().min(1, translations.validation.lotRequired),
   type: z.enum(["maintenance", "works"], {
@@ -36,13 +35,13 @@ export type ContributionState = {
     description?: string[];
   };
   message?: string | null;
+  success?: boolean;
 };
 
 export async function createContributionAction(
   prevState: ContributionState,
   formData: FormData
 ): Promise<ContributionState> {
-  // Extract and validate data
   const validatedFields = CreateContribution.safeParse({
     lotId: formData.get("lotId"),
     type: formData.get("type"),
@@ -55,6 +54,7 @@ export async function createContributionAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to create contribution.`,
+      success: false,
     };
   }
 
@@ -72,18 +72,20 @@ export async function createContributionAction(
     if (!result) {
       return {
         message: "Database Error: Failed to create contribution.",
+      success: false,
       };
     }
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to create contribution.`,
+      success: false,
     };
   }
 
   revalidatePath("/maintenance");
   revalidatePath("/works");
   revalidatePath("/");
-  return { message: `${translations.validation.createSuccess}.` };
+  return { message: `${translations.validation.createSuccess}.`, success: true };
 }
 
 export async function updateContributionAction(
@@ -103,6 +105,7 @@ export async function updateContributionAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to update contribution.`,
+      success: false,
     };
   }
 
@@ -120,18 +123,20 @@ export async function updateContributionAction(
     if (!result) {
       return {
         message: "Database Error: Failed to update contribution.",
+      success: false,
       };
     }
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to update contribution.`,
+      success: false,
     };
   }
 
   revalidatePath("/maintenance");
   revalidatePath("/works");
   revalidatePath("/");
-  return { message: `${translations.validation.updateSuccess}.` };
+  return { message: `${translations.validation.updateSuccess}.`, success: true };
 }
 
 export async function deleteContributionAction(id: number) {
@@ -141,16 +146,18 @@ export async function deleteContributionAction(id: number) {
     if (!result) {
       return {
         message: `${translations.validation.databaseError}: Failed to delete contribution.`,
+      success: false,
       };
     }
 
     revalidatePath("/maintenance");
     revalidatePath("/works");
     revalidatePath("/");
-    return { message: `${translations.validation.deleteSuccess}.` };
+    return { message: `${translations.validation.deleteSuccess}.`, success: true };
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to delete contribution.`,
+      success: false,
     };
   }
 }
