@@ -139,7 +139,7 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
                       className={`rounded-full px-2 py-1 text-xs ${
                         expense.type === "maintenance"
                           ? "bg-primary/10 text-primary"
-                          : "bg-secondary/10 text-secondary-foreground"
+                          : "bg-orange-100 text-orange-700"
                       }`}
                     >
                       {expense.type === "maintenance"
@@ -147,16 +147,12 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
                         : translations.labels.works}
                     </span>
                     <p className="text-muted-foreground text-sm">
-                      {new Date(expense.date).toLocaleDateString("es-ES", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {new Date(expense.date).toISOString().split('T')[0]}
                     </p>
                   </div>
-                  {expense.category && (
+                  {expense.description && (
                     <p className="text-muted-foreground mt-1 text-sm">
-                      📂 {expense.category}
+                      📝 {expense.description}
                     </p>
                   )}
                 </div>

@@ -291,15 +291,6 @@ export default function IncomeList({
           {/* Results Header */}
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h3
-                className={`text-lg font-semibold ${colorClasses[getColorForFilter(incomeFilter)]}`}
-              >
-                {incomeFilter === "all"
-                  ? translations.navigation.income
-                  : incomeFilter === "maintenance"
-                    ? translations.titles.maintenanceContributions
-                    : translations.titles.worksContributions}
-              </h3>
               <p className="text-sm text-gray-600">
                 {filteredContributions.length}{" "}
                 {filteredContributions.length === 1
@@ -328,7 +319,7 @@ export default function IncomeList({
                             className={`rounded-full px-2 py-1 text-xs ${
                               contribution.type === "maintenance"
                                 ? "bg-primary/10 text-primary"
-                                : "bg-secondary/10 text-secondary-foreground"
+                                : "bg-orange-100 text-orange-700"
                             }`}
                           >
                             {contribution.type === "maintenance"
@@ -336,16 +327,14 @@ export default function IncomeList({
                               : translations.labels.works}
                           </span>
                           <p className="text-muted-foreground text-sm">
-                            {new Date(contribution.date).toLocaleDateString(
-                              "es-ES",
-                              {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              }
-                            )}
+                            {new Date(contribution.date).toISOString().split('T')[0]}
                           </p>
                         </div>
+                        {contribution.description && (
+                          <p className="text-muted-foreground mt-1 text-sm">
+                            📝 {contribution.description}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
