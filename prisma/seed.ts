@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.contribution.deleteMany();
   await prisma.expense.deleteMany();
-  await prisma.monthlyMaintenanceQuota.deleteMany();
   await prisma.lot.deleteMany();
 
   const lotsData = [
@@ -54,15 +53,6 @@ async function main() {
 
   console.log(`Created ${lotsData.length} lots`);
 
-  await prisma.monthlyMaintenanceQuota.create({
-    data: {
-      year: 2025,
-      monthlyAmount: 60000,
-    },
-  });
-
-  console.log("Created 2025 maintenance quota: 60.000 COP/month");
-
   const lots = await prisma.lot.findMany();
   const maintenanceContributions = [];
 
@@ -106,7 +96,7 @@ async function main() {
           type: "maintenance",
           amount: amount,
           date: new Date(year, month - 1, Math.floor(Math.random() * 28) + 1),
-          description: `Cuota de mantenimiento ${monthName} ${year}`,
+          description: `Maintenance fee ${monthName} ${year}`,
         });
       }
     }
@@ -129,7 +119,7 @@ async function main() {
       type: "maintenance",
       amount: 100000,
       date: new Date(2024, 9, 21),
-      description: "Pago anticipado mantenimiento nov/dic 2024",
+      description: "Advanced payment maintenance nov/dec 2024",
     });
   }
 
@@ -143,7 +133,7 @@ async function main() {
         type: "works",
         amount: 500000,
         date: new Date(2025, 0, 15),
-        description: "Aporte obras 2025",
+        description: "Works contribution 2025",
       });
       
       maintenanceContributions.push({
@@ -151,7 +141,7 @@ async function main() {
         type: "maintenance",
         amount: 720000,
         date: new Date(2025, 0, 15),
-        description: "Pago anual mantenimiento 2025 (12 meses)",
+        description: "Annual maintenance payment 2025 (12 months)",
       });
     }
   }

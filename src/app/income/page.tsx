@@ -1,16 +1,14 @@
 import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
-import { getAllQuotas } from "@/lib/database/quotas";
 
 import IncomeList from "@/components/shared/IncomeList";
 import { translations } from "@/lib/translations";
 
 export default async function IncomePage() {
   try {
-    const [lots, contributions, quotas] = await Promise.all([
+    const [lots, contributions] = await Promise.all([
       getLots(),
       getContributions(),
-      getAllQuotas(),
     ]);
 
     return (
@@ -18,7 +16,6 @@ export default async function IncomePage() {
         title={translations.navigation.income}
         lots={lots}
         contributions={contributions}
-        quotas={quotas}
       />
     );
   } catch (error) {

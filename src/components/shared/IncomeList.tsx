@@ -2,24 +2,18 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Edit, Trash2, Filter, Settings } from "lucide-react";
+import { Edit, Trash2, Filter } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { formatCurrency } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import QuotaModal from "../modals/QuotaModal";
 
 interface IncomeListProps {
   title: string;
   contributions: Contribution[];
   lots: Lot[];
-  quotas: Array<{
-    id: number;
-    year: number;
-    monthlyAmount: number;
-  }>;
 }
 
 type IncomeType = "all" | "maintenance" | "works";
@@ -28,13 +22,11 @@ export default function IncomeList({
   title,
   contributions,
   lots,
-  quotas,
 }: IncomeListProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
   const [deletingContribution, setDeletingContribution] =
     useState<Contribution | null>(null);
-  const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [selectedLotId, setSelectedLotId] = useState<string>("");
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
   
@@ -220,16 +212,6 @@ export default function IncomeList({
                 ))}
               </select>
             </div>
-            
-            {/* Quota Configuration Button */}
-            <button
-              onClick={() => setShowQuotaModal(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">{translations.titles.quotaConfig}</span>
-              <span className="sm:hidden">Config</span>
-            </button>
           </div>
         </div>
       </div>
@@ -375,10 +357,6 @@ export default function IncomeList({
         variant="danger"
       />
 
-      {/* Quota Configuration Modal */}
-      {showQuotaModal && (
-        <QuotaModal onClose={() => setShowQuotaModal(false)} quotas={quotas} />
-      )}
     </div>
   );
 }
