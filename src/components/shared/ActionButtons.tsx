@@ -62,14 +62,14 @@ export default function ActionButtons() {
           disabled={lotsLoading}
         >
           {lotsLoading ? <Spinner size="sm" /> : <Plus className="w-4 h-4" />}
-          <span>{translations.buttons.newContribution}</span>
+          <span>{translations.titles.newContribution}</span>
         </button>
         <button
           onClick={() => setShowExpenseModal(true)}
           className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-red-700"
         >
           <Plus className="w-4 h-4" />
-          <span>{translations.buttons.newExpense}</span>
+          <span>{translations.titles.newExpense}</span>
         </button>
       </div>
 

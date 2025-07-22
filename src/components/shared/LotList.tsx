@@ -102,7 +102,7 @@ export default function LotList({ lots }: LotListProps) {
             disabled={isPending}
           >
             <Plus className="w-4 h-4" />
-            {translations.lotList.addLot}
+            {translations.titles.newLot}
           </button>
         </div>
         {error && (
@@ -116,13 +116,13 @@ export default function LotList({ lots }: LotListProps) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {translations.lotList.lotNumber}
+                {translations.labels.lot}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {translations.lotList.owner}
+                {translations.labels.owner}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {translations.lotList.actions}
+                {translations.labels.actions}
               </th>
             </tr>
           </thead>
@@ -168,7 +168,7 @@ export default function LotList({ lots }: LotListProps) {
         </table>
         {optimisticLots.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">{translations.lotList.noLotsFound}</p>
+            <p className="text-gray-500">{translations.messages.noLots}</p>
           </div>
         )}
       </div>
@@ -185,8 +185,8 @@ export default function LotList({ lots }: LotListProps) {
         isOpen={isConfirmModalOpen}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title={translations.confirmations.deleteLot.title}
-        message={translations.confirmations.deleteLot.message}
+        title={translations.confirmations.deleteTitle}
+        message={translations.confirmations.deleteLot}
         variant="danger"
         isLoading={isPending}
       />

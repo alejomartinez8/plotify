@@ -52,7 +52,7 @@ export default function ExpenseModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {expense ? "Edit Expense" : translations.modals.registerNewExpense}
+            {expense ? translations.titles.editExpense : translations.titles.registerExpense}
           </h2>
           <button
             onClick={onClose}
@@ -79,7 +79,7 @@ export default function ExpenseModal({
           {expense && <input type="hidden" name="id" value={expense.id} />}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.fundType}
+              {translations.labels.type}
             </label>
             <select
               name="type"
@@ -89,9 +89,9 @@ export default function ExpenseModal({
               disabled={isPending}
             >
               <option value="maintenance">
-                {translations.modals.maintenance}
+                {translations.labels.maintenance}
               </option>
-              <option value="works">{translations.modals.works}</option>
+              <option value="works">{translations.labels.works}</option>
             </select>
             {state.errors?.type && (
               <div className="text-red-500 text-sm mt-1">
@@ -102,7 +102,7 @@ export default function ExpenseModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.amount}
+              {translations.labels.amount}
             </label>
             <input
               type="number"
@@ -123,7 +123,7 @@ export default function ExpenseModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.date}
+              {translations.labels.date}
             </label>
             <input
               type="date"
@@ -142,14 +142,14 @@ export default function ExpenseModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.description}
+              {translations.labels.description}
             </label>
             <input
               type="text"
               name="description"
               defaultValue={expense?.description || ""}
               className="w-full border rounded-sm px-3 py-2"
-              placeholder={translations.modals.expenseDescription}
+              placeholder={translations.placeholders.optionalDescription}
               disabled={isPending}
             />
             {state.errors?.description && (
@@ -161,14 +161,14 @@ export default function ExpenseModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.category}
+              {translations.labels.category}
             </label>
             <input
               type="text"
               name="category"
               defaultValue={expense?.category || ""}
               className="w-full border rounded-sm px-3 py-2"
-              placeholder={translations.modals.categoryPlaceholder}
+              placeholder={translations.placeholders.categoryExample}
               required
               disabled={isPending}
             />
@@ -186,7 +186,7 @@ export default function ExpenseModal({
               disabled={isPending}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
-              {translations.buttons.cancel}
+              {translations.actions.cancel}
             </button>
             <button
               type="submit"
@@ -196,8 +196,8 @@ export default function ExpenseModal({
               {isPending
                 ? translations.status.processing
                 : expense
-                ? "Update"
-                : translations.buttons.saveExpense}
+                ? translations.actions.update
+                : translations.actions.save}
             </button>
           </div>
         </form>

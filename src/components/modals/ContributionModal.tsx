@@ -57,7 +57,7 @@ export default function ContributionModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {contribution ? "Edit Contribution" : translations.modals.registerNewContribution}
+            {contribution ? translations.titles.editContribution : translations.titles.registerContribution}
           </h2>
           <button
             onClick={onClose}
@@ -84,7 +84,7 @@ export default function ContributionModal({
           {contribution && <input type="hidden" name="id" value={contribution.id} />}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.lot}
+              {translations.labels.lot}
             </label>
             <select
               name="lotId"
@@ -94,7 +94,7 @@ export default function ContributionModal({
               disabled={lotsLoading || isPending}
             >
               <option value="">
-                {lotsLoading ? translations.status.loading : translations.modals.selectLot}
+                {lotsLoading ? translations.status.loading : translations.placeholders.selectLot}
               </option>
               {lots.map((lot) => (
                 <option key={lot.id} value={lot.id}>
@@ -111,7 +111,7 @@ export default function ContributionModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.fundType}
+              {translations.messages.fundType}
             </label>
             <select
               name="type"
@@ -121,9 +121,9 @@ export default function ContributionModal({
               disabled={isPending}
             >
               <option value="maintenance">
-                {translations.modals.maintenance}
+                {translations.labels.maintenance}
               </option>
-              <option value="works">{translations.modals.works}</option>
+              <option value="works">{translations.labels.works}</option>
             </select>
             {state.errors?.type && (
               <div className="text-red-500 text-sm mt-1">
@@ -134,7 +134,7 @@ export default function ContributionModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.amount}
+              {translations.labels.amount}
             </label>
             <input
               type="number"
@@ -155,7 +155,7 @@ export default function ContributionModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.date}
+              {translations.labels.date}
             </label>
             <input
               type="date"
@@ -174,14 +174,14 @@ export default function ContributionModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.description}
+              {translations.labels.description}
             </label>
             <input
               type="text"
               name="description"
               defaultValue={contribution?.description || ""}
               className="w-full border rounded-sm px-3 py-2"
-              placeholder={translations.modals.optionalDescription}
+              placeholder={translations.placeholders.optionalDescription}
               disabled={isPending}
             />
             {state.errors?.description && (
@@ -198,7 +198,7 @@ export default function ContributionModal({
               disabled={isPending}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
-              {translations.buttons.cancel}
+              {translations.actions.cancel}
             </button>
             <button
               type="submit"
@@ -209,7 +209,7 @@ export default function ContributionModal({
                 ? translations.status.processing
                 : contribution
                 ? "Update"
-                : translations.buttons.saveContribution}
+                : translations.actions.save}
             </button>
           </div>
         </form>

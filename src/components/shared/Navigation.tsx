@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TrendingUp, Calendar, Users, TrendingDown } from "lucide-react";
+import { TrendingUp, DollarSign, Users, TrendingDown } from "lucide-react";
 import { translations } from "@/lib/translations";
 import ActionButtons from "./ActionButtons";
 
 const navigationItems = [
   { href: "/", label: translations.navigation.dashboard, icon: TrendingUp },
   {
-    href: "/maintenance",
-    label: translations.navigation.maintenance,
-    icon: Calendar,
+    href: "/income",
+    label: translations.navigation.income,
+    icon: DollarSign,
   },
-  { href: "/works", label: translations.navigation.works, icon: Users },
   {
     href: "/expenses",
     label: translations.navigation.expenses,

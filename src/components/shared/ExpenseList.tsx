@@ -73,14 +73,14 @@ export default function ExpenseList({
                 <button
                   onClick={() => setEditingExpense(expense)}
                   className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                  title={translations.tooltips.editExpense}
+                  title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setDeletingExpense(expense)}
                   className="p-1 text-red-600 hover:bg-red-50 rounded"
-                  title={translations.tooltips.deleteExpense}
+                  title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -90,7 +90,7 @@ export default function ExpenseList({
         ))}
         {filteredExpenses.length === 0 && (
           <p className="text-gray-500 text-center py-4">
-            {translations.expenseList.noExpensesRecorded}
+            {translations.messages.noExpenses}
           </p>
         )}
       </div>
@@ -107,7 +107,7 @@ export default function ExpenseList({
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={!!deletingExpense}
-        title={translations.confirmations.deleteExpense.title}
+        title={translations.confirmations.deleteTitle}
         message={`¿Estás seguro de que quieres eliminar el gasto "${deletingExpense?.description}"? Esta acción no se puede deshacer.`}
         onConfirm={handleDeleteConfirm}
         onClose={() => setDeletingExpense(null)}

@@ -11,13 +11,13 @@ export default async function ExpensesPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ExpenseList
-              title={translations.expenseList.maintenanceExpenses}
+              title={translations.titles.maintenanceExpenses}
               expenses={expenses}
               type="maintenance"
               color="blue"
             />
             <ExpenseList
-              title={translations.expenseList.worksExpenses}
+              title={translations.titles.worksExpenses}
               expenses={expenses}
               type="works"
               color="orange"
@@ -35,12 +35,12 @@ export default async function ExpensesPage() {
             {translations.navigation.expenses}
           </h1>
           <p className="text-gray-600">
-            {translations.errors.errorLoadingExpenses}
+            {translations.errors.loadingExpenses}
           </p>
           <p className="text-sm text-red-600 mt-2">
             {error instanceof Error
               ? error.message
-              : translations.errors.unknownError}
+              : translations.errors.unknown}
           </p>
         </div>
       </div>

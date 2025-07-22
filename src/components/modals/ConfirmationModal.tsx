@@ -21,8 +21,8 @@ export default function ConfirmationModal({
   onConfirm,
   title,
   message,
-  confirmText = translations.buttons.confirm,
-  cancelText = translations.buttons.cancel,
+  confirmText = translations.actions.confirm,
+  cancelText = translations.actions.cancel,
   variant = "default",
   isLoading = false,
 }: ConfirmationModalProps) {
