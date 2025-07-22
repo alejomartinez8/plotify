@@ -25,21 +25,18 @@ interface ExpenseListProps {
 
 type ExpenseType = "all" | "maintenance" | "works";
 
-export default function ExpenseList({
-  title,
-  expenses,
-}: ExpenseListProps) {
+export default function ExpenseList({ title, expenses }: ExpenseListProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [expenseFilter, setExpenseFilter] = useState<ExpenseType>("all");
-  
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
   // Initialize filters from URL parameters
   useEffect(() => {
     const typeParam = searchParams.get("type") as ExpenseType;
-    
+
     if (typeParam && (typeParam === "maintenance" || typeParam === "works")) {
       setExpenseFilter(typeParam);
     } else {
@@ -49,14 +46,14 @@ export default function ExpenseList({
 
   const handleExpenseFilterChange = (expenseType: ExpenseType) => {
     setExpenseFilter(expenseType);
-    
+
     const params = new URLSearchParams(searchParams.toString());
     if (expenseType !== "all") {
       params.set("type", expenseType);
     } else {
       params.delete("type");
     }
-    
+
     // Update URL without causing a page refresh
     router.replace(`?${params.toString()}`, { scroll: false });
   };
@@ -65,7 +62,7 @@ export default function ExpenseList({
     if (expenseFilter === "all") {
       return expenses;
     }
-    return expenses.filter(expense => expense.type === expenseFilter);
+    return expenses.filter((expense) => expense.type === expenseFilter);
   }, [expenses, expenseFilter]);
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
@@ -75,9 +72,11 @@ export default function ExpenseList({
 
   const handleDeleteConfirm = async () => {
     if (!deletingExpense) return;
-    
+
     try {
-      const { deleteExpenseAction } = await import("@/lib/actions/expense-actions");
+      const { deleteExpenseAction } = await import(
+        "@/lib/actions/expense-actions"
+      );
       await deleteExpenseAction(deletingExpense.id);
       console.log("Deleted expense:", deletingExpense);
     } catch (error) {
@@ -88,27 +87,35 @@ export default function ExpenseList({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with filters */}
       <div className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">{title}</h1>
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {/* Expense Type Filter */}
             <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <Select 
-                value={expenseFilter} 
-                onValueChange={(value) => handleExpenseFilterChange(value as ExpenseType)}
+              <Filter className="text-muted-foreground h-4 w-4" />
+              <Select
+                value={expenseFilter}
+                onValueChange={(value) =>
+                  handleExpenseFilterChange(value as ExpenseType)
+                }
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{translations.filters.allExpenses}</SelectItem>
-                  <SelectItem value="maintenance">{translations.labels.maintenance}</SelectItem>
-                  <SelectItem value="works">{translations.labels.works}</SelectItem>
+                  <SelectItem value="all">
+                    {translations.filters.allExpenses}
+                  </SelectItem>
+                  <SelectItem value="maintenance">
+                    {translations.labels.maintenance}
+                  </SelectItem>
+                  <SelectItem value="works">
+                    {translations.labels.works}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -123,44 +130,48 @@ export default function ExpenseList({
             {filteredExpenses.map((expense) => (
               <div
                 key={expense.id}
-                className="flex justify-between items-center p-4 bg-muted/30 rounded-lg border hover:bg-muted/50 transition-colors group"
+                className="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between rounded-lg border p-4 transition-colors"
               >
                 <div className="flex-1">
                   <p className="font-medium">{expense.description}</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      expense.type === "maintenance" 
-                        ? "bg-primary/10 text-primary" 
-                        : "bg-secondary/10 text-secondary-foreground"
-                    }`}>
-                      {expense.type === "maintenance" ? translations.labels.maintenance : translations.labels.works}
+                  <div className="mt-1 flex items-center space-x-2">
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs ${
+                        expense.type === "maintenance"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-secondary/10 text-secondary-foreground"
+                      }`}
+                    >
+                      {expense.type === "maintenance"
+                        ? translations.labels.maintenance
+                        : translations.labels.works}
                     </span>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {new Date(expense.date).toLocaleDateString("es-ES", {
                         year: "numeric",
-                        month: "long", 
+                        month: "long",
                         day: "numeric",
                       })}
                     </p>
                   </div>
                   {expense.category && (
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-muted-foreground mt-1 text-sm">
                       📂 {expense.category}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className="font-semibold text-destructive">
+                  <span className="text-destructive font-semibold">
                     {formatCurrency(expense.amount)}
                   </span>
-                  <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex space-x-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setEditingExpense(expense)}
                       title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -169,16 +180,16 @@ export default function ExpenseList({
                       className="text-destructive hover:text-destructive"
                       title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </div>
             ))}
             {filteredExpenses.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-muted-foreground text-6xl mb-4">💳</div>
-                <p className="text-muted-foreground text-lg mb-2">
+              <div className="py-12 text-center">
+                <div className="text-muted-foreground mb-4 text-6xl">💳</div>
+                <p className="text-muted-foreground mb-2 text-lg">
                   {translations.messages.noExpenses}
                 </p>
                 {expenseFilter !== "all" && (

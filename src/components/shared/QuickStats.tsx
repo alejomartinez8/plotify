@@ -21,14 +21,18 @@ export default async function QuickStats({
 
   const currentMonthContributions = contributions.filter((c) => {
     const contributionDate = new Date(c.date);
-    return contributionDate.getMonth() === currentMonth && 
-           contributionDate.getFullYear() === currentYear;
+    return (
+      contributionDate.getMonth() === currentMonth &&
+      contributionDate.getFullYear() === currentYear
+    );
   });
-  
+
   const currentMonthExpenses = expenses.filter((e) => {
     const expenseDate = new Date(e.date);
-    return expenseDate.getMonth() === currentMonth && 
-           expenseDate.getFullYear() === currentYear;
+    return (
+      expenseDate.getMonth() === currentMonth &&
+      expenseDate.getFullYear() === currentYear
+    );
   });
 
   const stats = [
@@ -53,11 +57,11 @@ export default async function QuickStats({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {stats.map((stat, index) => (
-        <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
+        <div key={index} className="rounded-lg bg-white p-6 shadow-sm">
           <div className="flex items-center">
-            <stat.icon className={`w-8 h-8 ${stat.color}`} />
+            <stat.icon className={`h-8 w-8 ${stat.color}`} />
             <div className="ml-4">
               <p className="text-sm text-gray-600">{stat.label}</p>
               <p className="text-2xl font-semibold">{stat.value}</p>

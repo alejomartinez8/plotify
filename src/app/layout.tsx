@@ -19,7 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+      <body
+        className={`${inter.className} antialiased`}
+        suppressHydrationWarning
+      >
         <Header />
         <Navigation />
         <main className="min-h-screen bg-gray-50">{children}</main>

@@ -2,10 +2,10 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { 
-  createExpense, 
-  updateExpense, 
-  deleteExpense 
+import {
+  createExpense,
+  updateExpense,
+  deleteExpense,
 } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 
@@ -72,7 +72,7 @@ export async function createExpenseAction(
     if (!result) {
       return {
         message: "Database Error: Failed to create expense.",
-      success: false,
+        success: false,
       };
     }
   } catch (error) {
@@ -108,7 +108,8 @@ export async function updateExpenseAction(
     };
   }
 
-  const { id, type, amount, date, description, category } = validatedFields.data;
+  const { id, type, amount, date, description, category } =
+    validatedFields.data;
 
   try {
     const result = await updateExpense(id, {
@@ -122,7 +123,7 @@ export async function updateExpenseAction(
     if (!result) {
       return {
         message: "Database Error: Failed to update expense.",
-      success: false,
+        success: false,
       };
     }
   } catch (error) {
@@ -140,11 +141,11 @@ export async function updateExpenseAction(
 export async function deleteExpenseAction(id: number) {
   try {
     const result = await deleteExpense(id);
-    
+
     if (!result) {
       return {
         message: `${translations.errors.database}: Failed to delete expense.`,
-      success: false,
+        success: false,
       };
     }
 

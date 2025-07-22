@@ -24,7 +24,9 @@ export default async function IncomePage() {
       <ErrorLayout
         title={translations.navigation.income}
         message={translations.errors.loadingIncome}
-        error={error instanceof Error ? error.message : translations.errors.unknown}
+        error={
+          error instanceof Error ? error.message : translations.errors.unknown
+        }
       />
     );
   }

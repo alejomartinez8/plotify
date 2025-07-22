@@ -2,10 +2,10 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { 
-  createContribution, 
-  updateContribution, 
-  deleteContribution 
+import {
+  createContribution,
+  updateContribution,
+  deleteContribution,
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 
@@ -72,7 +72,7 @@ export async function createContributionAction(
     if (!result) {
       return {
         message: "Database Error: Failed to create contribution.",
-      success: false,
+        success: false,
       };
     }
   } catch (error) {
@@ -123,7 +123,7 @@ export async function updateContributionAction(
     if (!result) {
       return {
         message: "Database Error: Failed to update contribution.",
-      success: false,
+        success: false,
       };
     }
   } catch (error) {
@@ -142,11 +142,11 @@ export async function updateContributionAction(
 export async function deleteContributionAction(id: number) {
   try {
     const result = await deleteContribution(id);
-    
+
     if (!result) {
       return {
         message: `${translations.errors.database}: Failed to delete contribution.`,
-      success: false,
+        success: false,
       };
     }
 

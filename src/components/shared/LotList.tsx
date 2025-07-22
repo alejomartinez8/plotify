@@ -94,18 +94,18 @@ export default function LotList({ lots }: LotListProps) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">{translations.navigation.lots}</h1>
           <Button onClick={handleAdd} disabled={isPending}>
-            <Plus className="w-4 h-4" />
+            <Plus className="h-4 w-4" />
             {translations.titles.newLot}
           </Button>
         </div>
         {error && (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded mt-4">
+          <div className="bg-destructive/10 border-destructive/20 text-destructive mt-4 rounded border px-4 py-3">
             {error}
           </div>
         )}
@@ -118,13 +118,13 @@ export default function LotList({ lots }: LotListProps) {
             <table className="w-full">
               <thead className="bg-muted/30">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
                     {translations.labels.lot}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
                     {translations.labels.owner}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium tracking-wider uppercase">
                     {translations.labels.actions}
                   </th>
                 </tr>
@@ -134,8 +134,8 @@ export default function LotList({ lots }: LotListProps) {
                   <tr key={lot.id} className="hover:bg-muted/30">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                          <User className="w-4 h-4 text-primary" />
+                        <div className="bg-primary/10 mr-3 flex h-8 w-8 items-center justify-center rounded-full">
+                          <User className="text-primary h-4 w-4" />
                         </div>
                         <span className="text-sm font-medium">
                           {lot.lotNumber}
@@ -145,7 +145,7 @@ export default function LotList({ lots }: LotListProps) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm">{lot.owner}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
@@ -154,7 +154,7 @@ export default function LotList({ lots }: LotListProps) {
                           title="Edit lot"
                           disabled={isPending}
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -164,7 +164,7 @@ export default function LotList({ lots }: LotListProps) {
                           disabled={isPending}
                           className="text-destructive hover:text-destructive"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -173,8 +173,8 @@ export default function LotList({ lots }: LotListProps) {
               </tbody>
             </table>
             {optimisticLots.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-muted-foreground text-6xl mb-4">🏠</div>
+              <div className="py-12 text-center">
+                <div className="text-muted-foreground mb-4 text-6xl">🏠</div>
                 <p className="text-muted-foreground">
                   {translations.messages.noLots}
                 </p>

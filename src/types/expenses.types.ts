@@ -1,4 +1,4 @@
-import { ContributionType } from './contributions.types';
+import { ContributionType } from "./contributions.types";
 
 export interface Expense {
   id: number;

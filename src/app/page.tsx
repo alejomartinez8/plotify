@@ -23,10 +23,10 @@ export default async function Home() {
     const worksBalance = calculateBalance("works", contributions, expenses);
 
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
           {/* Financial Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FinancialCard
               title={translations.titles.maintenanceFund}
               balance={maintenanceBalance}
@@ -54,7 +54,9 @@ export default async function Home() {
       <ErrorLayout
         title={translations.app.title}
         message={translations.errors.loadingData}
-        error={error instanceof Error ? error.message : translations.errors.unknown}
+        error={
+          error instanceof Error ? error.message : translations.errors.unknown
+        }
       />
     );
   }

@@ -18,33 +18,37 @@ export default async function FinancialCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <span className="text-muted-foreground">
             {translations.labels.income}:
           </span>
-          <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
+          <Badge
+            variant="outline"
+            className="border-emerald-200 bg-emerald-50 text-emerald-600"
+          >
             {formatCurrency(balance.income)}
           </Badge>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <span className="text-muted-foreground">
             {translations.labels.expenses}:
           </span>
-          <Badge variant="outline" className="text-destructive border-destructive/20 bg-destructive/10">
+          <Badge
+            variant="outline"
+            className="text-destructive border-destructive/20 bg-destructive/10"
+          >
             {formatCurrency(balance.expenses)}
           </Badge>
         </div>
         <div className="border-t pt-3">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span className="font-semibold">
               {translations.labels.balance}:
             </span>
-            <Badge 
+            <Badge
               variant={balance.balance >= 0 ? "default" : "destructive"}
               className={cn(
                 "font-bold",

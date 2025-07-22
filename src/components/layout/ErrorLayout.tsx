@@ -4,21 +4,17 @@ interface ErrorLayoutProps {
   error?: string | null;
 }
 
-export default function ErrorLayout({ title, message, error }: ErrorLayoutProps) {
+export default function ErrorLayout({
+  title,
+  message,
+  error,
+}: ErrorLayoutProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">
-          {title}
-        </h1>
-        <p className="text-muted-foreground">
-          {message}
-        </p>
-        {error && (
-          <p className="text-sm text-destructive mt-2">
-            {error}
-          </p>
-        )}
+        <h1 className="mb-4 text-2xl font-bold">{title}</h1>
+        <p className="text-muted-foreground">{message}</p>
+        {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
       </div>
     </div>
   );

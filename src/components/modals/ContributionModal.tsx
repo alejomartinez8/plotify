@@ -44,7 +44,9 @@ export default function ContributionModal({
   lotsLoading = false,
 }: ContributionModalProps) {
   const initialState: ContributionState = { message: null, errors: {} };
-  const action = contribution ? updateContributionAction : createContributionAction;
+  const action = contribution
+    ? updateContributionAction
+    : createContributionAction;
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
 
@@ -74,15 +76,21 @@ export default function ContributionModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {contribution ? translations.titles.editContribution : translations.titles.registerContribution}
+            {contribution
+              ? translations.titles.editContribution
+              : translations.titles.registerContribution}
           </DialogTitle>
         </DialogHeader>
 
-        <form id="contribution-form" action={handleSubmit} className="space-y-4">
+        <form
+          id="contribution-form"
+          action={handleSubmit}
+          className="space-y-4"
+        >
           {state.message && (
             <div
               className={cn(
-                "text-sm mb-4",
+                "mb-4 text-sm",
                 state.message.includes("successfully")
                   ? "text-emerald-600"
                   : "text-destructive"
@@ -92,7 +100,9 @@ export default function ContributionModal({
             </div>
           )}
 
-          {contribution && <input type="hidden" name="id" value={contribution.id} />}
+          {contribution && (
+            <input type="hidden" name="id" value={contribution.id} />
+          )}
           <div className="space-y-2">
             <Label htmlFor="lotId">{translations.labels.lot}</Label>
             <Select
@@ -102,9 +112,13 @@ export default function ContributionModal({
               disabled={lotsLoading || isPending}
             >
               <SelectTrigger>
-                <SelectValue placeholder={
-                  lotsLoading ? translations.status.loading : translations.placeholders.selectLot
-                } />
+                <SelectValue
+                  placeholder={
+                    lotsLoading
+                      ? translations.status.loading
+                      : translations.placeholders.selectLot
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
                 {lots.map((lot) => (
@@ -173,7 +187,11 @@ export default function ContributionModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={contribution?.date ? contribution.date.toISOString().split('T')[0] : ""}
+              defaultValue={
+                contribution?.date
+                  ? contribution.date.toISOString().split("T")[0]
+                  : ""
+              }
               required
               disabled={isPending}
             />
@@ -185,7 +203,9 @@ export default function ContributionModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">{translations.labels.description}</Label>
+            <Label htmlFor="description">
+              {translations.labels.description}
+            </Label>
             <Input
               type="text"
               name="description"
@@ -200,7 +220,6 @@ export default function ContributionModal({
               </div>
             )}
           </div>
-
         </form>
         <DialogFooter>
           <Button
@@ -211,16 +230,12 @@ export default function ContributionModal({
           >
             {translations.actions.cancel}
           </Button>
-          <Button
-            type="submit"
-            form="contribution-form"
-            disabled={isPending}
-          >
+          <Button type="submit" form="contribution-form" disabled={isPending}>
             {isPending
               ? translations.status.processing
               : contribution
-              ? "Update"
-              : translations.actions.save}
+                ? "Update"
+                : translations.actions.save}
           </Button>
         </DialogFooter>
       </DialogContent>

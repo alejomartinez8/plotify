@@ -10,7 +10,7 @@ export const translations = {
   navigation: {
     home: "Inicio",
     income: "Ingresos",
-    expenses: "Gastos", 
+    expenses: "Gastos",
     lots: "Lotes",
   },
 
@@ -18,7 +18,7 @@ export const translations = {
   actions: {
     new: "Nuevo",
     add: "Agregar",
-    edit: "Editar", 
+    edit: "Editar",
     save: "Guardar",
     update: "Actualizar",
     create: "Crear",
@@ -35,7 +35,7 @@ export const translations = {
   labels: {
     // Basic fields
     lot: "Lote",
-    owner: "Propietario", 
+    owner: "Propietario",
     amount: "Monto",
     date: "Fecha",
     description: "Descripción",
@@ -44,15 +44,15 @@ export const translations = {
     year: "Año",
     month: "Mes",
     actions: "Acciones",
-    
+
     // Financial terms
     income: "Ingresos",
     expenses: "Gastos",
     balance: "Saldo",
     total: "Total",
-    maintenance: "Mantenimiento", 
+    maintenance: "Mantenimiento",
     works: "Obras",
-    
+
     // Quantities
     payments: "pagos",
     results: "resultados",
@@ -94,27 +94,26 @@ export const translations = {
     newContribution: "Nuevo Aporte",
     editContribution: "Editar Aporte",
     registerContribution: "Registrar Nuevo Aporte",
-    
-    // Expenses 
+
+    // Expenses
     newExpense: "Nuevo Gasto",
-    editExpense: "Editar Gasto", 
+    editExpense: "Editar Gasto",
     registerExpense: "Registrar Nuevo Gasto",
-    
+
     // Lots
-    newLot: "Agregar Nuevo Lote", 
+    newLot: "Agregar Nuevo Lote",
     editLot: "Editar Lote",
-    
-    
+
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",
-    worksContributions: "Aportes de Obras", 
+    worksContributions: "Aportes de Obras",
     maintenanceExpenses: "Gastos de Mantenimiento",
     worksExpenses: "Gastos de Obras",
-    
+
     // Fund types
     maintenanceFund: "Fondo de Mantenimiento",
     worksFund: "Fondo de Obras",
-    
+
     // Stats
     totalLots: "Total de Lotes",
     contributionsThisMonth: "Aportes este mes",
@@ -126,19 +125,19 @@ export const translations = {
     // Empty states
     noContributions: "No hay contribuciones registradas",
     noContributionsForLot: "No hay contribuciones registradas para este lote",
-    noExpenses: "No hay gastos registrados", 
+    noExpenses: "No hay gastos registrados",
     noLots: "No hay lotes",
     noResults: "No se encontraron resultados",
-    
+
     // Success
     created: "Creado exitosamente",
     updated: "Actualizado exitosamente",
-    deleted: "Eliminado exitosamente", 
-    
+    deleted: "Eliminado exitosamente",
+
     // Hints
     changeFilter: "Intenta cambiar el filtro de tipo de ingreso",
     selectLot: "Selecciona un lote para ver el resumen",
-    
+
     // Options
     notDefined: "No definida",
     fundType: "Tipo de Fondo",
@@ -152,10 +151,10 @@ export const translations = {
     loadingExpenses: "Error cargando datos de gastos",
     loadingLots: "Error cargando datos de lotes",
     unknown: "Error desconocido",
-    
+
     // Validation
     required: "Este campo es requerido",
-    lotRequired: "El lote es requerido", 
+    lotRequired: "El lote es requerido",
     typeRequired: "El tipo debe ser mantenimiento u obras",
     amountRequired: "El monto es requerido",
     amountPositive: "El monto debe ser positivo",
@@ -164,10 +163,10 @@ export const translations = {
     categoryRequired: "La categoría es requerida",
     ownerRequired: "El nombre del propietario es requerido",
     missingFields: "Campos faltantes",
-    
+
     // System
     database: "Error de base de datos",
-    network: "Error de conexión", 
+    network: "Error de conexión",
     server: "Error del servidor",
   },
 
@@ -175,19 +174,33 @@ export const translations = {
   confirmations: {
     // Delete confirmations (all use same title)
     deleteTitle: "Confirmar Eliminación",
-    deleteLot: "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
-    deleteExpense: "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
-    deleteContribution: "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
-    
+    deleteLot:
+      "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
+    deleteExpense:
+      "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
+    deleteContribution:
+      "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
+
     // Generic
-    unsavedChanges: "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
+    unsavedChanges:
+      "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
     confirmAction: "¿Estás seguro de que quieres realizar esta acción?",
   },
 
   // Date and time
   months: [
-    "ENE", "FEB", "MAR", "ABR", "MAY", "JUN", 
-    "JUL", "AGO", "SEP", "OCT", "NOV", "DIC",
+    "ENE",
+    "FEB",
+    "MAR",
+    "ABR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AGO",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DIC",
   ],
 };
 

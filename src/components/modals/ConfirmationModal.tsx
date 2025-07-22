@@ -70,11 +70,11 @@ export default function ConfirmationModal({
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center",
+                "flex h-10 w-10 items-center justify-center rounded-full",
                 styles.iconBg
               )}
             >
-              <AlertTriangle className={cn("w-5 h-5", styles.icon)} />
+              <AlertTriangle className={cn("h-5 w-5", styles.icon)} />
             </div>
             <AlertDialogTitle>{title}</AlertDialogTitle>
           </div>
@@ -84,7 +84,7 @@ export default function ConfirmationModal({
           <AlertDialogCancel disabled={isLoading}>
             {cancelText}
           </AlertDialogCancel>
-          <AlertDialogAction 
+          <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
             className={cn(

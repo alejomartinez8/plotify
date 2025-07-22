@@ -8,7 +8,6 @@ This project serves as both a practical application and an exploration laborator
 
 1. **AI Development Tools Research**  
    As a senior developer, I'm actively experimenting with cutting-edge AI coding assistants to understand their capabilities, limitations, and impact on development workflows:
-
    - **Cline**: AI software engineer assistant for autonomous coding
    - **Claude Code**: Anthropic's official CLI for development assistance
    - **AI-Driven Development**: Exploring how AI can accelerate development, improve code quality, and handle complex refactoring
