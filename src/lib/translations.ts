@@ -9,194 +9,194 @@ export const translations = {
   // Navigation
   navigation: {
     dashboard: "Panel de Control",
-    maintenance: "Mantenimiento",
-    works: "Obras",
-    expenses: "Gastos",
+    income: "Ingresos",
+    expenses: "Gastos", 
     lots: "Lotes",
   },
 
-  // Buttons
-  buttons: {
-    newContribution: "Nuevo Aporte",
-    newExpense: "Nuevo Gasto",
-    saveContribution: "Guardar Aporte",
-    saveExpense: "Guardar Gasto",
-    cancel: "Cancelar",
+  // Common actions and buttons
+  actions: {
+    new: "Nuevo",
+    add: "Agregar",
+    edit: "Editar", 
+    save: "Guardar",
+    update: "Actualizar",
+    create: "Crear",
     delete: "Eliminar",
+    cancel: "Cancelar",
     confirm: "Confirmar",
-    edit: "Editar",
-    gridView: "Vista por Lote",
-    listView: "Vista Lista",
-    quotaConfiguration: "Configurar Cuotas",
-    saveQuota: "Guardar Cuota",
+    close: "Cerrar",
+    filter: "Filtrar",
+    search: "Buscar",
+    config: "Configurar",
   },
 
-  // Confirmation dialogs
-  confirmations: {
-    deleteLot: {
-      title: "Confirmar Eliminación",
-      message:
-        "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
-    },
-    deleteExpense: {
-      title: "Confirmar Eliminación",
-      message: "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
-    },
-    deleteContribution: {
-      title: "Confirmar Eliminación", 
-      message: "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
-    },
-  },
-
-  // Financial cards
-  financial: {
-    maintenanceFund: "Fondo de Mantenimiento",
-    worksFund: "Fondo de Obras",
+  // Common labels and fields
+  labels: {
+    // Basic fields
+    lot: "Lote",
+    owner: "Propietario", 
+    amount: "Monto",
+    date: "Fecha",
+    description: "Descripción",
+    category: "Categoría",
+    type: "Tipo",
+    year: "Año",
+    month: "Mes",
+    actions: "Acciones",
+    
+    // Financial terms
     income: "Ingresos",
     expenses: "Gastos",
     balance: "Saldo",
+    total: "Total",
+    maintenance: "Mantenimiento", 
+    works: "Obras",
+    
+    // Quantities
+    payments: "pagos",
+    results: "resultados",
+    result: "resultado",
+    summary: "Resumen",
   },
 
-  // Quick stats
-  stats: {
+  // Status messages
+  status: {
+    loading: "Cargando...",
+    processing: "Procesando...",
+    saving: "Guardando...",
+    deleting: "Eliminando...",
+  },
+
+  // Form placeholders and options
+  placeholders: {
+    selectLot: "Seleccionar lote",
+    optionalDescription: "Descripción opcional",
+    categoryExample: "ej. Jardinería, Seguridad, Servicios",
+    lotIdExample: "ej. 22, E2-1, 18 y 19",
+    ownerName: "Ingrese el nombre del propietario",
+    monthlyAmount: "60000",
+    selectMonth: "Seleccionar mes",
+    search: "Buscar...",
+  },
+
+  // Filter options
+  filters: {
+    all: "Todos",
+    allIncome: "Todos los Ingresos",
+    allLots: "Todos los Lotes",
+    allExpenses: "Todos los Gastos",
+  },
+
+  // Modal and form titles
+  titles: {
+    // Contributions
+    newContribution: "Nuevo Aporte",
+    editContribution: "Editar Aporte",
+    registerContribution: "Registrar Nuevo Aporte",
+    
+    // Expenses 
+    newExpense: "Nuevo Gasto",
+    editExpense: "Editar Gasto", 
+    registerExpense: "Registrar Nuevo Gasto",
+    
+    // Lots
+    newLot: "Agregar Nuevo Lote", 
+    editLot: "Editar Lote",
+    
+    // Quotas
+    quotaConfig: "Configuración de Cuota de Mantenimiento",
+    quotasByYear: "Cuotas Definidas por Año",
+    monthlyQuota: "Cuota Mensual de Mantenimiento",
+    
+    // Grid headers
+    maintenanceContributions: "Aportes de Mantenimiento",
+    worksContributions: "Aportes de Obras", 
+    maintenanceExpenses: "Gastos de Mantenimiento",
+    worksExpenses: "Gastos de Obras",
+    
+    // Fund types
+    maintenanceFund: "Fondo de Mantenimiento",
+    worksFund: "Fondo de Obras",
+    
+    // Stats
     totalLots: "Total de Lotes",
     contributionsThisMonth: "Aportes este mes",
     expensesThisMonth: "Gastos este mes",
   },
 
-  // Payment grid
-  grid: {
-    lotNo: "No. Lote",
-    owner: "Propietario",
-    maintenanceContributions: "Aportes de Mantenimiento",
-    worksContributions: "Aportes de Obras",
-  },
-
-  // Expense list
-  expenseList: {
-    maintenanceExpenses: "Gastos de Mantenimiento",
-    worksExpenses: "Gastos de Obras",
-    noExpensesRecorded: "No hay gastos registrados",
-  },
-
-  // Lot list
-  lotList: {
-    addLot: "Agregar Lote",
-    lotNumber: "No. Lote",
-    owner: "Propietario",
-    actions: "Acciones",
-    noLotsFound: "No hay lotes",
-  },
-
-  // Modals
-  modals: {
-    // Contribution modal
-    registerNewContribution: "Registrar Nuevo Aporte",
-    lot: "Lote",
-    selectLot: "Seleccionar lote",
-    fundType: "Tipo de Fondo",
-    maintenance: "Mantenimiento",
-    works: "Obras",
-    month: "Mes",
-    selectMonth: "Seleccionar mes",
-    amount: "Monto",
-    date: "Fecha",
-    description: "Descripción",
-    optionalDescription: "Descripción opcional",
-
-    // Expense modal
-    registerNewExpense: "Registrar Nuevo Gasto",
-    expenseDescription: "Descripción del gasto",
-    category: "Categoría",
-    categoryPlaceholder: "ej. Jardinería, Seguridad, Servicios",
-
-    // Lot modal
-    editLot: "Editar Lote",
-    addNewLot: "Agregar Nuevo Lote",
-    lotId: "No. de Lote",
-    ownerName: "Nombre del Propietario",
-    lotIdPlaceholder: "ej. 22, E2-1, 18 y 19",
-    ownerNamePlaceholder: "Ingrese el nombre del propietario",
-    update: "Actualizar",
-    create: "Crear",
-
-    // Quota modal - only for maintenance
-    maintenanceQuotaConfiguration: "Configuración de Cuota de Mantenimiento",
-    maintenanceQuotaDescription: "Define la cuota mensual de mantenimiento por año",
-    year: "Año",
-    quotasDefinedByYear: "Cuotas Definidas por Año",
-    monthlyMaintenanceQuota: "Cuota Mensual de Mantenimiento",
-    monthlyAmount: "Cuota Mensual (COP)",
-    monthlyAmountPlaceholder: "60000",
+  // Messages
+  messages: {
+    // Empty states
+    noContributions: "No hay contribuciones registradas",
+    noContributionsForLot: "No hay contribuciones registradas para este lote",
+    noExpenses: "No hay gastos registrados", 
+    noLots: "No hay lotes",
+    noResults: "No se encontraron resultados",
+    
+    // Success
+    created: "Creado exitosamente",
+    updated: "Actualizado exitosamente",
+    deleted: "Eliminado exitosamente", 
+    quotaUpdated: "Cuota mensual de mantenimiento actualizada exitosamente",
+    
+    // Hints
+    changeFilter: "Intenta cambiar el filtro de tipo de ingreso",
+    selectLot: "Selecciona un lote para ver el resumen",
+    
+    // Options
     notDefined: "No definida",
+    fundType: "Tipo de Fondo",
+    quotaDescription: "Define la cuota mensual de mantenimiento por año",
     addOrUpdateQuota: "Agregar/Actualizar Cuota",
-  },
-
-  // Status messages
-  status: {
-    processing: "Procesando...",
-    loading: "Cargando...",
   },
 
   // Error messages
   errors: {
-    errorLoadingData: "Error cargando datos de la aplicación",
-    errorLoadingExpenses: "Error cargando datos de gastos",
-    errorLoadingMaintenance: "Error cargando datos de mantenimiento",
-    errorLoadingWorks: "Error cargando datos de obras",
-    unknownError: "Error desconocido",
-  },
-
-  // Validation messages
-  validation: {
-    lotRequired: "El lote es requerido",
+    // Loading
+    loadingData: "Error cargando datos de la aplicación",
+    loadingIncome: "Error cargando datos de ingresos",
+    loadingExpenses: "Error cargando datos de gastos",
+    loadingLots: "Error cargando datos de lotes",
+    unknown: "Error desconocido",
+    
+    // Validation
+    required: "Este campo es requerido",
+    lotRequired: "El lote es requerido", 
     typeRequired: "El tipo debe ser mantenimiento u obras",
+    amountRequired: "El monto es requerido",
     amountPositive: "El monto debe ser positivo",
     dateRequired: "La fecha es requerida",
     dateValid: "Fecha válida es requerida",
-    descriptionOptional: "La descripción es opcional",
     categoryRequired: "La categoría es requerida",
-    lotNumberRequired: "El número de lote es requerido",
     ownerRequired: "El nombre del propietario es requerido",
-    lotIdRequired: "ID de lote válido es requerido",
-    contributionIdRequired: "ID de aporte válido es requerido",
-    expenseIdRequired: "ID de gasto válido es requerido",
     missingFields: "Campos faltantes",
-    databaseError: "Error de base de datos",
-    createSuccess: "Creado exitosamente",
-    updateSuccess: "Actualizado exitosamente",
-    deleteSuccess: "Eliminado exitosamente",
+    
+    // System
+    database: "Error de base de datos",
+    network: "Error de conexión", 
+    server: "Error del servidor",
   },
 
-  // Tooltips and titles
-  tooltips: {
-    editExpense: "Editar gasto",
-    deleteExpense: "Eliminar gasto", 
-    editContribution: "Editar contribución",
-    deleteContribution: "Eliminar contribución",
+  // Confirmation dialogs
+  confirmations: {
+    // Delete confirmations (all use same title)
+    deleteTitle: "Confirmar Eliminación",
+    deleteLot: "¿Estás seguro de que quieres eliminar el lote? Esta acción no se puede deshacer.",
+    deleteExpense: "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
+    deleteContribution: "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
+    
+    // Generic
+    unsavedChanges: "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
+    confirmAction: "¿Estás seguro de que quieres realizar esta acción?",
   },
 
-  // Messages
-  messages: {
-    noContributionsRecorded: "No hay contribuciones registradas",
-    noContributionsForLot: "No hay contribuciones registradas para este lote",
-    allLots: "Todos los lotes",
-    quotaUpdatedSuccessfully: "Cuota mensual de mantenimiento actualizada exitosamente",
-  },
-
-  // Months in Spanish
+  // Date and time
   months: [
-    "ENE",
-    "FEB",
-    "MAR",
-    "ABR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AGO",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DIC",
+    "ENE", "FEB", "MAR", "ABR", "MAY", "JUN", 
+    "JUL", "AGO", "SEP", "OCT", "NOV", "DIC",
   ],
 };
+
+// Type definitions for better TypeScript support
+export type TranslationKeys = typeof translations;

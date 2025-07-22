@@ -27,12 +27,12 @@ export default async function Dashboard() {
           {/* Financial Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FinancialCard
-              title={translations.financial.maintenanceFund}
+              title={translations.titles.maintenanceFund}
               balance={maintenanceBalance}
               color="blue"
             />
             <FinancialCard
-              title={translations.financial.worksFund}
+              title={translations.titles.worksFund}
               balance={worksBalance}
               color="orange"
             />
@@ -56,12 +56,12 @@ export default async function Dashboard() {
             {translations.app.title}
           </h1>
           <p className="text-gray-600">
-            {translations.errors.errorLoadingData}
+            {translations.errors.loadingData}
           </p>
           <p className="text-sm text-red-600 mt-2">
             {error instanceof Error
               ? error.message
-              : translations.errors.unknownError}
+              : translations.errors.unknown}
           </p>
         </div>
       </div>

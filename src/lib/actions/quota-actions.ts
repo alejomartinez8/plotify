@@ -42,7 +42,7 @@ export async function createOrUpdateQuotaAction(
     revalidatePath("/");
 
     return {
-      message: translations.messages.quotaUpdatedSuccessfully,
+      message: translations.messages.quotaUpdated,
       errors: {},
       success: true,
     };

@@ -34,19 +34,19 @@ export default async function QuickStats({
   const stats = [
     {
       icon: Users,
-      label: translations.stats.totalLots,
+      label: translations.titles.totalLots,
       value: lots.length,
       color: "text-blue-600",
     },
     {
       icon: DollarSign,
-      label: translations.stats.contributionsThisMonth,
+      label: translations.titles.contributionsThisMonth,
       value: currentMonthContributions.length,
       color: "text-green-600",
     },
     {
       icon: Calendar,
-      label: translations.stats.expensesThisMonth,
+      label: translations.titles.expensesThisMonth,
       value: currentMonthExpenses.length,
       color: "text-orange-600",
     },

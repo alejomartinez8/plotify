@@ -10,20 +10,20 @@ import {
 import { translations } from "@/lib/translations";
 
 const ContributionSchema = z.object({
-  lotId: z.string().min(1, translations.validation.lotRequired),
+  lotId: z.string().min(1, translations.errors.lotRequired),
   type: z.enum(["maintenance", "works"], {
-    message: translations.validation.typeRequired,
+    message: translations.errors.typeRequired,
   }),
-  amount: z.coerce.number().positive(translations.validation.amountPositive),
+  amount: z.coerce.number().positive(translations.errors.amountPositive),
   date: z.coerce.date({
-    message: translations.validation.dateValid,
+    message: translations.errors.dateValid,
   }),
   description: z.string().optional(),
 });
 
 const CreateContribution = ContributionSchema;
 const UpdateContribution = ContributionSchema.extend({
-  id: z.coerce.number().positive(translations.validation.contributionIdRequired),
+  id: z.coerce.number().positive(translations.errors.required),
 });
 
 export type ContributionState = {
@@ -53,7 +53,7 @@ export async function createContributionAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: `${translations.validation.missingFields}. Failed to create contribution.`,
+      message: `${translations.errors.missingFields}. Failed to create contribution.`,
       success: false,
     };
   }
@@ -77,7 +77,7 @@ export async function createContributionAction(
     }
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to create contribution.`,
+      message: `${translations.errors.database}: Failed to create contribution.`,
       success: false,
     };
   }
@@ -85,7 +85,7 @@ export async function createContributionAction(
   revalidatePath("/maintenance");
   revalidatePath("/works");
   revalidatePath("/");
-  return { message: `${translations.validation.createSuccess}.`, success: true };
+  return { message: `${translations.messages.created}.`, success: true };
 }
 
 export async function updateContributionAction(
@@ -104,7 +104,7 @@ export async function updateContributionAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: `${translations.validation.missingFields}. Failed to update contribution.`,
+      message: `${translations.errors.missingFields}. Failed to update contribution.`,
       success: false,
     };
   }
@@ -128,7 +128,7 @@ export async function updateContributionAction(
     }
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to update contribution.`,
+      message: `${translations.errors.database}: Failed to update contribution.`,
       success: false,
     };
   }
@@ -136,7 +136,7 @@ export async function updateContributionAction(
   revalidatePath("/maintenance");
   revalidatePath("/works");
   revalidatePath("/");
-  return { message: `${translations.validation.updateSuccess}.`, success: true };
+  return { message: `${translations.messages.updated}.`, success: true };
 }
 
 export async function deleteContributionAction(id: number) {
@@ -145,7 +145,7 @@ export async function deleteContributionAction(id: number) {
     
     if (!result) {
       return {
-        message: `${translations.validation.databaseError}: Failed to delete contribution.`,
+        message: `${translations.errors.database}: Failed to delete contribution.`,
       success: false,
       };
     }
@@ -153,10 +153,10 @@ export async function deleteContributionAction(id: number) {
     revalidatePath("/maintenance");
     revalidatePath("/works");
     revalidatePath("/");
-    return { message: `${translations.validation.deleteSuccess}.`, success: true };
+    return { message: `${translations.messages.deleted}.`, success: true };
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to delete contribution.`,
+      message: `${translations.errors.database}: Failed to delete contribution.`,
       success: false,
     };
   }

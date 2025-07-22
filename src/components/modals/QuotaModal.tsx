@@ -45,7 +45,7 @@ export default function QuotaModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {translations.modals.maintenanceQuotaConfiguration}
+            {translations.titles.quotaConfig}
           </h2>
           <button
             onClick={onClose}
@@ -58,25 +58,25 @@ export default function QuotaModal({
 
         <div className="space-y-6">
           <p className="text-gray-600 text-sm">
-            {translations.modals.maintenanceQuotaDescription}
+            {translations.messages.quotaDescription}
           </p>
 
           {/* Quotas Table */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">{translations.modals.quotasDefinedByYear}</h3>
+            <h3 className="text-lg font-semibold mb-3">{translations.titles.quotasByYear}</h3>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left">{translations.modals.year}</th>
-                    <th className="px-4 py-2 text-right">{translations.modals.monthlyMaintenanceQuota}</th>
+                    <th className="px-4 py-2 text-left">{translations.labels.year}</th>
+                    <th className="px-4 py-2 text-right">{translations.titles.monthlyQuota}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {quotas.length === 0 ? (
                     <tr>
                       <td colSpan={2} className="px-4 py-8 text-center text-gray-500">
-                        {translations.modals.notDefined}
+                        {translations.messages.notDefined}
                       </td>
                     </tr>
                   ) : (
@@ -96,7 +96,7 @@ export default function QuotaModal({
 
           {/* Form to Add/Update Quota */}
           <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold mb-3">{translations.modals.addOrUpdateQuota}</h3>
+            <h3 className="text-lg font-semibold mb-3">{translations.messages.addOrUpdateQuota}</h3>
             
             <form action={handleSubmit} className="space-y-4">
               {state.message && (
@@ -113,7 +113,7 @@ export default function QuotaModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations.modals.year}
+                  {translations.labels.year}
                 </label>
                 <select
                   name="year"
@@ -140,13 +140,13 @@ export default function QuotaModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations.modals.monthlyAmount}
+                  {translations.labels.amount}
                 </label>
                 <input
                   type="number"
                   name="monthlyAmount"
                   className="w-full border rounded-sm px-3 py-2"
-                  placeholder={translations.modals.monthlyAmountPlaceholder}
+                  placeholder={translations.placeholders.monthlyAmount}
                   required
                   min="0"
                   step="1000"
@@ -166,7 +166,7 @@ export default function QuotaModal({
                   disabled={isPending}
                   className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {translations.buttons.cancel}
+                  {translations.actions.cancel}
                 </button>
                 <button
                   type="submit"
@@ -175,7 +175,7 @@ export default function QuotaModal({
                 >
                   {isPending
                     ? translations.status.processing
-                    : translations.buttons.saveQuota}
+                    : translations.actions.save}
                 </button>
               </div>
             </form>

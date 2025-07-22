@@ -12,17 +12,17 @@ import { translations } from "@/lib/translations";
 // Zod schema for validation
 const ExpenseSchema = z.object({
   type: z.enum(["maintenance", "works"], {
-    message: translations.validation.typeRequired,
+    message: translations.errors.typeRequired,
   }),
-  amount: z.coerce.number().positive(translations.validation.amountPositive),
-  date: z.string().min(1, translations.validation.dateRequired),
+  amount: z.coerce.number().positive(translations.errors.amountPositive),
+  date: z.string().min(1, translations.errors.dateRequired),
   description: z.string().optional(),
-  category: z.string().min(1, translations.validation.categoryRequired),
+  category: z.string().min(1, translations.errors.categoryRequired),
 });
 
 const CreateExpense = ExpenseSchema;
 const UpdateExpense = ExpenseSchema.extend({
-  id: z.coerce.number().positive(translations.validation.expenseIdRequired),
+  id: z.coerce.number().positive(translations.errors.required),
 });
 
 export type ExpenseState = {
@@ -53,7 +53,7 @@ export async function createExpenseAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: `${translations.validation.missingFields}. Failed to create expense.`,
+      message: `${translations.errors.missingFields}. Failed to create expense.`,
       success: false,
     };
   }
@@ -77,14 +77,14 @@ export async function createExpenseAction(
     }
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to create expense.`,
+      message: `${translations.errors.database}: Failed to create expense.`,
       success: false,
     };
   }
 
   revalidatePath("/expenses");
   revalidatePath("/");
-  return { message: `${translations.validation.createSuccess}.`, success: true };
+  return { message: `${translations.messages.created}.`, success: true };
 }
 
 export async function updateExpenseAction(
@@ -103,7 +103,7 @@ export async function updateExpenseAction(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: `${translations.validation.missingFields}. Failed to update expense.`,
+      message: `${translations.errors.missingFields}. Failed to update expense.`,
       success: false,
     };
   }
@@ -127,14 +127,14 @@ export async function updateExpenseAction(
     }
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to update expense.`,
+      message: `${translations.errors.database}: Failed to update expense.`,
       success: false,
     };
   }
 
   revalidatePath("/expenses");
   revalidatePath("/");
-  return { message: `${translations.validation.updateSuccess}.`, success: true };
+  return { message: `${translations.messages.updated}.`, success: true };
 }
 
 export async function deleteExpenseAction(id: number) {
@@ -143,17 +143,17 @@ export async function deleteExpenseAction(id: number) {
     
     if (!result) {
       return {
-        message: `${translations.validation.databaseError}: Failed to delete expense.`,
+        message: `${translations.errors.database}: Failed to delete expense.`,
       success: false,
       };
     }
 
     revalidatePath("/expenses");
     revalidatePath("/");
-    return { message: `${translations.validation.deleteSuccess}.`, success: true };
+    return { message: `${translations.messages.deleted}.`, success: true };
   } catch (error) {
     return {
-      message: `${translations.validation.databaseError}: Failed to delete expense.`,
+      message: `${translations.errors.database}: Failed to delete expense.`,
       success: false,
     };
   }

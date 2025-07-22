@@ -26,7 +26,7 @@ export default async function FinancialCard({
       <div className="space-y-3">
         <div className="flex justify-between">
           <span className="text-gray-600">
-            {translations.financial.income}:
+            {translations.labels.income}:
           </span>
           <span className="font-semibold text-green-600">
             {formatCurrency(balance.income)}
@@ -34,7 +34,7 @@ export default async function FinancialCard({
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">
-            {translations.financial.expenses}:
+            {translations.labels.expenses}:
           </span>
           <span className="font-semibold text-red-600">
             {formatCurrency(balance.expenses)}
@@ -43,7 +43,7 @@ export default async function FinancialCard({
         <div className="border-t pt-3">
           <div className="flex justify-between">
             <span className="text-gray-900 font-semibold">
-              {translations.financial.balance}:
+              {translations.labels.balance}:
             </span>
             <span
               className={`font-bold ${

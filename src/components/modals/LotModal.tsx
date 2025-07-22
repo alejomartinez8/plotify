@@ -45,7 +45,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {lot ? translations.modals.editLot : translations.modals.addNewLot}
+            {lot ? translations.titles.editLot : translations.titles.newLot}
           </h2>
           <button
             onClick={onClose}
@@ -73,7 +73,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.lotId}
+              {translations.labels.lot}
             </label>
             <input
               type="text"
@@ -82,7 +82,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={isPending}
-              placeholder={translations.modals.lotIdPlaceholder}
+              placeholder={translations.placeholders.lotIdExample}
             />
             {state.errors?.lotNumber && (
               <div className="text-red-500 text-sm mt-1">
@@ -93,7 +93,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.modals.ownerName}
+              {translations.labels.owner}
             </label>
             <input
               type="text"
@@ -102,7 +102,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={isPending}
-              placeholder={translations.modals.ownerNamePlaceholder}
+              placeholder={translations.placeholders.ownerName}
             />
             {state.errors?.owner && (
               <div className="text-red-500 text-sm mt-1">
@@ -118,7 +118,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               disabled={isPending}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
-              {translations.buttons.cancel}
+              {translations.actions.cancel}
             </button>
             <button
               type="submit"
@@ -128,8 +128,8 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               {isPending
                 ? translations.status.processing
                 : lot
-                ? translations.modals.update
-                : translations.modals.create}
+                ? translations.actions.update
+                : translations.actions.create}
             </button>
           </div>
         </form>
