@@ -42,7 +42,7 @@ model Expense {
 model MonthlyMaintenanceQuota {
   id             Int      @id @default(autoincrement())
   year           Int      @unique
-  monthlyAmount  Int      // Amount in COP (e.g., 60000 for 60.000 COP)
+  monthlyAmount  Int
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

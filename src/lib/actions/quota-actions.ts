@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createOrUpdateQuota, getAllQuotas, getQuotaForYear, getCurrentYearQuota } from "@/lib/database/quotas";
+import { createOrUpdateQuota } from "@/lib/database/quotas";
 
 const quotaSchema = z.object({
   year: z.number().min(2020).max(2050),
@@ -20,7 +20,7 @@ export async function createOrUpdateQuotaAction(
 ): Promise<QuotaState> {
   const data = {
     year: parseInt(formData.get("year") as string),
-    monthlyAmount: Math.round(parseFloat(formData.get("monthlyAmount") as string) * 100), // Convert to cents
+    monthlyAmount: parseInt(formData.get("monthlyAmount") as string),
   };
 
   const validated = quotaSchema.safeParse(data);
@@ -49,6 +49,3 @@ export async function createOrUpdateQuotaAction(
     };
   }
 }
-
-// These functions are now imported from @/lib/database/quotas
-export { getAllQuotas, getQuotaForYear, getCurrentYearQuota };
