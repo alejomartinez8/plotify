@@ -12,6 +12,7 @@ const quotaSchema = z.object({
 export type QuotaState = {
   errors: Record<string, string[]>;
   message: string;
+  success?: boolean;
 };
 
 export async function createOrUpdateQuotaAction(
@@ -29,6 +30,7 @@ export async function createOrUpdateQuotaAction(
     return {
       errors: validated.error.flatten().fieldErrors,
       message: "Error de validación",
+      success: false,
     };
   }
 
@@ -41,11 +43,13 @@ export async function createOrUpdateQuotaAction(
     return {
       message: "Cuota mensual de mantenimiento actualizada exitosamente",
       errors: {},
+      success: true,
     };
   } catch (error) {
     return {
       message: "Error en la base de datos",
       errors: {},
+      success: false,
     };
   }
 }

@@ -23,7 +23,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (state?.message && state.message.includes("successfully")) {
+    if (state?.success) {
       onClose();
     }
   }, [state, onClose]);

@@ -22,6 +22,7 @@ export type State = {
     owner?: string[];
   };
   message?: string | null;
+  success?: boolean;
 };
 
 export async function createLotAction(
@@ -38,6 +39,7 @@ export async function createLotAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to create lot.`,
+      success: false,
     };
   }
 
@@ -48,11 +50,12 @@ export async function createLotAction(
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to create lot.`,
+      success: false,
     };
   }
 
   revalidatePath("/lots");
-  return { message: `${translations.validation.createSuccess}.` };
+  return { message: `${translations.validation.createSuccess}.`, success: true };
 }
 
 export async function updateLotAction(
@@ -69,6 +72,7 @@ export async function updateLotAction(
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.validation.missingFields}. Failed to update lot.`,
+      success: false,
     };
   }
 
@@ -79,21 +83,23 @@ export async function updateLotAction(
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to update lot.`,
+      success: false,
     };
   }
 
   revalidatePath("/lots");
-  return { message: `${translations.validation.updateSuccess}.` };
+  return { message: `${translations.validation.updateSuccess}.`, success: true };
 }
 
 export async function deleteLotAction(id: string) {
   try {
     await deleteLot(id);
     revalidatePath("/lots");
-    return { message: `${translations.validation.deleteSuccess}.` };
+    return { message: `${translations.validation.deleteSuccess}.`, success: true };
   } catch (error) {
     return {
       message: `${translations.validation.databaseError}: Failed to delete lot.`,
+      success: false,
     };
   }
 }

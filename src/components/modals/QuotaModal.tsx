@@ -27,7 +27,7 @@ export default function QuotaModal({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (state?.message && state.message.includes("exitosamente")) {
+    if (state?.success) {
       onClose();
     }
   }, [state, onClose]);
@@ -102,7 +102,7 @@ export default function QuotaModal({
               {state.message && (
                 <div
                   className={`text-sm mb-4 ${
-                    state.message.includes("exitosamente")
+                    state.success
                       ? "text-green-600"
                       : "text-red-500"
                   }`}
