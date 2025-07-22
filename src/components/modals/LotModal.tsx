@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useActionState, useTransition } from "react";
-import { X } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import {
   createLotAction,
@@ -9,6 +8,17 @@ import {
   State,
 } from "@/lib/actions/lot-actions";
 import { translations } from "@/lib/translations";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface LotModalProps {
   lot?: Lot | null;
@@ -41,29 +51,23 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>
             {lot ? translations.titles.editLot : translations.titles.newLot}
-          </h2>
-          <button
-            onClick={onClose}
-            disabled={isPending}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        <form action={handleSubmit} className="space-y-4">
+        <form id="lot-form" action={handleSubmit} className="space-y-4">
           {state.message && (
             <div
-              className={`text-sm mb-4 ${
+              className={cn(
+                "text-sm mb-4",
                 state.message.includes("successfully")
-                  ? "text-green-600"
-                  : "text-red-500"
-              }`}
+                  ? "text-emerald-600"
+                  : "text-destructive"
+              )}
             >
               {state.message}
             </div>
@@ -71,69 +75,65 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
 
           {lot && <input type="hidden" name="id" value={lot.id} />}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.lot}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="lotNumber">{translations.labels.lot}</Label>
+            <Input
               type="text"
               name="lotNumber"
+              id="lotNumber"
               defaultValue={lot?.lotNumber || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={isPending}
               placeholder={translations.placeholders.lotIdExample}
             />
             {state.errors?.lotNumber && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.lotNumber}
               </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translations.labels.owner}
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="owner">{translations.labels.owner}</Label>
+            <Input
               type="text"
               name="owner"
+              id="owner"
               defaultValue={lot?.owner || ""}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
               disabled={isPending}
               placeholder={translations.placeholders.ownerName}
             />
             {state.errors?.owner && (
-              <div className="text-red-500 text-sm mt-1">
+              <div className="text-destructive text-sm">
                 {state.errors.owner}
               </div>
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-            >
-              {translations.actions.cancel}
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {isPending
-                ? translations.status.processing
-                : lot
-                ? translations.actions.update
-                : translations.actions.create}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            {translations.actions.cancel}
+          </Button>
+          <Button
+            type="submit"
+            form="lot-form"
+            disabled={isPending}
+          >
+            {isPending
+              ? translations.status.processing
+              : lot
+              ? translations.actions.update
+              : translations.actions.create}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

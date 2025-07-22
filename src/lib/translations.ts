@@ -8,7 +8,7 @@ export const translations = {
 
   // Navigation
   navigation: {
-    dashboard: "Panel de Control",
+    home: "Inicio",
     income: "Ingresos",
     expenses: "Gastos", 
     lots: "Lotes",

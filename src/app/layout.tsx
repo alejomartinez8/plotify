@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <Header />
         <Navigation />
-        <div className="min-h-screen bg-gray-50">{children}</div>
+        <main className="min-h-screen bg-gray-50">{children}</main>
       </body>
     </html>
   );

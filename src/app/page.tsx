@@ -4,9 +4,10 @@ import { getExpenses } from "@/lib/database/expenses";
 import { calculateBalance } from "@/lib/utils";
 import FinancialCard from "@/components/shared/FinancialCard";
 import QuickStats from "@/components/shared/QuickStats";
+import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
-export default async function Dashboard() {
+export default async function Home() {
   try {
     const [lots, contributions, expenses] = await Promise.all([
       getLots(),
@@ -29,12 +30,12 @@ export default async function Dashboard() {
             <FinancialCard
               title={translations.titles.maintenanceFund}
               balance={maintenanceBalance}
-              color="blue"
+              variant="default"
             />
             <FinancialCard
               title={translations.titles.worksFund}
               balance={worksBalance}
-              color="orange"
+              variant="secondary"
             />
           </div>
 
@@ -50,21 +51,11 @@ export default async function Dashboard() {
   } catch (error) {
     console.error("Error loading data:", error);
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {translations.app.title}
-          </h1>
-          <p className="text-gray-600">
-            {translations.errors.loadingData}
-          </p>
-          <p className="text-sm text-red-600 mt-2">
-            {error instanceof Error
-              ? error.message
-              : translations.errors.unknown}
-          </p>
-        </div>
-      </div>
+      <ErrorLayout
+        title={translations.app.title}
+        message={translations.errors.loadingData}
+        error={error instanceof Error ? error.message : translations.errors.unknown}
+      />
     );
   }
 }
