@@ -104,10 +104,6 @@ export const translations = {
     newLot: "Agregar Nuevo Lote", 
     editLot: "Editar Lote",
     
-    // Quotas
-    quotaConfig: "Configuración de Cuota de Mantenimiento",
-    quotasByYear: "Cuotas Definidas por Año",
-    monthlyQuota: "Cuota Mensual de Mantenimiento",
     
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",
@@ -138,7 +134,6 @@ export const translations = {
     created: "Creado exitosamente",
     updated: "Actualizado exitosamente",
     deleted: "Eliminado exitosamente", 
-    quotaUpdated: "Cuota mensual de mantenimiento actualizada exitosamente",
     
     // Hints
     changeFilter: "Intenta cambiar el filtro de tipo de ingreso",
@@ -147,8 +142,6 @@ export const translations = {
     // Options
     notDefined: "No definida",
     fundType: "Tipo de Fondo",
-    quotaDescription: "Define la cuota mensual de mantenimiento por año",
-    addOrUpdateQuota: "Agregar/Actualizar Cuota",
   },
 
   // Error messages
