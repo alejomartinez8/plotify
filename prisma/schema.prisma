@@ -17,24 +17,26 @@ model Lot {
 }
 
 model Contribution {
-  id          Int      @id @default(autoincrement())
-  lotId       String
-  type        String
-  amount      Int
-  date        DateTime @default(now())
-  description String
-  lot         Lot      @relation(fields: [lotId], references: [id])
+  id            Int      @id @default(autoincrement())
+  lotId         String
+  type          String
+  amount        Int
+  date          DateTime @default(now())
+  description   String
+  receiptNumber String?
+  lot           Lot      @relation(fields: [lotId], references: [id])
 
   @@map("contributions")
 }
 
 model Expense {
-  id          Int    @id @default(autoincrement())
-  type        String
-  amount      Int
-  date        String
-  description String
-  category    String
+  id            Int    @id @default(autoincrement())
+  type          String
+  amount        Int
+  date          String
+  description   String
+  category      String
+  receiptNumber String?
 
   @@map("expenses")
 }
