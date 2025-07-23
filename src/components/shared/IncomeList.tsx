@@ -100,17 +100,6 @@ export default function IncomeList({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  const getColorForFilter = (filter: IncomeType): "blue" | "orange" => {
-    switch (filter) {
-      case "maintenance":
-        return "blue";
-      case "works":
-        return "orange";
-      default:
-        return "blue";
-    }
-  };
-
   const getLotInfo = (lotId: string | number) => {
     return lots.find((lot) => lot.id === lotId);
   };
@@ -170,6 +159,29 @@ export default function IncomeList({
       (c) => c.type === "maintenance"
     );
     const worksContributions = lotContributions.filter(
+      (c) => c.type === "works"
+    );
+
+    return {
+      maintenance: {
+        count: maintenanceContributions.length,
+        total: maintenanceContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+      works: {
+        count: worksContributions.length,
+        total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+    };
+  }, [contributions, selectedLotId]);
+
+  // Calculate summary for all lots when no specific lot is selected
+  const allLotsSummary = useMemo(() => {
+    if (selectedLotId) return null;
+
+    const maintenanceContributions = contributions.filter(
+      (c) => c.type === "maintenance"
+    );
+    const worksContributions = contributions.filter(
       (c) => c.type === "works"
     );
 
@@ -288,6 +300,40 @@ export default function IncomeList({
             </div>
           )}
 
+          {/* All Lots Summary - appears when all lots are selected */}
+          {allLotsSummary && (
+            <div className="from-emerald-50 to-blue-50 mb-6 rounded-lg border bg-gradient-to-r p-4">
+              <h4 className="mb-3 font-semibold">
+                🏘️ {translations.labels.summary} - Todos los Lotes
+              </h4>
+              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">
+                      {translations.labels.maintenance}:
+                    </p>
+                    <p className="text-primary font-semibold">
+                      {allLotsSummary.maintenance.count}{" "}
+                      {translations.labels.payments} -{" "}
+                      {formatCurrency(allLotsSummary.maintenance.total)}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-3">
+                    <p className="text-muted-foreground mb-1">
+                      {translations.labels.works}:
+                    </p>
+                    <p className="text-secondary-foreground font-semibold">
+                      {allLotsSummary.works.count} {translations.labels.payments} -{" "}
+                      {formatCurrency(allLotsSummary.works.total)}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
           {/* Results Header */}
           <div className="mb-4 flex items-center justify-between">
             <div>
@@ -327,7 +373,11 @@ export default function IncomeList({
                               : translations.labels.works}
                           </span>
                           <p className="text-muted-foreground text-sm">
-                            {new Date(contribution.date).toISOString().split('T')[0]}
+                            {
+                              new Date(contribution.date)
+                                .toISOString()
+                                .split("T")[0]
+                            }
                           </p>
                         </div>
                         {contribution.description && (

@@ -150,11 +150,6 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
                       {new Date(expense.date).toISOString().split('T')[0]}
                     </p>
                   </div>
-                  {expense.description && (
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      📝 {expense.description}
-                    </p>
-                  )}
                 </div>
                 <div className="flex items-center space-x-3">
                   <span className="text-destructive font-semibold">

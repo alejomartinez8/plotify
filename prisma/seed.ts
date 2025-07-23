@@ -7,42 +7,20 @@ async function main() {
   await prisma.expense.deleteMany();
   await prisma.lot.deleteMany();
 
+  // Mock lots data with clearly fake names and numbers
   const lotsData = [
-    { lotNumber: "00", owner: "JUDITH" },
-    { lotNumber: "03", owner: "JAMER" },
-    { lotNumber: "04", owner: "ALEXANDER" },
-    { lotNumber: "05", owner: "EDISSON" },
-    { lotNumber: "06", owner: "MARIBEL VALDEZ" },
-    { lotNumber: "07", owner: "JORGE GOMEZ" },
-    { lotNumber: "08", owner: "SERGIO QUINTERO" },
-    { lotNumber: "09", owner: "KELLY QUINTERO" },
-    { lotNumber: "10", owner: "ALEX" },
-    { lotNumber: "11", owner: "SERGIO ROLDAN" },
-    { lotNumber: "12", owner: "ADRIANA VILLADA" },
-    { lotNumber: "13", owner: "MIRYAM" },
-    { lotNumber: "14", owner: "STYLACHO" },
-    { lotNumber: "15", owner: "DARLY" },
-    { lotNumber: "16", owner: "LUISA OLARTE" },
-    { lotNumber: "17", owner: "GLORIA" },
-    { lotNumber: "18 Y 19", owner: "JUAN ALEJANDRO" },
-    { lotNumber: "20", owner: "JUAN OLARTE" },
-    { lotNumber: "21", owner: "KEVIN" },
-    { lotNumber: "22", owner: "ALEJANDRO MARTINEZ" },
-    { lotNumber: "23", owner: "JESSICA" },
-    { lotNumber: "24", owner: "DIANA" },
-    { lotNumber: "25", owner: "WILMAR" },
-    { lotNumber: "26", owner: "MILENA" },
-    { lotNumber: "27 Y 28", owner: "AGUSTIN" },
-    { lotNumber: "29", owner: "LUIS CARVAJAL" },
-    { lotNumber: "31", owner: "YESICA" },
-    { lotNumber: "E2-1", owner: "RICARDO/LILIANA" },
-    { lotNumber: "E2-2", owner: "CAMILA" },
-    { lotNumber: "E2-3", owner: "EDGAR" },
-    { lotNumber: "E2-4", owner: "LEIDY" },
-    { lotNumber: "E2-5", owner: "LEWIS" },
-    { lotNumber: "E2-6", owner: "EDISON" },
-    { lotNumber: "E2-7", owner: "JORGE" },
-    { lotNumber: "E2-8", owner: "MONICA RAMIREZ" },
+    { lotNumber: "A01", owner: "TEST USER ONE" },
+    { lotNumber: "A02", owner: "TEST USER TWO" },
+    { lotNumber: "A03", owner: "TEST USER THREE" },
+    { lotNumber: "B01", owner: "TEST USER FOUR" },
+    { lotNumber: "B02", owner: "TEST USER FIVE" },
+    { lotNumber: "B03", owner: "TEST USER SIX" },
+    { lotNumber: "C01", owner: "TEST USER SEVEN" },
+    { lotNumber: "C02", owner: "TEST USER EIGHT" },
+    { lotNumber: "C03", owner: "TEST USER NINE" },
+    { lotNumber: "D01", owner: "TEST USER TEN" },
+    { lotNumber: "D02", owner: "TEST USER ELEVEN" },
+    { lotNumber: "D03", owner: "TEST USER TWELVE" },
   ];
 
   for (const lotData of lotsData) {
@@ -51,410 +29,197 @@ async function main() {
     });
   }
 
-  console.log(`Created ${lotsData.length} lots`);
+  console.log(`Created ${lotsData.length} mock lots`);
 
   const lots = await prisma.lot.findMany();
-  const maintenanceContributions = [];
+  const contributions = [];
 
-  const lot22 = lots.find((l) => l.lotNumber === "22");
-  if (lot22) {
-    maintenanceContributions.push({
-      lotId: lot22.id,
-      type: "maintenance",
-      amount: 100000,
-      date: new Date(2025, 0, 23),
-      description: "Mantenimiento enero y febrero 2025",
-    });
-  }
+  // Create mock contributions for different lots
+  const mockDates = [
+    new Date(2025, 0, 15), // January 15, 2025
+    new Date(2025, 1, 10), // February 10, 2025
+    new Date(2025, 2, 5),  // March 5, 2025
+    new Date(2025, 3, 20), // April 20, 2025
+    new Date(2025, 4, 12), // May 12, 2025
+  ];
 
-  const lot08 = lots.find((l) => l.lotNumber === "08");
-  const lot20 = lots.find((l) => l.lotNumber === "20");
-
-  for (const lot of [lot08, lot20]) {
-    if (lot) {
-      maintenanceContributions.push({
-        lotId: lot.id,
-        type: "works",
-        amount: 500000,
-        date: new Date(2025, 0, 15),
-        description: "Works contribution 2025",
-      });
-
-      maintenanceContributions.push({
+  // Add maintenance contributions for multiple lots
+  for (let i = 0; i < lots.length; i++) {
+    const lot = lots[i];
+    const numContributions = Math.floor(Math.random() * 3) + 1; // 1-3 contributions per lot
+    
+    for (let j = 0; j < numContributions; j++) {
+      const dateIndex = Math.floor(Math.random() * mockDates.length);
+      const amounts = [50000, 60000, 75000, 80000, 100000]; // Various amounts
+      const amount = amounts[Math.floor(Math.random() * amounts.length)];
+      
+      contributions.push({
         lotId: lot.id,
         type: "maintenance",
-        amount: 720000,
-        date: new Date(2025, 0, 15),
-        description: "Annual maintenance payment 2025 (12 months)",
+        amount: amount,
+        date: mockDates[dateIndex],
+        description: `MOCK Maintenance payment ${j + 1} for ${lot.lotNumber}`,
       });
     }
   }
 
-  for (const contribution of maintenanceContributions) {
+  // Add some works contributions
+  const selectedLotsForWorks = lots.slice(0, 6); // First 6 lots get works contributions
+  for (const lot of selectedLotsForWorks) {
+    contributions.push({
+      lotId: lot.id,
+      type: "works",
+      amount: 200000,
+      date: new Date(2025, 0, 20),
+      description: `MOCK Works contribution for ${lot.lotNumber} - Security upgrade`,
+    });
+  }
+
+  // Add extra works contributions for some lots
+  const extraWorksLots = lots.slice(3, 8);
+  for (const lot of extraWorksLots) {
+    contributions.push({
+      lotId: lot.id,
+      type: "works",
+      amount: 150000,
+      date: new Date(2025, 2, 15),
+      description: `MOCK Works contribution for ${lot.lotNumber} - Infrastructure`,
+    });
+  }
+
+  for (const contribution of contributions) {
     await prisma.contribution.create({
       data: contribution,
     });
   }
 
-  console.log(
-    `Created ${maintenanceContributions.length} maintenance contributions for 2025`
-  );
+  console.log(`Created ${contributions.length} mock contributions`);
 
-  const expenses = [
+  // Mock expenses data
+  const mockExpenses = [
     {
       type: "maintenance",
-      amount: 380000,
-      date: "2024-10-02",
-      description: "Reemplazo cámara averiada",
-      category: "Seguridad",
+      amount: 120000,
+      date: "2025-01-10",
+      description: "MOCK - Security camera replacement",
+      category: "Security",
     },
     {
       type: "maintenance",
-      amount: 290000,
-      date: "2024-10-05",
-      description: "Mantenimiento cunetas Miguel",
-      category: "Infraestructura",
+      amount: 85000,
+      date: "2025-01-15",
+      description: "MOCK - Garden maintenance by contractor",
+      category: "Landscaping",
     },
     {
       type: "maintenance",
-      amount: 130000,
-      date: "2024-10-15",
-      description: "Pago mano obra 14 y 15 octubre",
-      category: "Mano de obra",
+      amount: 200000,
+      date: "2025-02-01",
+      description: "MOCK - Street lighting repair and upgrade",
+      category: "Infrastructure",
     },
     {
       type: "maintenance",
-      amount: 426000,
-      date: "2024-10-20",
-      description: "Compra 3 lámparas iluminación externa",
-      category: "Iluminación",
-    },
-    {
-      type: "maintenance",
-      amount: 260000,
-      date: "2024-10-22",
-      description: "Cambio lámparas externas",
-      category: "Iluminación",
-    },
-    {
-      type: "maintenance",
-      amount: 350000,
-      date: "2024-11-10",
-      description: "Poda vías internas y externas",
-      category: "Jardinería",
-    },
-    {
-      type: "maintenance",
-      amount: 440000,
-      date: "2024-11-15",
-      description: "Reintegro dinero lámparas Alejandro Martinez",
-      category: "Reembolso",
-    },
-    {
-      type: "maintenance",
-      amount: 240000,
-      date: "2024-12-07",
-      description: "Mantenimiento cunetas Miguel - 4 días",
-      category: "Infraestructura",
-    },
-    {
-      type: "maintenance",
-      amount: 350000,
-      date: "2024-12-14",
-      description: "Mantenimiento cunetas Miguel - 6 días",
-      category: "Infraestructura",
-    },
-    {
-      type: "maintenance",
-      amount: 689500,
-      date: "2024-12-20",
-      description: "Materiales lámpara inferior y cámara portón abajo",
-      category: "Seguridad",
-    },
-    {
-      type: "maintenance",
-      amount: 700000,
-      date: "2024-12-21",
-      description: "Mano obra instalación lámpara y cámara portón abajo",
-      category: "Seguridad",
-    },
-    {
-      type: "maintenance",
-      amount: 426000,
-      date: "2025-01-31",
-      description: "Compra 3 lámparas iluminación externa",
-      category: "Iluminación",
-    },
-    {
-      type: "maintenance",
-      amount: 350000,
+      amount: 65000,
       date: "2025-02-05",
-      description: "Mantenimiento prados ingreso a Jalisco",
-      category: "Jardinería",
+      description: "MOCK - Cleaning supplies and materials",
+      category: "Supplies",
     },
     {
       type: "maintenance",
-      amount: 240000,
-      date: "2025-02-11",
-      description: "Mano obra cambio lámparas",
-      category: "Iluminación",
+      amount: 180000,
+      date: "2025-02-20",
+      description: "MOCK - Water system maintenance",
+      category: "Utilities",
     },
     {
-      type: "works",
-      amount: 1566000,
-      date: "2025-01-25",
-      description: "Material portón inferior",
-      category: "Infraestructura",
+      type: "maintenance",
+      amount: 95000,
+      date: "2025-03-01",
+      description: "MOCK - Electrical repairs main gate",
+      category: "Electrical",
     },
     {
-      type: "works",
-      amount: 680000,
-      date: "2025-01-26",
-      description: "Mano de obra portón inferior",
-      category: "Mano de obra",
+      type: "maintenance",
+      amount: 140000,
+      date: "2025-03-10",
+      description: "MOCK - Monthly security service payment",
+      category: "Security",
     },
     {
-      type: "works",
-      amount: 127600,
-      date: "2025-01-27",
-      description: "Pago tubería electricidad y taladro",
-      category: "Herramientas",
-    },
-    {
-      type: "works",
-      amount: 1800000,
-      date: "2025-01-29",
-      description: "Compra material electricidad",
-      category: "Electricidad",
-    },
-    {
-      type: "works",
-      amount: 315000,
-      date: "2025-01-30",
-      description: "Alquiler formaletas y pulidora",
-      category: "Herramientas",
-    },
-    {
-      type: "works",
-      amount: 1000000,
-      date: "2025-01-30",
-      description: "Pago mano obra Joan/Angel portón inf",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 80000,
-      date: "2025-01-31",
-      description: "Pago mano obra muro falso",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 1024500,
-      date: "2025-02-01",
-      description: "Material ferretería",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 600000,
-      date: "2025-02-01",
-      description: "Mano obra electricidad portón",
-      category: "Electricidad",
-    },
-    {
-      type: "works",
-      amount: 410000,
-      date: "2025-02-03",
-      description: "Material cambio portón a corredizo",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 610000,
-      date: "2025-02-04",
-      description: "2 ángulos y 2 tubos cuadrados con acarreo",
-      category: "Materiales",
+      type: "maintenance",
+      amount: 75000,
+      date: "2025-03-15",
+      description: "MOCK - Road maintenance materials",
+      category: "Infrastructure",
     },
     {
       type: "works",
       amount: 500000,
-      date: "2025-02-05",
-      description: "Mano de obra portón inferior cambio a corredizo",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 20000,
-      date: "2025-02-05",
-      description: "Compra 4 metros tubo faltante",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 100000,
-      date: "2025-02-06",
-      description: "Visita de instrucción instalador motor",
-      category: "Servicios",
-    },
-    {
-      type: "works",
-      amount: 7236200,
-      date: "2025-02-16",
-      description:
-        "Motor, cremallera, tar wifi, controles, regulador, matrix, fotoceldas",
-      category: "Automatización",
-    },
-    {
-      type: "works",
-      amount: 750000,
-      date: "2025-02-16",
-      description: "Mano obra instalación motor",
-      category: "Automatización",
-    },
-    {
-      type: "works",
-      amount: 800000,
-      date: "2025-02-17",
-      description: "Material y mano obra extensión internet al portón",
-      category: "Telecomunicaciones",
-    },
-    {
-      type: "works",
-      amount: 256000,
-      date: "2025-02-15",
-      description: "Caja intemperie + domicilio",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 200000,
-      date: "2025-03-01",
-      description: "Pago mano obra ayudante portón inf",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 636500,
-      date: "2025-03-16",
-      description: "Pago material ferretería muros inferior",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 520000,
-      date: "2025-03-16",
-      description: "Pago mano obra muros portón inferior",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 60000,
-      date: "2025-03-20",
-      description: "Pago visita mantenimiento portón",
-      category: "Mantenimiento",
-    },
-    {
-      type: "works",
-      amount: 32500,
-      date: "2025-03-20",
-      description: "Recarga sim tigo portón",
-      category: "Telecomunicaciones",
-    },
-    {
-      type: "works",
-      amount: 180000,
-      date: "2025-04-28",
-      description: "Pago mano obra pendiente portón inferior",
-      category: "Mano de obra",
-    },
-    {
-      type: "works",
-      amount: 160000,
-      date: "2025-05-09",
-      description: "Mantenimiento cámaras",
-      category: "Seguridad",
-    },
-    {
-      type: "works",
-      amount: 32500,
-      date: "2025-05-15",
-      description: "Recarga sim tigo portón",
-      category: "Telecomunicaciones",
-    },
-    {
-      type: "works",
-      amount: 200000,
-      date: "2025-06-01",
-      description: "Mano de obra reja seguridad portón chucho",
-      category: "Seguridad",
-    },
-    {
-      type: "works",
-      amount: 158800,
-      date: "2025-06-04",
-      description: "Materiales ferretería Jalisco",
-      category: "Materiales",
-    },
-    {
-      type: "works",
-      amount: 160000,
-      date: "2025-06-10",
-      description: "Internet porterial / config DVR",
-      category: "Telecomunicaciones",
-    },
-    {
-      type: "works",
-      amount: 160000,
-      date: "2025-06-09",
-      description: "Técnico motor config tarj wifi y tarj SMS",
-      category: "Automatización",
+      date: "2025-01-25",
+      description: "MOCK - New gate installation materials",
+      category: "Infrastructure",
     },
     {
       type: "works",
       amount: 300000,
-      date: "2025-06-19",
-      description: "Mantenimiento poda de vías",
-      category: "Mantenimiento",
+      date: "2025-01-30",
+      description: "MOCK - Gate installation labor costs",
+      category: "Labor",
     },
     {
       type: "works",
-      amount: 150000,
-      date: "2025-06-28",
-      description: "Cambio lámpara",
-      category: "Iluminación",
+      amount: 800000,
+      date: "2025-02-10",
+      description: "MOCK - Security system upgrade equipment",
+      category: "Security",
     },
     {
       type: "works",
-      amount: 58000,
-      date: "2025-07-17",
-      description: "Compra alambre cuchilla",
-      category: "Seguridad",
+      amount: 450000,
+      date: "2025-02-15",
+      description: "MOCK - Security system installation and setup",
+      category: "Security",
     },
     {
       type: "works",
-      amount: 4341300,
-      date: "2025-07-21",
-      description: "Material vía inferior",
-      category: "Infraestructura",
+      amount: 1200000,
+      date: "2025-03-01",
+      description: "MOCK - Automated gate system motor and controls",
+      category: "Automation",
     },
     {
       type: "works",
-      amount: 240000,
-      date: "2025-07-21",
-      description: "Pago ayudante obra vía inferior",
-      category: "Mano de obra",
+      amount: 600000,
+      date: "2025-03-05",
+      description: "MOCK - Gate automation installation labor",
+      category: "Automation",
+    },
+    {
+      type: "works",
+      amount: 250000,
+      date: "2025-03-20",
+      description: "MOCK - Network infrastructure for gate system",
+      category: "Technology",
+    },
+    {
+      type: "works",
+      amount: 180000,
+      date: "2025-04-01",
+      description: "MOCK - Final adjustments and testing",
+      category: "Services",
     },
   ];
 
-  for (const expense of expenses) {
+  for (const expense of mockExpenses) {
     await prisma.expense.create({
       data: expense,
     });
   }
 
-  console.log(`Created ${expenses.length} expenses`);
-  console.log("Database seeded successfully!");
+  console.log(`Created ${mockExpenses.length} mock expenses`);
+  console.log("🎭 Database seeded successfully with MOCK DATA!");
+  console.log("⚠️  All data is clearly marked as MOCK/TEST/DEMO for safety");
 }
 
 main()
