@@ -9,11 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-CO", {
+  return new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
-  }).format(amount);
+    currencyDisplay: "symbol",
+  }).format(amount).replace("COP", "$");
 }
 
 export function getCurrentMonth(): string {

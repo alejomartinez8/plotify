@@ -2,15 +2,20 @@ import { getExpenses } from "@/lib/database/expenses";
 import ExpenseList from "@/components/shared/ExpenseList";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
+import { isAuthenticated } from "@/lib/auth";
 
 export default async function ExpensesPage() {
   try {
-    const expenses = await getExpenses();
+    const [expenses, isAdmin] = await Promise.all([
+      getExpenses(),
+      isAuthenticated(),
+    ]);
 
     return (
       <ExpenseList
         title={translations.navigation.expenses}
         expenses={expenses}
+        isAuthenticated={isAdmin}
       />
     );
   } catch (error) {

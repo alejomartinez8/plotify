@@ -2,27 +2,21 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Edit, Trash2, Filter } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
-import { formatCurrency } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import SummarySection from "@/components/shared/SummarySection";
+import FilterSection from "@/components/shared/FilterSection";
+import ItemCard from "@/components/shared/ItemCard";
 
 interface IncomeListProps {
   title: string;
   contributions: Contribution[];
   lots: Lot[];
+  isAuthenticated?: boolean;
 }
 
 type IncomeType = "all" | "maintenance" | "works";
@@ -31,6 +25,7 @@ export default function IncomeList({
   title,
   contributions,
   lots,
+  isAuthenticated = false,
 }: IncomeListProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
@@ -178,10 +173,19 @@ export default function IncomeList({
   const allLotsSummary = useMemo(() => {
     if (selectedLotId) return null;
 
-    const maintenanceContributions = contributions.filter(
+    let contributionsToSummarize = contributions;
+
+    // If filter is applied, only use filtered contributions for summary
+    if (incomeFilter !== "all") {
+      contributionsToSummarize = contributions.filter(
+        (c) => c.type === incomeFilter
+      );
+    }
+
+    const maintenanceContributions = contributionsToSummarize.filter(
       (c) => c.type === "maintenance"
     );
-    const worksContributions = contributions.filter(
+    const worksContributions = contributionsToSummarize.filter(
       (c) => c.type === "works"
     );
 
@@ -195,7 +199,7 @@ export default function IncomeList({
         total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
       },
     };
-  }, [contributions, selectedLotId]);
+  }, [contributions, selectedLotId, incomeFilter]);
 
   const selectedLot = lots.find((lot) => lot.id === selectedLotId);
   const colorClasses = {
@@ -206,134 +210,67 @@ export default function IncomeList({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with unified filters and actions */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold">{title}</h1>
+      <FilterSection
+        title={title}
+        typeFilter={{
+          value: incomeFilter,
+          onChange: (value) => handleIncomeFilterChange(value as IncomeType),
+          options: [
+            { value: "all", label: translations.filters.allIncome },
+            { value: "maintenance", label: translations.labels.maintenance },
+            { value: "works", label: translations.labels.works },
+          ],
+        }}
+        lotFilter={{
+          value: selectedLotId,
+          onChange: (value) => handleLotFilterChange(value === "__all__" ? "" : value),
+          lots: lots,
+        }}
+      />
 
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            {/* Income Type Filter */}
-            <div className="flex items-center space-x-2">
-              <Filter className="text-muted-foreground h-4 w-4" />
-              <Select
-                value={incomeFilter}
-                onValueChange={(value) =>
-                  handleIncomeFilterChange(value as IncomeType)
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {translations.filters.allIncome}
-                  </SelectItem>
-                  <SelectItem value="maintenance">
-                    {translations.labels.maintenance}
-                  </SelectItem>
-                  <SelectItem value="works">
-                    {translations.labels.works}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      {/* Lot Summary - appears when a lot is selected */}
+      {lotSummary && selectedLot && (
+        <SummarySection
+          icon={`📊 ${translations.labels.summary} - Lote ${selectedLot.lotNumber} (${selectedLot.owner})`}
+          gradientClasses="from-primary/5 to-secondary/5"
+          items={[
+            {
+              type: "maintenance",
+              total: lotSummary.maintenance.total,
+              show: true,
+            },
+            {
+              type: "works",
+              total: lotSummary.works.total,
+              show: true,
+            },
+          ]}
+        />
+      )}
 
-            {/* Lot Filter */}
-            <div className="flex items-center space-x-2">
-              <Select
-                value={selectedLotId || "__all__"}
-                onValueChange={(value) => handleLotFilterChange(value || "")}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder={translations.filters.allLots} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__all__">
-                    {translations.filters.allLots}
-                  </SelectItem>
-                  {lots.map((lot) => (
-                    <SelectItem key={lot.id} value={lot.id}>
-                      Lote {lot.lotNumber} - {lot.owner}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* All Lots Summary - appears when all lots are selected */}
+      {allLotsSummary && (
+        <SummarySection
+          icon="🏘️"
+          gradientClasses="from-emerald-50 to-blue-50"
+          items={[
+            {
+              type: "maintenance",
+              total: allLotsSummary.maintenance.total,
+              show: incomeFilter === "all" || incomeFilter === "maintenance",
+            },
+            {
+              type: "works",
+              total: allLotsSummary.works.total,
+              show: incomeFilter === "all" || incomeFilter === "works",
+            },
+          ]}
+        />
+      )}
 
       {/* Income List Card */}
       <Card>
         <CardContent className="p-6">
-          {/* Lot Summary - appears when a lot is selected */}
-          {lotSummary && selectedLot && (
-            <div className="from-primary/5 to-secondary/5 mb-6 rounded-lg border bg-gradient-to-r p-4">
-              <h4 className="mb-3 font-semibold">
-                📊 {translations.labels.summary} - Lote {selectedLot.lotNumber}{" "}
-                ({selectedLot.owner})
-              </h4>
-              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-                <Card>
-                  <CardContent className="p-3">
-                    <p className="text-muted-foreground mb-1">
-                      {translations.labels.maintenance}:
-                    </p>
-                    <p className="text-primary font-semibold">
-                      {lotSummary.maintenance.count}{" "}
-                      {translations.labels.payments} -{" "}
-                      {formatCurrency(lotSummary.maintenance.total)}
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-3">
-                    <p className="text-muted-foreground mb-1">
-                      {translations.labels.works}:
-                    </p>
-                    <p className="text-secondary-foreground font-semibold">
-                      {lotSummary.works.count} {translations.labels.payments} -{" "}
-                      {formatCurrency(lotSummary.works.total)}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-
-          {/* All Lots Summary - appears when all lots are selected */}
-          {allLotsSummary && (
-            <div className="from-emerald-50 to-blue-50 mb-6 rounded-lg border bg-gradient-to-r p-4">
-              <h4 className="mb-3 font-semibold">
-                🏘️ {translations.labels.summary} - Todos los Lotes
-              </h4>
-              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-                <Card>
-                  <CardContent className="p-3">
-                    <p className="text-muted-foreground mb-1">
-                      {translations.labels.maintenance}:
-                    </p>
-                    <p className="text-primary font-semibold">
-                      {allLotsSummary.maintenance.count}{" "}
-                      {translations.labels.payments} -{" "}
-                      {formatCurrency(allLotsSummary.maintenance.total)}
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-3">
-                    <p className="text-muted-foreground mb-1">
-                      {translations.labels.works}:
-                    </p>
-                    <p className="text-secondary-foreground font-semibold">
-                      {allLotsSummary.works.count} {translations.labels.payments} -{" "}
-                      {formatCurrency(allLotsSummary.works.total)}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-
           {/* Results Header */}
           <div className="mb-4 flex items-center justify-between">
             <div>
@@ -350,69 +287,21 @@ export default function IncomeList({
             {filteredContributions.map((contribution) => {
               const lot = getLotInfo(contribution.lotId);
               return (
-                <div
+                <ItemCard
                   key={contribution.id}
-                  className="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between rounded-lg border p-4 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-4">
-                      <div>
-                        <p className="font-medium">
-                          Lote {lot?.lotNumber} - {lot?.owner}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <span
-                            className={`rounded-full px-2 py-1 text-xs ${
-                              contribution.type === "maintenance"
-                                ? "bg-primary/10 text-primary"
-                                : "bg-orange-100 text-orange-700"
-                            }`}
-                          >
-                            {contribution.type === "maintenance"
-                              ? translations.labels.maintenance
-                              : translations.labels.works}
-                          </span>
-                          <p className="text-muted-foreground text-sm">
-                            {
-                              new Date(contribution.date)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </p>
-                        </div>
-                        {contribution.description && (
-                          <p className="text-muted-foreground mt-1 text-sm">
-                            📝 {contribution.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="font-semibold text-emerald-600">
-                      {formatCurrency(contribution.amount)}
-                    </span>
-                    <div className="flex space-x-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingContribution(contribution)}
-                        title={translations.actions.edit}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeletingContribution(contribution)}
-                        className="text-destructive hover:text-destructive"
-                        title={translations.actions.delete}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                  id={contribution.id}
+                  date={contribution.date}
+                  title={`Lote ${lot?.lotNumber} - ${lot?.owner}`}
+                  type={contribution.type}
+                  amount={contribution.amount}
+                  description={contribution.description}
+                  amountColorClass="text-emerald-600"
+                  isAuthenticated={isAuthenticated}
+                  onEdit={() => setEditingContribution(contribution)}
+                  onDelete={() => setDeletingContribution(contribution)}
+                  editTitle={translations.actions.edit}
+                  deleteTitle={translations.actions.delete}
+                />
               );
             })}
             {filteredContributions.length === 0 && (
@@ -433,7 +322,7 @@ export default function IncomeList({
       </Card>
 
       {/* Edit Modal */}
-      {editingContribution && (
+      {editingContribution && isAuthenticated && (
         <ContributionModal
           contribution={editingContribution}
           onClose={() => setEditingContribution(null)}
@@ -444,18 +333,20 @@ export default function IncomeList({
       )}
 
       {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={!!deletingContribution}
-        title={translations.confirmations.deleteTitle}
-        message={`¿Estás seguro de que quieres eliminar la contribución de ${
-          deletingContribution
-            ? getLotInfo(deletingContribution.lotId)?.owner
-            : ""
-        }? Esta acción no se puede deshacer.`}
-        onConfirm={handleDeleteConfirm}
-        onClose={() => setDeletingContribution(null)}
-        variant="danger"
-      />
+      {isAuthenticated && (
+        <ConfirmationModal
+          isOpen={!!deletingContribution}
+          title={translations.confirmations.deleteTitle}
+          message={`¿Estás seguro de que quieres eliminar la contribución de ${
+            deletingContribution
+              ? getLotInfo(deletingContribution.lotId)?.owner
+              : ""
+          }? Esta acción no se puede deshacer.`}
+          onConfirm={handleDeleteConfirm}
+          onClose={() => setDeletingContribution(null)}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

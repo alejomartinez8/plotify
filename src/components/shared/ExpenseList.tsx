@@ -2,30 +2,24 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Edit, Trash2, Filter } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
-import { formatCurrency } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import SummarySection from "@/components/shared/SummarySection";
+import FilterSection from "@/components/shared/FilterSection";
+import ItemCard from "@/components/shared/ItemCard";
 
 interface ExpenseListProps {
   title: string;
   expenses: Expense[];
+  isAuthenticated?: boolean;
 }
 
 type ExpenseType = "all" | "maintenance" | "works";
 
-export default function ExpenseList({ title, expenses }: ExpenseListProps) {
+export default function ExpenseList({ title, expenses, isAuthenticated = false }: ExpenseListProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [expenseFilter, setExpenseFilter] = useState<ExpenseType>("all");
@@ -65,6 +59,32 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
     return expenses.filter((expense) => expense.type === expenseFilter);
   }, [expenses, expenseFilter]);
 
+  // Calculate summary based on current filter
+  const expenseSummary = useMemo(() => {
+    let expensesToSummarize = expenses;
+    
+    // If filter is applied, only use filtered expenses for summary
+    if (expenseFilter !== "all") {
+      expensesToSummarize = expenses.filter((e) => e.type === expenseFilter);
+    }
+
+    const maintenanceExpenses = expensesToSummarize.filter(
+      (e) => e.type === "maintenance"
+    );
+    const worksExpenses = expensesToSummarize.filter(
+      (e) => e.type === "works"
+    );
+
+    return {
+      maintenance: {
+        total: maintenanceExpenses.reduce((sum, e) => sum + e.amount, 0),
+      },
+      works: {
+        total: worksExpenses.reduce((sum, e) => sum + e.amount, 0),
+      },
+    };
+  }, [expenses, expenseFilter]);
+
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
     console.log(isUpdate ? "Updated expense:" : "Created expense:", expense);
     setEditingExpense(null);
@@ -89,93 +109,56 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with filters */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold">{title}</h1>
+      <FilterSection
+        title={title}
+        typeFilter={{
+          value: expenseFilter,
+          onChange: (value) => handleExpenseFilterChange(value as ExpenseType),
+          options: [
+            { value: "all", label: translations.filters.allExpenses },
+            { value: "maintenance", label: translations.labels.maintenance },
+            { value: "works", label: translations.labels.works },
+          ],
+        }}
+      />
 
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            {/* Expense Type Filter */}
-            <div className="flex items-center space-x-2">
-              <Filter className="text-muted-foreground h-4 w-4" />
-              <Select
-                value={expenseFilter}
-                onValueChange={(value) =>
-                  handleExpenseFilterChange(value as ExpenseType)
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {translations.filters.allExpenses}
-                  </SelectItem>
-                  <SelectItem value="maintenance">
-                    {translations.labels.maintenance}
-                  </SelectItem>
-                  <SelectItem value="works">
-                    {translations.labels.works}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Expenses Summary */}
+      <SummarySection
+        icon="💳"
+        gradientClasses="from-red-50 to-orange-50"
+        items={[
+          {
+            type: "maintenance",
+            total: expenseSummary.maintenance.total,
+            show: expenseFilter === "all" || expenseFilter === "maintenance",
+          },
+          {
+            type: "works",
+            total: expenseSummary.works.total,
+            show: expenseFilter === "all" || expenseFilter === "works",
+          },
+        ]}
+      />
 
       {/* Expenses List Card */}
       <Card>
         <CardContent className="p-6">
           <div className="space-y-3">
             {filteredExpenses.map((expense) => (
-              <div
+              <ItemCard
                 key={expense.id}
-                className="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between rounded-lg border p-4 transition-colors"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{expense.description}</p>
-                  <div className="mt-1 flex items-center space-x-2">
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs ${
-                        expense.type === "maintenance"
-                          ? "bg-primary/10 text-primary"
-                          : "bg-orange-100 text-orange-700"
-                      }`}
-                    >
-                      {expense.type === "maintenance"
-                        ? translations.labels.maintenance
-                        : translations.labels.works}
-                    </span>
-                    <p className="text-muted-foreground text-sm">
-                      {new Date(expense.date).toISOString().split('T')[0]}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-destructive font-semibold">
-                    {formatCurrency(expense.amount)}
-                  </span>
-                  <div className="flex space-x-1 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditingExpense(expense)}
-                      title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeletingExpense(expense)}
-                      className="text-destructive hover:text-destructive"
-                      title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                id={expense.id}
+                date={expense.date}
+                title={expense.description}
+                type={expense.type}
+                amount={expense.amount}
+                amountColorClass="text-destructive"
+                isAuthenticated={isAuthenticated}
+                onEdit={() => setEditingExpense(expense)}
+                onDelete={() => setDeletingExpense(expense)}
+                editTitle={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
+                deleteTitle={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
+              />
             ))}
             {filteredExpenses.length === 0 && (
               <div className="py-12 text-center">
@@ -195,7 +178,7 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
       </Card>
 
       {/* Edit Modal */}
-      {editingExpense && (
+      {editingExpense && isAuthenticated && (
         <ExpenseModal
           expense={editingExpense}
           onClose={() => setEditingExpense(null)}
@@ -204,14 +187,16 @@ export default function ExpenseList({ title, expenses }: ExpenseListProps) {
       )}
 
       {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={!!deletingExpense}
-        title={translations.confirmations.deleteTitle}
-        message={`¿Estás seguro de que quieres eliminar el gasto "${deletingExpense?.description}"? Esta acción no se puede deshacer.`}
-        onConfirm={handleDeleteConfirm}
-        onClose={() => setDeletingExpense(null)}
-        variant="danger"
-      />
+      {isAuthenticated && (
+        <ConfirmationModal
+          isOpen={!!deletingExpense}
+          title={translations.confirmations.deleteTitle}
+          message={`¿Estás seguro de que quieres eliminar el gasto "${deletingExpense?.description}"? Esta acción no se puede deshacer.`}
+          onConfirm={handleDeleteConfirm}
+          onClose={() => setDeletingExpense(null)}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

@@ -3,12 +3,14 @@ import { getContributions } from "@/lib/database/contributions";
 import IncomeList from "@/components/shared/IncomeList";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
+import { isAuthenticated } from "@/lib/auth";
 
 export default async function IncomePage() {
   try {
-    const [lots, contributions] = await Promise.all([
+    const [lots, contributions, isAdmin] = await Promise.all([
       getLots(),
       getContributions(),
+      isAuthenticated(),
     ]);
 
     return (
@@ -16,6 +18,7 @@ export default async function IncomePage() {
         title={translations.navigation.income}
         lots={lots}
         contributions={contributions}
+        isAuthenticated={isAdmin}
       />
     );
   } catch (error) {
