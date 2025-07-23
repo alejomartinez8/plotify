@@ -7,4 +7,5 @@ export interface Contribution {
   amount: number;
   date: Date;
   description: string;
+  receiptNumber?: string | null;
 }

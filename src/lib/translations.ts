@@ -44,6 +44,7 @@ export const translations = {
     year: "Año",
     month: "Mes",
     actions: "Acciones",
+    receiptNumber: "Número de Comprobante",
 
     // Financial terms
     income: "Ingresos",
@@ -78,6 +79,7 @@ export const translations = {
     monthlyAmount: "60000",
     selectMonth: "Seleccionar mes",
     search: "Buscar...",
+    receiptNumber: "ej. 001234, FV-001",
   },
 
   // Filter options
