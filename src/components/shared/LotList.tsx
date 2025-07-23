@@ -12,9 +12,10 @@ import { deleteLotAction } from "@/lib/actions/lot-actions";
 
 interface LotListProps {
   lots: Lot[];
+  isAuthenticated?: boolean;
 }
 
-export default function LotList({ lots }: LotListProps) {
+export default function LotList({ lots, isAuthenticated = false }: LotListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -99,10 +100,12 @@ export default function LotList({ lots }: LotListProps) {
       <div className="mb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">{translations.navigation.lots}</h1>
-          <Button onClick={handleAdd} disabled={isPending}>
-            <Plus className="h-4 w-4" />
-            {translations.titles.newLot}
-          </Button>
+          {isAuthenticated && (
+            <Button onClick={handleAdd} disabled={isPending}>
+              <Plus className="h-4 w-4" />
+              {translations.titles.newLot}
+            </Button>
+          )}
         </div>
         {error && (
           <div className="bg-destructive/10 border-destructive/20 text-destructive mt-4 rounded border px-4 py-3">
@@ -124,9 +127,11 @@ export default function LotList({ lots }: LotListProps) {
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
                     {translations.labels.owner}
                   </th>
-                  <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium tracking-wider uppercase">
-                    {translations.labels.actions}
-                  </th>
+                  {isAuthenticated && (
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium tracking-wider uppercase">
+                      {translations.labels.actions}
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -145,29 +150,31 @@ export default function LotList({ lots }: LotListProps) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm">{lot.owner}</span>
                     </td>
-                    <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(lot)}
-                          title="Edit lot"
-                          disabled={isPending}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(lot)}
-                          title="Delete lot"
-                          disabled={isPending}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
+                    {isAuthenticated && (
+                      <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(lot)}
+                            title="Edit lot"
+                            disabled={isPending}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(lot)}
+                            title="Delete lot"
+                            disabled={isPending}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -184,7 +191,7 @@ export default function LotList({ lots }: LotListProps) {
         </CardContent>
       </Card>
 
-      {isModalOpen && (
+      {isModalOpen && isAuthenticated && (
         <LotModal
           onClose={() => setIsModalOpen(false)}
           lot={selectedLot}
@@ -192,15 +199,17 @@ export default function LotList({ lots }: LotListProps) {
         />
       )}
 
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title={translations.confirmations.deleteTitle}
-        message={translations.confirmations.deleteLot}
-        variant="danger"
-        isLoading={isPending}
-      />
+      {isAuthenticated && (
+        <ConfirmationModal
+          isOpen={isConfirmModalOpen}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title={translations.confirmations.deleteTitle}
+          message={translations.confirmations.deleteLot}
+          variant="danger"
+          isLoading={isPending}
+        />
+      )}
     </div>
   );
 }

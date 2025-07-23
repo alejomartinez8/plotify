@@ -14,6 +14,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ActionButtons from "./ActionButtons";
 
+interface NavigationProps {
+  isAuthenticated?: boolean;
+}
+
 const navigationItems = [
   { href: "/", label: translations.navigation.home, icon: TrendingUp },
   {
@@ -33,7 +37,7 @@ const navigationItems = [
   },
 ];
 
-export default function Navigation() {
+export default function Navigation({ isAuthenticated = false }: NavigationProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -74,7 +78,7 @@ export default function Navigation() {
 
           {/* Action Buttons - Hidden on mobile when menu is closed */}
           <div className="hidden sm:flex">
-            <ActionButtons />
+            <ActionButtons isAuthenticated={isAuthenticated} />
           </div>
         </div>
 
@@ -102,7 +106,7 @@ export default function Navigation() {
               })}
             </nav>
             <div className="border-t border-gray-200 px-4 py-3">
-              <ActionButtons />
+              <ActionButtons isAuthenticated={isAuthenticated} />
             </div>
           </div>
         )}

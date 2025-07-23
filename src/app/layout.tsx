@@ -4,6 +4,7 @@ import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
+import { isAuthenticated } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
   description: translations.app.subtitle,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const isAdmin = await isAuthenticated();
+
   return (
     <html lang="es">
       <body
@@ -24,7 +27,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Header />
-        <Navigation />
+        <Navigation isAuthenticated={isAdmin} />
         <main className="min-h-screen bg-gray-50">{children}</main>
       </body>
     </html>

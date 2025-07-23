@@ -50,7 +50,7 @@ export const translations = {
     expenses: "Gastos",
     balance: "Saldo",
     total: "Total",
-    maintenance: "Mantenimiento",
+    maintenance: "Mantenimientos",
     works: "Obras",
 
     // Quantities

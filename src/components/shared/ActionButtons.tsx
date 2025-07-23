@@ -11,7 +11,11 @@ import { Expense } from "@/types/expenses.types";
 import { Lot } from "@/types/lots.types";
 import { translations } from "@/lib/translations";
 
-export default function ActionButtons() {
+interface ActionButtonsProps {
+  isAuthenticated?: boolean;
+}
+
+export default function ActionButtons({ isAuthenticated = false }: ActionButtonsProps) {
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [lots, setLots] = useState<Lot[]>([]);
@@ -53,6 +57,10 @@ export default function ActionButtons() {
     await loadLots();
     setShowContributionModal(true);
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <>
