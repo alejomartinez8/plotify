@@ -296,7 +296,6 @@ export default function IncomeList({
                   type={contribution.type}
                   amount={contribution.amount}
                   description={contribution.description}
-                  receiptNumber={contribution.receiptNumber}
                   amountColorClass="text-emerald-600"
                   isAuthenticated={isAuthenticated}
                   onEdit={() => setEditingContribution(contribution)}

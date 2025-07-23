@@ -150,7 +150,6 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
                 title={expense.description}
                 type={expense.type}
                 amount={expense.amount}
-                receiptNumber={expense.receiptNumber}
                 amountColorClass="text-destructive"
                 isAuthenticated={isAuthenticated}
                 onEdit={() => setEditingExpense(expense)}

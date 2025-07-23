@@ -58,7 +58,6 @@ export default function ExpenseModal({
         date: formData.get("date") as string,
         description: formData.get("description") as string,
         category: formData.get("category") as string,
-        receiptNumber: formData.get("receiptNumber") as string,
       };
       onSuccess(updatedExpense, !!expense);
       formAction(formData);
@@ -187,25 +186,6 @@ export default function ExpenseModal({
             {state.errors?.category && (
               <div className="text-destructive text-sm">
                 {state.errors.category}
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="receiptNumber">
-              {translations.labels.receiptNumber}
-            </Label>
-            <Input
-              type="text"
-              name="receiptNumber"
-              id="receiptNumber"
-              defaultValue={expense?.receiptNumber || ""}
-              placeholder={translations.placeholders.receiptNumber}
-              disabled={isPending}
-            />
-            {state.errors?.receiptNumber && (
-              <div className="text-destructive text-sm">
-                {state.errors.receiptNumber}
               </div>
             )}
           </div>

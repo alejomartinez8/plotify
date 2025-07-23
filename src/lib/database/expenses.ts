@@ -5,7 +5,7 @@ export async function getExpenses(): Promise<Expense[]> {
   try {
     const expenses = await prisma.expense.findMany({
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return expenses as Expense[];
@@ -33,7 +33,6 @@ export async function createExpense(data: {
   date: string;
   description: string;
   category: string;
-  receiptNumber?: string | null;
 }): Promise<Expense | null> {
   try {
     const expense = await prisma.expense.create({
@@ -54,7 +53,6 @@ export async function updateExpense(
     date?: string;
     description?: string;
     category?: string;
-    receiptNumber?: string | null;
   }
 ): Promise<Expense | null> {
   try {
@@ -86,7 +84,7 @@ export async function getExpensesByType(type: string): Promise<Expense[]> {
     const expenses = await prisma.expense.findMany({
       where: { type },
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return expenses as Expense[];
@@ -103,7 +101,7 @@ export async function getExpensesByCategory(
     const expenses = await prisma.expense.findMany({
       where: { category },
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return expenses as Expense[];

@@ -19,7 +19,6 @@ const ContributionSchema = z.object({
     message: translations.errors.dateValid,
   }),
   description: z.string().optional(),
-  receiptNumber: z.string().optional(),
 });
 
 const CreateContribution = ContributionSchema;
@@ -34,7 +33,6 @@ export type ContributionState = {
     amount?: string[];
     date?: string[];
     description?: string[];
-    receiptNumber?: string[];
   };
   message?: string | null;
   success?: boolean;
@@ -50,7 +48,6 @@ export async function createContributionAction(
     amount: formData.get("amount"),
     date: formData.get("date"),
     description: formData.get("description"),
-    receiptNumber: formData.get("receiptNumber"),
   });
 
   if (!validatedFields.success) {
@@ -61,7 +58,7 @@ export async function createContributionAction(
     };
   }
 
-  const { lotId, type, amount, date, description, receiptNumber } = validatedFields.data;
+  const { lotId, type, amount, date, description } = validatedFields.data;
 
   try {
     const result = await createContribution({
@@ -70,7 +67,6 @@ export async function createContributionAction(
       amount,
       date,
       description: description || "",
-      receiptNumber: receiptNumber || null,
     });
 
     if (!result) {
@@ -103,7 +99,6 @@ export async function updateContributionAction(
     amount: formData.get("amount"),
     date: formData.get("date"),
     description: formData.get("description"),
-    receiptNumber: formData.get("receiptNumber"),
   });
 
   if (!validatedFields.success) {
@@ -114,7 +109,7 @@ export async function updateContributionAction(
     };
   }
 
-  const { id, lotId, type, amount, date, description, receiptNumber } = validatedFields.data;
+  const { id, lotId, type, amount, date, description } = validatedFields.data;
 
   try {
     const result = await updateContribution(id, {
@@ -123,7 +118,6 @@ export async function updateContributionAction(
       amount,
       date,
       description: description || "",
-      receiptNumber: receiptNumber || null,
     });
 
     if (!result) {

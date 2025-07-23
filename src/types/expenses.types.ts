@@ -7,5 +7,4 @@ export interface Expense {
   date: string;
   description: string;
   category: string;
-  receiptNumber?: string | null;
 }

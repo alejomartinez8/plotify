@@ -65,7 +65,6 @@ export default function ContributionModal({
         amount: parseFloat(formData.get("amount") as string),
         date: new Date(formData.get("date") as string),
         description: formData.get("description") as string,
-        receiptNumber: formData.get("receiptNumber") as string,
       };
       onSuccess(updatedContribution, !!contribution);
       formAction(formData);
@@ -218,25 +217,6 @@ export default function ContributionModal({
             {state.errors?.description && (
               <div className="text-destructive text-sm">
                 {state.errors.description}
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="receiptNumber">
-              {translations.labels.receiptNumber}
-            </Label>
-            <Input
-              type="text"
-              name="receiptNumber"
-              id="receiptNumber"
-              defaultValue={contribution?.receiptNumber || ""}
-              placeholder={translations.placeholders.receiptNumber}
-              disabled={isPending}
-            />
-            {state.errors?.receiptNumber && (
-              <div className="text-destructive text-sm">
-                {state.errors.receiptNumber}
               </div>
             )}
           </div>

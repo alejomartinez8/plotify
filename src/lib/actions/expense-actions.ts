@@ -18,7 +18,6 @@ const ExpenseSchema = z.object({
   date: z.string().min(1, translations.errors.dateRequired),
   description: z.string().optional(),
   category: z.string().min(1, translations.errors.categoryRequired),
-  receiptNumber: z.string().optional(),
 });
 
 const CreateExpense = ExpenseSchema;
@@ -33,7 +32,6 @@ export type ExpenseState = {
     date?: string[];
     description?: string[];
     category?: string[];
-    receiptNumber?: string[];
   };
   message?: string | null;
   success?: boolean;
@@ -50,7 +48,6 @@ export async function createExpenseAction(
     date: formData.get("date"),
     description: formData.get("description"),
     category: formData.get("category"),
-    receiptNumber: formData.get("receiptNumber"),
   });
 
   if (!validatedFields.success) {
@@ -61,7 +58,7 @@ export async function createExpenseAction(
     };
   }
 
-  const { type, amount, date, description, category, receiptNumber } = validatedFields.data;
+  const { type, amount, date, description, category } = validatedFields.data;
 
   try {
     const result = await createExpense({
@@ -70,7 +67,6 @@ export async function createExpenseAction(
       date,
       description: description || "",
       category,
-      receiptNumber: receiptNumber || null,
     });
 
     if (!result) {
@@ -102,7 +98,6 @@ export async function updateExpenseAction(
     date: formData.get("date"),
     description: formData.get("description"),
     category: formData.get("category"),
-    receiptNumber: formData.get("receiptNumber"),
   });
 
   if (!validatedFields.success) {
@@ -113,7 +108,7 @@ export async function updateExpenseAction(
     };
   }
 
-  const { id, type, amount, date, description, category, receiptNumber } =
+  const { id, type, amount, date, description, category } =
     validatedFields.data;
 
   try {
@@ -123,7 +118,6 @@ export async function updateExpenseAction(
       date,
       description: description || "",
       category,
-      receiptNumber: receiptNumber || null,
     });
 
     if (!result) {

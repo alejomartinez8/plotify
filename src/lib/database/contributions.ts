@@ -5,7 +5,7 @@ export async function getContributions(): Promise<Contribution[]> {
   try {
     const contributions = await prisma.contribution.findMany({
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return contributions as Contribution[];
@@ -35,7 +35,6 @@ export async function createContribution(data: {
   amount: number;
   date: Date;
   description: string;
-  receiptNumber?: string | null;
 }): Promise<Contribution | null> {
   try {
     const contribution = await prisma.contribution.create({
@@ -56,7 +55,6 @@ export async function updateContribution(
     amount?: number;
     date?: Date;
     description?: string;
-    receiptNumber?: string | null;
   }
 ): Promise<Contribution | null> {
   try {
@@ -90,7 +88,7 @@ export async function getContributionsByLot(
     const contributions = await prisma.contribution.findMany({
       where: { lotId },
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return contributions as Contribution[];
@@ -107,7 +105,7 @@ export async function getContributionsByType(
     const contributions = await prisma.contribution.findMany({
       where: { type },
       orderBy: {
-        id: "desc",
+        date: "desc",
       },
     });
     return contributions as Contribution[];
