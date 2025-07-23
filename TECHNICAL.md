@@ -4,99 +4,102 @@
 
 ### Frontend
 
-- **React 19** with hooks
-- **TypeScript** for type safety
-- **Tailwind CSS 4** for styling
+- **React 19.1.0** with hooks and modern patterns
+- **TypeScript 5** for type safety
+- **Tailwind CSS 4** for styling with custom animations
+- **Shadcn/ui** component library with Radix UI primitives
 - **Lucide React** for iconography
+- **Zod 4** for runtime validation
 - **Responsive Design** for all devices
 
 ### Backend
 
-- **Next.js 15** with App Router
-- **Vercel Postgres** as database
-- **Prisma ORM** for data management
-- **NextAuth.js** or **Clerk** for authentication
-- **next-intl** for internationalization
+- **Next.js 15.3.5** with App Router
+- **PostgreSQL** database
+- **Prisma ORM 6.12.0** for data management with Accelerate extension
+- **Custom Authentication** system with session-based auth
+- **Server Actions** for data mutations
+- **Middleware** for route protection
 
-### Deployment
+### Development Tools
 
-- **Vercel** for hosting
-- **Vercel Postgres** for database
-- **GitHub Actions** for CI/CD
+- **ESLint** with Next.js config
+- **Prettier** with Tailwind CSS plugin
+- **Commitizen** for conventional commits
+- **tsx** for TypeScript execution
+- **Prisma Studio** for database management
 
 ## 🏗️ Project Structure
 
 ```
 /src
   /app                 # Next.js App Router pages
+    /api               # API routes (auth endpoints)
+    /expenses          # Expenses management page
+    /income            # Income/contributions page
+    /login             # Authentication page
+    /lots              # Lots management page
   /components          # React components
-  /lib                 # Utility functions
-  /types               # TypeScript types
+    /layout            # Layout components
+    /modals            # Modal components
+    /shared            # Shared/reusable components
+  /lib                 # Utility functions and services
+    /actions           # Server actions
+    /database          # Database queries
+  /types               # TypeScript type definitions
 /prisma
   /schema.prisma       # Database schema
   /migrations          # Prisma migration files
   /seed.ts             # Seed data script
 /public                # Static assets
-/messages              # i18n translation files
 ```
 
 ## 🔧 Environment Variables
 
 ```env
-# Database (Vercel Postgres)
-POSTGRES_URL="postgres://..."
-POSTGRES_PRISMA_URL="postgres://..."
-POSTGRES_URL_NO_SSL="postgres://..."
-POSTGRES_URL_NON_POOLING="postgres://..."
-POSTGRES_USER="..."
-POSTGRES_HOST="..."
-POSTGRES_PASSWORD="..."
-POSTGRES_DATABASE="..."
+# Database
+PRISMA_DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
 
 # Authentication
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-
-# App Configuration
-NEXT_PUBLIC_APP_NAME="Plotify"
-NEXT_PUBLIC_COMMUNITY_NAME="Your Community Name"
+ADMIN_PASSWORD="your-secure-admin-password"
 ```
 
 ## 📊 Data Model
 
 ### Main Entities
 
-#### Plots
+#### Lots (Lotes)
 
-- Plot ID
-- Owner name
-- Active/inactive status
-- Contact information
+- `id`: Unique identifier
+- `lotNumber`: Display number/identifier
+- `owner`: Owner name
+- `createdAt/updatedAt`: Timestamps
 
-#### Contributions
+#### Contributions (Aportes)
 
-- Plot ID
-- Fund type (maintenance/improvements)
-- Amount
-- Month and year
-- Payment date
-- Description/notes
+- `id`: Unique identifier
+- `lotId`: Reference to lot
+- `type`: "maintenance" | "works"
+- `amount`: Contribution amount
+- `date`: Contribution date
+- `description`: Optional description
+- `createdAt/updatedAt`: Timestamps
 
-#### Expenses
+#### Expenses (Gastos)
 
-- Fund type
-- Amount
-- Date
-- Description
-- Category
-- Receipt/reference
+- `id`: Unique identifier
+- `type`: "maintenance" | "works"
+- `amount`: Expense amount
+- `date`: Expense date
+- `description`: Expense description
+- `createdAt/updatedAt`: Timestamps
 
 ## 🚀 Installation & Setup
 
 ### Prerequisites
 
 - Node.js 18+
-- Vercel account
+- PostgreSQL database
 - Git
 
 ### Development Setup
@@ -111,13 +114,14 @@ npm install
 
 # Setup environment variables
 cp .env.example .env.local
+# Edit .env.local with your database URL and admin password
 
 # Setup database
-npx prisma generate
-npx prisma migrate dev
+npm run db:generate
+npm run db:migrate
 
 # Seed database (optional)
-npx prisma db seed
+npm run db:seed
 
 # Start development server
 npm run dev
@@ -125,165 +129,215 @@ npm run dev
 
 ### Production Deployment
 
-#### Vercel Deployment
+1. Set up PostgreSQL database
+2. Configure environment variables
+3. Run database migrations: `npx prisma migrate deploy`
+4. Build and deploy: `npm run build && npm start`
 
-1. Connect GitHub repository to Vercel
-2. Go to Storage tab in Vercel dashboard
-3. Create new Postgres database
-4. Environment variables are automatically configured
-5. Deploy automatically on push to main branch
+## 🔒 Authentication System
 
-#### Database Setup (Vercel Postgres)
+### Implementation
 
-1. In Vercel dashboard, go to Storage tab
-2. Click "Create Database" → "Postgres"
-3. Choose database name and region
-4. Environment variables are automatically added to your project
-5. Run migrations: `npx prisma migrate deploy`
+- **Custom authentication** using session-based approach
+- **Password-based login** for admin access
+- **Middleware protection** for all routes except login
+- **Server-side session management**
 
-## 🏘️ Community Configuration
+### Security Features
 
-### Configurable Elements
+- Password hashing and validation
+- Session-based authentication
+- Protected routes via middleware
+- Secure logout functionality
 
-- **Community Name**: Customizable for any residential community
-- **Plot Numbering**: Flexible system (numbers, letters, mixed)
-- **Fund Types**: Configurable categories (maintenance, improvements, emergency)
-- **Payment Periods**: Monthly, quarterly, or annual
-- **Currency**: Multi-currency support
+### Components
 
-### Example Communities
+- `AuthButton`: Login/logout interface
+- `login-form`: Authentication form
+- `middleware.ts`: Route protection
+- `lib/auth.ts`: Authentication utilities
 
-- **Residential Plots**: Gated communities, subdivisions
-- **Rural Communities**: Agricultural or countryside developments
-- **Urban Complexes**: Apartment complexes, condominiums
-- **Mixed-Use**: Commercial and residential combinations
+## 🎨 UI Components Architecture
 
-## 🔒 Security Considerations
+### Unified Components
 
-### Authentication
+- **ItemCard**: Unified card design for contributions and expenses
+  - Date-first layout with improved typography
+  - Contextual icons (🔧 maintenance, 🏗️ works)
+  - Responsive design with hover states
 
-- Mandatory authentication for access
-- Role-based access control (Admin, Treasurer, Read-only)
-- Session management with NextAuth.js/Clerk
+- **SummaryCard**: Enhanced summary display
+  - Prominent amount display
+  - Contextual icons and color schemes
 
-### Data Protection
+- **FilterSection**: Unified filtering interface
+  - Type filters (maintenance/works/all)
+  - Lot-specific filtering for contributions
+  - URL-based state management
 
-- Sensitive information encryption
-- Audit logs for changes
-- Automatic data backup with Vercel Postgres
-- HTTPS enforcement
+- **SummarySection**: Unified summary container
+  - Configurable gradient backgrounds
+  - Responsive grid layout
+  - Conditional rendering based on data
 
-### Environment Security
+### Design System
 
-- Environment variables for sensitive data
-- No hardcoded secrets in code
-- Secure database connections via Vercel
-- Regular security updates
+- **Typography**: Balanced hierarchy (ItemCards: text-sm, SummaryCards: text-lg)
+- **Colors**: Consistent color palette with contextual variants
+- **Spacing**: Systematic spacing using Tailwind utilities
+- **Icons**: Lucide React with custom emoji icons for context
 
-## 📈 Performance Optimization
+## 💰 Currency & Localization
 
-### Frontend Optimizations
+### Currency Formatting
 
-- React Query/SWR for caching
-- Optimistic updates
-- Suspense boundaries
-- Code splitting and lazy loading
+- **Colombian Peso (COP)** as primary currency
+- **Display format**: $ symbol instead of COP for cleaner UI
+- **Number formatting**: Spanish (Colombia) locale with proper thousand separators
 
-### Backend Optimizations
+### Language Support
 
-- Database indexing
-- Query optimization with Prisma
-- API response caching
-- Image optimization
+- **Spanish**: Primary language with comprehensive translations
+- **Translation system**: Custom translations object in `lib/translations.ts`
+- **Consistent terminology**: Standardized labels and messages across components
 
-### Monitoring
+## 🗄️ Database Management
 
-- Error tracking (Sentry)
-- Performance monitoring
-- Analytics integration
-- Database performance metrics via Vercel
+### Prisma Configuration
 
-## 🧪 Testing Strategy
+```typescript
+// Example schema entities
+model Lot {
+  id          String   @id @default(cuid())
+  lotNumber   String
+  owner       String
+  contributions Contribution[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
-### Unit Testing
+model Contribution {
+  id          String   @id @default(cuid())
+  lotId       String
+  type        ContributionType
+  amount      Int
+  date        DateTime
+  description String?
+  lot         Lot      @relation(fields: [lotId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
 
-- Jest for unit tests
-- React Testing Library for component tests
-- Prisma testing utilities for database tests
+### Available Scripts
 
-### Integration Testing
+```bash
+npm run db:migrate    # Run database migrations
+npm run db:generate   # Generate Prisma client
+npm run db:seed       # Seed database with sample data
+npm run db:studio     # Open Prisma Studio
+```
 
-- API endpoint testing
-- Database integration tests
-- Authentication flow testing
+## 🚀 Performance Optimizations
 
-### End-to-End Testing
+### Frontend
 
-- Playwright for E2E tests
-- Critical user journey testing
-- Cross-browser compatibility
+- **Server Components**: Default to server components for better performance
+- **Client Components**: Only when necessary for interactivity
+- **Modern React**: Using React 19 features like useTransition and useOptimistic
+- **Optimized Images**: Next.js automatic image optimization
 
-## 🔄 Development Workflow
+### Backend
+
+- **Server Actions**: Direct server-side mutations without API overhead
+- **Database Indexing**: Proper indexing on frequently queried fields
+- **Prisma Optimizations**: Query optimization and relation loading
+
+## 🧪 Development Workflow
+
+### Code Quality
+
+- **TypeScript**: Strict mode enabled for type safety
+- **ESLint**: Next.js recommended configuration
+- **Prettier**: Consistent code formatting with Tailwind plugin
+- **Conventional Commits**: Standardized commit messages with Commitizen
 
 ### Git Workflow
 
-- Feature branches for new development
-- Pull requests for code review
-- Automated testing on PR
-- Main branch auto-deploys to production
+- **Feature branches**: `feat/feature-name` for new development
+- **Commit conventions**: Using conventional commits
+- **Pull requests**: Required for code review
+- **Automated checks**: Linting and type checking
 
 ### Database Migrations
 
-- Use descriptive names with timestamps
-- Review migrations before execution
-- Follow Prisma migration conventions
-- Include proper rollback considerations
-- Example: `20240101000000_create_users_table`
+- **Descriptive names**: Clear migration names with purpose
+- **Review process**: Always review migrations before applying
+- **Version control**: All migrations tracked in git
+- **Example**: `20240101000000_create_contributions_table`
 
-### Code Standards
+## 🔧 Available Scripts
 
-- TypeScript for type safety
-- ESLint and Prettier for code formatting
-- Conventional commits for git messages
-- Component and function documentation
+```bash
+npm run dev           # Start development server
+npm run build         # Build for production
+npm run start         # Start production server
+npm run lint          # Run ESLint
+npm run format        # Format code with Prettier
+npm run format:check  # Check code formatting
+```
 
-## 🌐 Internationalization (i18n)
+## 📈 Community Configuration
 
-### Setup
+### Flexible Setup
 
-- next-intl for internationalization
-- Locale detection middleware
-- Translation file management
+- **Community Name**: Configurable in translations
+- **Lot Numbering**: Flexible system supporting various formats
+- **Fund Types**: Two main categories (Maintenance, Works)
+- **Currency**: Colombian Peso with clean $ display
 
-### Supported Languages
+### Adaptability
 
-- English (default)
-- Spanish
-- Extensible for additional languages
+- **Residential Communities**: Gated communities, subdivisions
+- **Rural Developments**: Agricultural or countryside communities
+- **Urban Complexes**: Apartment buildings, condominiums
+- **Mixed Developments**: Commercial and residential combinations
 
-### Implementation
+## 🔒 Security Considerations
 
-- Translation keys in components
-- Locale-specific formatting for dates/numbers
-- Dynamic locale switching
+### Authentication Security
 
-## 📱 Progressive Web App (PWA)
+- **Session-based**: Secure server-side session management
+- **Password Protection**: Admin access with secure password handling
+- **Route Protection**: Middleware-based route guards
+- **Logout Security**: Proper session cleanup
 
-### Features
+### Data Security
 
-- Offline functionality
-- App-like experience
-- Push notifications
-- Background sync
+- **Environment Variables**: Sensitive data in environment files
+- **Database Security**: Secure database connections
+- **Input Validation**: Zod schema validation
+- **Type Safety**: TypeScript for runtime safety
 
-### Implementation
+## 📦 Key Dependencies
 
-- Service worker registration
-- Manifest file configuration
-- Offline data caching
-- Background data synchronization
+### Production Dependencies
+
+- `@prisma/client` - Database ORM client
+- `@radix-ui/*` - Accessible UI primitives
+- `lucide-react` - Icon library
+- `tailwind-merge` - Utility for merging Tailwind classes
+- `zod` - Schema validation
+
+### Development Dependencies
+
+- `@tailwindcss/postcss` - Tailwind CSS v4 PostCSS plugin
+- `prettier-plugin-tailwindcss` - Prettier plugin for Tailwind
+- `commitizen` - Conventional commit tool
+- `tsx` - TypeScript execution
 
 ---
 
 **Last Updated**: July 2025
+**Version**: 1.0.0
 **Maintained by**: Development Team
