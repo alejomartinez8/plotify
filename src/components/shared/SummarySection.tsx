@@ -8,14 +8,10 @@ interface SummaryItem {
 }
 
 interface SummarySectionProps {
-  icon: string;
-  gradientClasses: string;
   items: SummaryItem[];
 }
 
 export default function SummarySection({
-  icon,
-  gradientClasses,
   items,
 }: SummarySectionProps) {
   // Only render if there are items to show
@@ -46,20 +42,15 @@ export default function SummarySection({
   };
 
   return (
-    <div className={`mb-6 rounded-lg border bg-gradient-to-r p-4 ${gradientClasses}`}>
-      <h4 className="mb-3 font-semibold">
-        {icon} {translations.labels.summary}
-      </h4>
-      <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
-        {visibleItems.map((item) => (
-          <SummaryCard
-            key={item.type}
-            title={getTitle(item.type)}
-            total={item.total}
-            textColorClass={getTextColor(item.type)}
-          />
-        ))}
-      </div>
+    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+      {visibleItems.map((item) => (
+        <SummaryCard
+          key={item.type}
+          title={getTitle(item.type)}
+          total={item.total}
+          textColorClass={getTextColor(item.type)}
+        />
+      ))}
     </div>
   );
 }

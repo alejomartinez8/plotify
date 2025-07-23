@@ -124,8 +124,6 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
 
       {/* Expenses Summary */}
       <SummarySection
-        icon="💳"
-        gradientClasses="from-red-50 to-orange-50"
         items={[
           {
             type: "maintenance",

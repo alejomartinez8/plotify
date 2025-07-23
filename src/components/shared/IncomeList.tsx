@@ -230,29 +230,30 @@ export default function IncomeList({
 
       {/* Lot Summary - appears when a lot is selected */}
       {lotSummary && selectedLot && (
-        <SummarySection
-          icon={`📊 ${translations.labels.summary} - Lote ${selectedLot.lotNumber} (${selectedLot.owner})`}
-          gradientClasses="from-primary/5 to-secondary/5"
-          items={[
-            {
-              type: "maintenance",
-              total: lotSummary.maintenance.total,
-              show: true,
-            },
-            {
-              type: "works",
-              total: lotSummary.works.total,
-              show: true,
-            },
-          ]}
-        />
+        <div className="mb-6">
+          <h3 className="mb-4 text-lg font-semibold">
+            📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} ({selectedLot.owner})
+          </h3>
+          <SummarySection
+            items={[
+              {
+                type: "maintenance",
+                total: lotSummary.maintenance.total,
+                show: true,
+              },
+              {
+                type: "works",
+                total: lotSummary.works.total,
+                show: true,
+              },
+            ]}
+          />
+        </div>
       )}
 
       {/* All Lots Summary - appears when all lots are selected */}
       {allLotsSummary && (
         <SummarySection
-          icon="🏘️"
-          gradientClasses="from-emerald-50 to-blue-50"
           items={[
             {
               type: "maintenance",
