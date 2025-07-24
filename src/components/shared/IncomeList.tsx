@@ -8,9 +8,11 @@ import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SummarySection from "@/components/shared/SummarySection";
 import FilterSection from "@/components/shared/FilterSection";
 import ItemCard from "@/components/shared/ItemCard";
+import LotSummaryView from "@/components/shared/LotSummaryView";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportIncomesAction } from "@/lib/actions/export-actions";
 
@@ -35,6 +37,7 @@ export default function IncomeList({
     useState<Contribution | null>(null);
   const [selectedLotId, setSelectedLotId] = useState<string>("");
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
+  const [activeTab, setActiveTab] = useState<string>("summary");
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -43,6 +46,7 @@ export default function IncomeList({
   useEffect(() => {
     const lotParam = searchParams.get("lot");
     const typeParam = searchParams.get("type") as IncomeType;
+    const tabParam = searchParams.get("tab");
 
     if (lotParam && lots.some((lot) => lot.id === lotParam)) {
       setSelectedLotId(lotParam);
@@ -64,6 +68,18 @@ export default function IncomeList({
       params.delete("type");
       router.replace(`?${params.toString()}`, { scroll: false });
       setIncomeFilter("all");
+    }
+
+    if (tabParam && ["list", "summary"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    } else if (tabParam) {
+      // If tab in URL is invalid, clear it
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("tab");
+      router.replace(`?${params.toString()}`, { scroll: false });
+      setActiveTab("summary");
+    } else if (!tabParam) {
+      setActiveTab("summary");
     }
   }, [searchParams, lots, router]);
 
@@ -201,11 +217,46 @@ export default function IncomeList({
 
   const selectedLot = lots.find((lot) => lot.id === selectedLotId);
 
+  const handleTabChange = (tabValue: string) => {
+    setActiveTab(tabValue);
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (tabValue !== "summary") {
+      params.set("tab", tabValue);
+    } else {
+      params.delete("tab");
+    }
+
+    // Update URL without causing a page refresh
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleLotClickFromSummary = (lotId: string) => {
+    setActiveTab("list");
+    handleLotFilterChange(lotId);
+    
+    // Update tab in URL
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", "list");
+    if (lotId) {
+      params.set("lot", lotId);
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with unified filters and actions */}
       <FilterSection
-        title={title}
+        title="Aportes"
+        viewFilter={{
+          value: activeTab,
+          onChange: handleTabChange,
+          options: [
+            { value: "summary", label: translations.labels.summaryByLot },
+            { value: "list", label: translations.labels.list },
+          ],
+        }}
         typeFilter={{
           value: incomeFilter,
           onChange: (value) => handleIncomeFilterChange(value as IncomeType),
@@ -222,109 +273,124 @@ export default function IncomeList({
         }}
       />
 
-      {/* Lot Summary - appears when a lot is selected */}
-      {lotSummary && selectedLot && (
-        <div className="mb-6">
-          <h3 className="mb-4 text-lg font-semibold">
-            📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} ({selectedLot.owner})
-          </h3>
-          <SummarySection
-            items={[
-              {
-                type: "maintenance",
-                total: lotSummary.maintenance.total,
-                show: true,
-              },
-              {
-                type: "works",
-                total: lotSummary.works.total,
-                show: true,
-              },
-            ]}
-          />
-        </div>
-      )}
-
-      {/* All Lots Summary - appears when all lots are selected */}
-      {allLotsSummary && (
-        <SummarySection
-          items={[
-            {
-              type: "maintenance",
-              total: allLotsSummary.maintenance.total,
-              show: incomeFilter === "all" || incomeFilter === "maintenance",
-            },
-            {
-              type: "works",
-              total: allLotsSummary.works.total,
-              show: incomeFilter === "all" || incomeFilter === "works",
-            },
-          ]}
-        />
-      )}
-
-      {/* Income List Card */}
-      <Card>
-        <CardContent className="p-6">
-          {/* Results Header */}
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">
-                {filteredContributions.length}{" "}
-                {filteredContributions.length === 1
-                  ? translations.labels.result
-                  : translations.labels.results}
-              </p>
-            </div>
-            {isAuthenticated && (
-              <ExportButton 
-                onExport={exportIncomesAction}
-                variant="outline"
-                size="sm"
-              >
-                {translations.actions.export} {translations.labels.income} CSV
-              </ExportButton>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            {filteredContributions.map((contribution) => {
-              const lot = getLotInfo(contribution.lotId);
-              return (
-                <ItemCard
-                  key={contribution.id}
-                  id={contribution.id}
-                  date={contribution.date}
-                  title={`Lote ${lot?.lotNumber} - ${lot?.owner}`}
-                  type={contribution.type}
-                  amount={contribution.amount}
-                  description={contribution.description}
-                  receiptNumber={contribution.receiptNumber}
-                  amountColorClass="text-emerald-600"
-                  isAuthenticated={isAuthenticated}
-                  onEdit={() => setEditingContribution(contribution)}
-                  onDelete={() => setDeletingContribution(contribution)}
-                  editTitle={translations.actions.edit}
-                  deleteTitle={translations.actions.delete}
+      <div className="mt-6">
+        {activeTab === "list" && (
+          <div>
+            {/* Lot Summary - appears when a lot is selected */}
+            {lotSummary && selectedLot && (
+              <div className="mb-6">
+                <h3 className="mb-4 text-lg font-semibold">
+                  📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} ({selectedLot.owner})
+                </h3>
+                <SummarySection
+                  items={[
+                    {
+                      type: "maintenance",
+                      total: lotSummary.maintenance.total,
+                      show: true,
+                    },
+                    {
+                      type: "works",
+                      total: lotSummary.works.total,
+                      show: true,
+                    },
+                  ]}
                 />
-              );
-            })}
-            {filteredContributions.length === 0 && (
-              <div className="py-12 text-center">
-                <div className="text-muted-foreground mb-4 text-6xl">📊</div>
-                <p className="text-muted-foreground mb-2 text-lg">
-                  {selectedLotId
-                    ? translations.messages.noContributionsForLot
-                    : translations.messages.noContributions}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {incomeFilter !== "all" && translations.messages.changeFilter}
-                </p>
               </div>
             )}
+
+            {/* All Lots Summary - appears when all lots are selected */}
+            {allLotsSummary && (
+              <SummarySection
+                items={[
+                  {
+                    type: "maintenance",
+                    total: allLotsSummary.maintenance.total,
+                    show: incomeFilter === "all" || incomeFilter === "maintenance",
+                  },
+                  {
+                    type: "works",
+                    total: allLotsSummary.works.total,
+                    show: incomeFilter === "all" || incomeFilter === "works",
+                  },
+                ]}
+              />
+            )}
+
+            {/* Income List Card */}
+            <Card>
+              <CardContent className="p-6">
+                {/* Results Header */}
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      {filteredContributions.length}{" "}
+                      {filteredContributions.length === 1
+                        ? translations.labels.result
+                        : translations.labels.results}
+                    </p>
+                  </div>
+                  {isAuthenticated && (
+                    <ExportButton 
+                      onExport={exportIncomesAction}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {translations.actions.export} {translations.labels.income} CSV
+                    </ExportButton>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  {filteredContributions.map((contribution) => {
+                    const lot = getLotInfo(contribution.lotId);
+                    return (
+                      <ItemCard
+                        key={contribution.id}
+                        id={contribution.id}
+                        date={contribution.date}
+                        title={`Lote ${lot?.lotNumber} - ${lot?.owner}`}
+                        type={contribution.type}
+                        amount={contribution.amount}
+                        description={contribution.description}
+                        receiptNumber={contribution.receiptNumber}
+                        amountColorClass="text-emerald-600"
+                        isAuthenticated={isAuthenticated}
+                        onEdit={() => setEditingContribution(contribution)}
+                        onDelete={() => setDeletingContribution(contribution)}
+                        editTitle={translations.actions.edit}
+                        deleteTitle={translations.actions.delete}
+                      />
+                    );
+                  })}
+                  {filteredContributions.length === 0 && (
+                    <div className="py-12 text-center">
+                      <div className="text-muted-foreground mb-4 text-6xl">📊</div>
+                      <p className="text-muted-foreground mb-2 text-lg">
+                        {selectedLotId
+                          ? translations.messages.noContributionsForLot
+                          : translations.messages.noContributions}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {incomeFilter !== "all" && translations.messages.changeFilter}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        )}
+
+        {activeTab === "summary" && (
+          <LotSummaryView
+            lots={lots}
+            contributions={contributions}
+            incomeFilter={incomeFilter}
+            onLotClick={handleLotClickFromSummary}
+          />
+        )}
+      </div>
 
       {/* Edit Modal */}
       {editingContribution && isAuthenticated && (
