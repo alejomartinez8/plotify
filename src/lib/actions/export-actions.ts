@@ -23,8 +23,6 @@ export async function exportIncomesAction(): Promise<{
   error?: string;
 }> {
   try {
-    await requireAuth();
-
     // Get contributions with lot information
     const contributionsWithLots = await prisma.contribution.findMany({
       include: {
@@ -93,8 +91,6 @@ export async function exportExpensesAction(): Promise<{
   error?: string;
 }> {
   try {
-    await requireAuth();
-
     const expenses = await getExpenses();
 
     // CSV headers
