@@ -103,10 +103,6 @@ export default function IncomeList({
     contribution: Contribution,
     isUpdate: boolean
   ) => {
-    console.log(
-      isUpdate ? "Updated contribution:" : "Created contribution:",
-      contribution
-    );
     setEditingContribution(null);
   };
 
@@ -118,7 +114,6 @@ export default function IncomeList({
         "@/lib/actions/contribution-actions"
       );
       await deleteContributionAction(deletingContribution.id);
-      console.log("Deleted contribution:", deletingContribution);
     } catch (error) {
       console.error("Error deleting contribution:", error);
     } finally {

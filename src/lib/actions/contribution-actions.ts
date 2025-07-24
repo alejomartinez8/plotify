@@ -15,9 +15,7 @@ const ContributionSchema = z.object({
     message: translations.errors.typeRequired,
   }),
   amount: z.coerce.number().positive(translations.errors.amountPositive),
-  date: z.coerce.date({
-    message: translations.errors.dateValid,
-  }),
+  date: z.string().min(1, translations.errors.dateValid),
   description: z.string().optional(),
   receiptNumber: z.string().optional(),
 });
