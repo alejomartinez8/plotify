@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "postinstall": "prisma generate --no-engine",
+    "postinstall": "prisma generate --no-engine && prisma migrate deploy",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate --no-engine",
     "db:seed": "tsx prisma/seed.ts",
