@@ -43,7 +43,7 @@ export const calculateBalance = (
   return { income, expenses: expenseTotal, balance: income - expenseTotal };
 };
 
-export function formatDateToYYYYMMDD(dateInput: string | Date): string {
+export function formatDateForStorage(dateInput: string | Date): string {
   if (typeof dateInput === 'string') {
     // If already a string in YYYY-MM-DD format, return as is
     if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -51,12 +51,25 @@ export function formatDateToYYYYMMDD(dateInput: string | Date): string {
     }
   }
   
-  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  // Parse date string as local date to avoid timezone issues (same logic as formatDateForDisplay)
+  let date: Date;
   
-  // Use UTC methods to avoid timezone issues
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
+  if (typeof dateInput === 'string') {
+    // If it's a YYYY-MM-DD string, parse it as local date
+    if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = dateInput.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(dateInput);
+    }
+  } else {
+    date = dateInput;
+  }
+  
+  // Use local methods for consistency with formatDateForDisplay
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 

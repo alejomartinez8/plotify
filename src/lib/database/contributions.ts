@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Contribution, ContributionType } from "@/types/contributions.types";
-import { formatDateToYYYYMMDD } from "@/lib/utils";
+import { formatDateForStorage } from "@/lib/utils";
 
 export async function getContributions(): Promise<Contribution[]> {
   try {
@@ -12,7 +12,7 @@ export async function getContributions(): Promise<Contribution[]> {
     return contributions.map(contribution => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     }));
   } catch (error) {
     console.error("Error fetching contributions:", error);
@@ -31,7 +31,7 @@ export async function getContributionById(
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     };
   } catch (error) {
     console.error("Error fetching contribution by id:", error);
@@ -54,7 +54,7 @@ export async function createContribution(data: {
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     };
   } catch (error) {
     console.error("Error creating contribution:", error);
@@ -81,7 +81,7 @@ export async function updateContribution(
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     };
   } catch (error) {
     console.error("Error updating contribution:", error);
@@ -114,7 +114,7 @@ export async function getContributionsByLot(
     return contributions.map(contribution => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     }));
   } catch (error) {
     console.error("Error fetching contributions by lot:", error);
@@ -135,7 +135,7 @@ export async function getContributionsByType(
     return contributions.map(contribution => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateToYYYYMMDD(contribution.date)
+      date: formatDateForStorage(contribution.date)
     }));
   } catch (error) {
     console.error("Error fetching contributions by type:", error);
