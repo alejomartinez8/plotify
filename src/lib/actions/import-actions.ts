@@ -183,7 +183,7 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
       const rowNum = i + 2;
       
       try {
-        const date = parseDate(row[1]?.replace(/"/g, '') || '');
+        const date = parseDate(row[1]?.replace(/"/g, '') || '').toISOString();
         const lotNumber = row[2]?.replace(/"/g, '') || '';
         const owner = row[3]?.replace(/"/g, '') || '';
         const type = row[4]?.replace(/"/g, '') === 'Mantenimiento' ? 'maintenance' : 'works';
@@ -280,7 +280,7 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
       const rowNum = i + 2;
       
       try {
-        const date = parseDate(row[1]?.replace(/"/g, '') || '');
+        const date = parseDate(row[1]?.replace(/"/g, '') || '').toISOString();
         const type = row[2]?.replace(/"/g, '') === 'Mantenimiento' ? 'maintenance' : 'works';
         const category = row[3]?.replace(/"/g, '') || '';
         const description = row[4]?.replace(/"/g, '') || '';
