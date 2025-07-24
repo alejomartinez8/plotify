@@ -1,6 +1,6 @@
-import { Edit, Trash2, Calendar, Tag, Receipt } from "lucide-react";
+import { Edit, Trash2, Calendar, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 
 interface ItemCardProps {
@@ -33,14 +33,6 @@ export default function ItemCard({
   editTitle,
   deleteTitle,
 }: ItemCardProps) {
-  const formatDate = (dateInput: string | Date) => {
-    const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
 
   const getTypeColor = (type: string) => {
     return type === "maintenance" 
@@ -67,7 +59,7 @@ export default function ItemCard({
         <div className="flex items-center gap-2 text-gray-500">
           <Calendar className="h-4 w-4" />
           <time className="text-sm font-medium">
-            {formatDate(date)}
+            {formatDateForDisplay(date)}
           </time>
         </div>
       </div>

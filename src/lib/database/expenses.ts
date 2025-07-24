@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Expense } from "@/types/expenses.types";
+import { ContributionType } from "@/types/contributions.types";
+import { formatDateToYYYYMMDD } from "@/lib/utils";
 
 export async function getExpenses(): Promise<Expense[]> {
   try {
@@ -8,7 +10,11 @@ export async function getExpenses(): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses as Expense[];
+    return expenses.map(expense => ({
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    }));
   } catch (error) {
     console.error("Error fetching expenses:", error);
     return [];
@@ -20,7 +26,12 @@ export async function getExpenseById(id: number): Promise<Expense | null> {
     const expense = await prisma.expense.findUnique({
       where: { id },
     });
-    return expense as Expense | null;
+    if (!expense) return null;
+    return {
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    };
   } catch (error) {
     console.error("Error fetching expense by id:", error);
     return null;
@@ -39,7 +50,11 @@ export async function createExpense(data: {
     const expense = await prisma.expense.create({
       data,
     });
-    return expense as Expense;
+    return {
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    };
   } catch (error) {
     console.error("Error creating expense:", error);
     return null;
@@ -62,7 +77,11 @@ export async function updateExpense(
       where: { id },
       data,
     });
-    return expense as Expense;
+    return {
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    };
   } catch (error) {
     console.error("Error updating expense:", error);
     return null;
@@ -89,7 +108,11 @@ export async function getExpensesByType(type: string): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses as Expense[];
+    return expenses.map(expense => ({
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    }));
   } catch (error) {
     console.error("Error fetching expenses by type:", error);
     return [];
@@ -106,7 +129,11 @@ export async function getExpensesByCategory(
         id: "desc",
       },
     });
-    return expenses as Expense[];
+    return expenses.map(expense => ({
+      ...expense,
+      type: expense.type as ContributionType,
+      date: formatDateToYYYYMMDD(expense.date)
+    }));
   } catch (error) {
     console.error("Error fetching expenses by category:", error);
     return [];
