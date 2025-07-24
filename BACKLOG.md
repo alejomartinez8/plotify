@@ -55,6 +55,15 @@
   - **Payment History**: Complete audit trail per lot and payment type
   - **Due Date Tracking**: Automated overdue payment identification
 
+- **🏦 Cash Management System**
+  - **Comprehensive Cash Flow Architecture**: Design unified system for all money sources and destinations
+  - **Income Type Classification**: Implement maintenance (monthly), works (annual projects), activities (fundraising events)
+  - **Initial Balance Module**: System to set starting cash balances for maintenance and works funds
+  - **Owner Debt Management**: Track outstanding payments, partial payments, and debt recovery
+  - **Unified Cash Dashboard**: Real-time view of available funds by type and total cash position
+  - **Multi-type Receipt System**: Handle receipts with multiple contribution types (maintenance + works in single payment)
+  - **Google Drive Integration**: Service Account integration for receipt document storage and management
+
 - **Role-Based Authentication System**
   - **Property Owners**: View personal payment status and history
   - **Collection Managers**: Manage payment collection and reminders
