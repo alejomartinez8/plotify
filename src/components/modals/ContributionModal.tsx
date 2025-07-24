@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, formatDateToYYYYMMDD } from "@/lib/utils";
 
 interface ContributionModalProps {
   contribution?: Contribution | null;
@@ -190,7 +190,7 @@ export default function ContributionModal({
               id="date"
               defaultValue={
                 contribution?.date
-                  ? contribution.date.toISOString().split("T")[0]
+                  ? formatDateToYYYYMMDD(contribution.date)
                   : ""
               }
               required
