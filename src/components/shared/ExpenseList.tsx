@@ -155,15 +155,13 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
                   : "resultados"}
               </p>
             </div>
-            {isAuthenticated && (
-              <ExportButton 
-                onExport={exportExpensesAction}
-                variant="outline"
-                size="sm"
-              >
-                {translations.actions.export} {translations.labels.expenses} CSV
-              </ExportButton>
-            )}
+            <ExportButton 
+              onExport={exportExpensesAction}
+              variant="outline"
+              size="sm"
+            >
+              {translations.actions.export} {translations.labels.expenses} CSV
+            </ExportButton>
           </div>
 
           <div className="space-y-3">

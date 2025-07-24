@@ -8,19 +8,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import LotSummaryTable from "./LotSummaryTable";
 import SummarySection from "./SummarySection";
 
-interface LotSummaryViewProps {
+interface IncomeTableProps {
   lots: Lot[];
   contributions: Contribution[];
   incomeFilter: "all" | "maintenance" | "works";
   onLotClick?: (lotId: string) => void;
 }
 
-export default function LotSummaryView({
+export default function IncomeTable({
   lots,
   contributions,
   incomeFilter,
   onLotClick,
-}: LotSummaryViewProps) {
+}: IncomeTableProps) {
   
   // Filter contributions based on income filter
   const filteredContributions = useMemo(() => {

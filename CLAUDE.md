@@ -101,7 +101,6 @@ export async function createItemAction(
 ### Commands
 
 - Run linting: `npm run lint`
-- Type checking: `npm run type-check`
 - Database migrations: `npm run db:migrate`
 - Generate Prisma client: `npm run db:generate`
 

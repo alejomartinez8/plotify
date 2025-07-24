@@ -1,6 +1,6 @@
 import { getLots } from "@/lib/database/lots";
 import { getContributions } from "@/lib/database/contributions";
-import IncomeList from "@/components/shared/IncomeList";
+import IncomeView from "@/components/shared/IncomeView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { isAuthenticated } from "@/lib/auth";
@@ -14,7 +14,7 @@ export default async function IncomePage() {
     ]);
 
     return (
-      <IncomeList
+      <IncomeView
         title={translations.navigation.income}
         lots={lots}
         contributions={contributions}
