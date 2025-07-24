@@ -1,6 +1,28 @@
-# Plotify - Personal Expense Tracking Application
+# Plotify - Cash Management System
 
-A Next.js application for personal expense tracking and visualization with PostgreSQL database.
+A Next.js application for community cash management with multi-fund architecture and PostgreSQL database.
+
+## TODO Management Requirements
+
+**CRITICAL**: Always check and update TODO.md when starting or completing tasks.
+
+### Before Starting Any Task:
+1. **Read TODO.md** to understand current priorities
+2. **Mark task as in progress** by checking the current status
+3. **Focus on Phase 1 items first** (Cash Management System foundation)
+
+### When Completing a Task:
+1. **Mark task as completed** with ✅ and add completion date
+2. **Add any new tasks discovered** during implementation
+3. **Update TODO.md** with next logical steps
+4. **Prioritize new items** based on Cash Management System phases
+
+### Current Priority Focus:
+- **Phase 1**: Database schema, income classification, initial balances, basic dashboard
+- **Phase 2**: Debt tracking, partial payments, multi-type receipts  
+- **Phase 3**: Google Drive integration, advanced features
+
+**Always reference TODO.md before suggesting or starting work on any feature.**
 
 ## Project Structure
 

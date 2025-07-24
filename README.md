@@ -1,6 +1,6 @@
 # Plotify - AI-Powered Community Management System
 
-A comprehensive management system for residential plot communities, built as an exploration of cutting-edge AI development tools. This project demonstrates how modern AI assistants like Claude Code and Cline can accelerate development while maintaining production-quality code for real-world community financial management.
+A comprehensive cash management system for residential plot communities, built as an exploration of cutting-edge AI development tools. This project focuses on solving real-world financial tracking challenges through advanced AI-assisted development.
 
 ## 🎯 Project Goals
 
@@ -20,13 +20,20 @@ This project serves as both a practical application and an exploration laborator
 
 ## 🚀 Key Features
 
-- **Separate Fund Management**: Independent handling of maintenance and improvement funds
-- **Monthly Tracking**: Clear visualization of payment status by plot and month
-- **Financial Dashboard**: Executive summary with balances and key metrics
-- **Expense Recording**: Detailed control of expenditures by category
-- **Intuitive Interface**: Responsive design optimized for desktop and mobile
-- **Visual Reports**: Status indicators with color-coded system
-- **Multi-language Support**: English and Spanish with extensible i18n system
+### 🏦 Cash Management System
+- **Multi-Fund Architecture**: Separate tracking for maintenance, works, and activities funds
+- **Real-time Balances**: Live view of available funds by type and total cash position
+- **Payment Allocation**: Intelligent distribution of payments across fund types
+- **Debt Tracking**: Complete owner debt management with partial payment support
+- **Receipt Management**: Multi-type receipt system with Google Drive integration
+- **Cash Flow Reports**: Historical and projected financial analysis
+
+### 💰 Financial Operations
+- **Income Classification**: Maintenance (monthly), Works (projects), Activities (events)
+- **Initial Balance Setup**: Configure starting balances for each fund type
+- **Payment Status Dashboard**: Visual indicators for paid/pending lots
+- **Expense Tracking**: Detailed expenditure control by category and fund
+- **Audit Trail**: Complete transaction history for compliance
 
 ## 🛠️ Tech Stack
 
@@ -78,10 +85,12 @@ For detailed technical documentation, see [TECHNICAL.md](./TECHNICAL.md).
 
 ### Workflow
 
-1. **Record Contributions**: Mark payments received by plot and month
-2. **Record Expenses**: Document money outflows by category
-3. **Monitoring**: Review dashboard for general status
-4. **Reports**: Generate monthly/annual reports
+1. **Setup Initial Balances**: Configure starting cash balances for each fund type
+2. **Record Income**: Track payments by type (maintenance/works/activities) and lot
+3. **Manage Expenses**: Document outflows with proper fund allocation
+4. **Monitor Cash Flow**: Real-time dashboard showing available funds by type
+5. **Track Debt**: Manage outstanding payments and partial payment plans
+6. **Generate Reports**: Comprehensive financial reports and audit trails
 
 ## 🏘️ Community Configuration
 
@@ -153,7 +162,7 @@ This project serves as a real-world case study for AI-assisted development. Key 
 - **Location**: Medellín, Colombia
 - **AI Tools Used**: Cline, Claude Code, Claude Sonnet 4
 
-For development roadmap and task tracking, see [BACKLOG.md](./BACKLOG.md).
+For development roadmap and current tasks, see [TODO.md](./TODO.md).
 
 ## 👥 Team
 
