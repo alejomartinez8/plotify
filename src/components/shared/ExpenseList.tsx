@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import SummarySection from "@/components/shared/SummarySection";
 import FilterSection from "@/components/shared/FilterSection";
 import ItemCard from "@/components/shared/ItemCard";
+import { ExportButton } from "@/components/shared/ExportButton";
+import { exportExpensesAction } from "@/lib/actions/export-actions";
 
 interface ExpenseListProps {
   title: string;
@@ -143,6 +145,27 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
       {/* Expenses List Card */}
       <Card>
         <CardContent className="p-6">
+          {/* Results Header with Export */}
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">
+                {filteredExpenses.length}{" "}
+                {filteredExpenses.length === 1
+                  ? "resultado"
+                  : "resultados"}
+              </p>
+            </div>
+            {isAuthenticated && (
+              <ExportButton 
+                onExport={exportExpensesAction}
+                variant="outline"
+                size="sm"
+              >
+                {translations.actions.export} {translations.labels.expenses} CSV
+              </ExportButton>
+            )}
+          </div>
+
           <div className="space-y-3">
             {filteredExpenses.map((expense) => (
               <ItemCard
