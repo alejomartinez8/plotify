@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import SummarySection from "./SummarySection";
 
 interface LotSummaryData {
   lot: Lot;
@@ -50,30 +49,6 @@ export default function IncomeTable({
     }
     return contributions.filter((c) => c.type === incomeFilter);
   }, [contributions, incomeFilter]);
-
-  // Calculate summary data for overview cards
-  const summaryData = useMemo(() => {
-    const maintenanceContributions = filteredContributions.filter(
-      (c) => c.type === "maintenance"
-    );
-    const worksContributions = filteredContributions.filter(
-      (c) => c.type === "works"
-    );
-
-    const activeLots = new Set(filteredContributions.map(c => c.lotId)).size;
-
-    return {
-      maintenance: {
-        count: maintenanceContributions.length,
-        total: maintenanceContributions.reduce((sum, c) => sum + c.amount, 0),
-      },
-      works: {
-        count: worksContributions.length,
-        total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
-      },
-      activeLots,
-    };
-  }, [filteredContributions]);
 
   // Calculate lot summary data for the table
   const lotSummaryData = useMemo(() => {
@@ -138,6 +113,18 @@ export default function IncomeTable({
     });
   }, [lots, filteredContributions, sortField, sortDirection]);
 
+  // Calculate totals for the table footer
+  const tableTotals = useMemo(() => {
+    const maintenanceTotal = lotSummaryData.reduce((sum, data) => sum + data.maintenanceTotal, 0);
+    const worksTotal = lotSummaryData.reduce((sum, data) => sum + data.worksTotal, 0);
+    
+    return {
+      maintenanceTotal,
+      worksTotal,
+      total: maintenanceTotal + worksTotal,
+    };
+  }, [lotSummaryData]);
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -164,22 +151,6 @@ export default function IncomeTable({
 
   return (
     <div className="space-y-6">
-      {/* Overview Summary Cards */}
-      <SummarySection
-        items={[
-          {
-            type: "maintenance",
-            total: summaryData.maintenance.total,
-            show: incomeFilter === "all" || incomeFilter === "maintenance",
-          },
-          {
-            type: "works",
-            total: summaryData.works.total,
-            show: incomeFilter === "all" || incomeFilter === "works",
-          },
-        ]}
-      />
-
       {/* Lot Summary Table */}
       <Card>
         <CardHeader>
@@ -271,6 +242,30 @@ export default function IncomeTable({
                       {translations.messages.noLots || 'No hay lotes disponibles'}
                     </TableCell>
                   </TableRow>
+                )}
+                {lotSummaryData.length > 0 && (
+                  <>
+                    {/* Separator row */}
+                    <TableRow>
+                      <TableCell colSpan={5} className="border-t-2 border-muted p-0" />
+                    </TableRow>
+                    {/* Totals row */}
+                    <TableRow className="bg-muted/30 font-semibold">
+                      <TableCell className="font-bold">
+                        {translations.labels.total || 'TOTAL GENERAL'}
+                      </TableCell>
+                      <TableCell></TableCell>
+                      <TableCell className="text-right font-bold text-blue-700">
+                        {tableTotals.maintenanceTotal > 0 ? formatCurrency(tableTotals.maintenanceTotal) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-amber-700">
+                        {tableTotals.worksTotal > 0 ? formatCurrency(tableTotals.worksTotal) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-emerald-700 text-lg">
+                        {tableTotals.total > 0 ? formatCurrency(tableTotals.total) : '-'}
+                      </TableCell>
+                    </TableRow>
+                  </>
                 )}
               </TableBody>
             </Table>
