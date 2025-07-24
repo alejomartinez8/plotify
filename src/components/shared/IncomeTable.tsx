@@ -152,58 +152,49 @@ export default function IncomeTable({
   return (
     <div className="space-y-6">
       {/* Lot Summary Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
+      <Card className="shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-medium flex items-center gap-2">
             📋 {translations.labels.lotDetail}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
+          <div className="overflow-hidden rounded-md border-0">
+            <Table className="border-separate border-spacing-0">
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
                   <TableHead
-                    className="cursor-pointer select-none hover:bg-muted/50"
+                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('lotNumber')}
                   >
-                    <div className="flex items-center">
-                      {translations.labels.lot}
+                    <div className="flex items-center gap-1">
+                      {translations.labels.lot} / {translations.labels.owner}
                       {getSortIcon('lotNumber')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none hover:bg-muted/50"
-                    onClick={() => handleSort('owner')}
-                  >
-                    <div className="flex items-center">
-                      {translations.labels.owner}
-                      {getSortIcon('owner')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer select-none hover:bg-muted/50 text-right"
+                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('maintenanceTotal')}
                   >
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end gap-1">
                       {translations.labels.maintenance}
                       {getSortIcon('maintenanceTotal')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none hover:bg-muted/50 text-right"
+                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('worksTotal')}
                   >
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end gap-1">
                       {translations.labels.works}
                       {getSortIcon('worksTotal')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none hover:bg-muted/50 text-right"
+                    className="cursor-pointer select-none px-6 py-4 text-right font-bold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('total')}
                   >
-                    <div className="flex items-center justify-end font-semibold">
+                    <div className="flex items-center justify-end gap-1">
                       {translations.labels.total}
                       {getSortIcon('total')}
                     </div>
@@ -211,35 +202,47 @@ export default function IncomeTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {lotSummaryData.map((data) => (
+                {lotSummaryData.map((data, index) => (
                   <TableRow
                     key={data.lot.id}
-                    className={`${
-                      onLotClick ? 'cursor-pointer hover:bg-muted/30' : ''
-                    } transition-colors`}
+                    className={`group transition-all duration-200 border-b border-border/50 hover:bg-muted/50 ${
+                      onLotClick ? 'cursor-pointer hover:shadow-sm' : ''
+                    } ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}
                     onClick={() => handleRowClick(data.lot.id)}
                   >
-                    <TableCell className="font-medium">
-                      {data.lot.lotNumber}
+                    <TableCell className="px-6 py-4 max-w-xs">
+                      <div className="font-medium truncate" title={`Lote ${data.lot.lotNumber} - ${data.lot.owner}`}>
+                        Lote {data.lot.lotNumber} - {data.lot.owner}
+                      </div>
                     </TableCell>
-                    <TableCell className="max-w-0 truncate">
-                      {data.lot.owner}
+                    <TableCell className="px-6 py-4 text-right">
+                      <div className={`font-medium ${data.maintenanceTotal > 0 ? 'text-slate-700' : 'text-muted-foreground'}`}>
+                        {data.maintenanceTotal > 0 ? formatCurrency(data.maintenanceTotal) : '—'}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-blue-600">
-                      {data.maintenanceTotal > 0 ? formatCurrency(data.maintenanceTotal) : '-'}
+                    <TableCell className="px-6 py-4 text-right">
+                      <div className={`font-medium ${data.worksTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
+                        {data.worksTotal > 0 ? formatCurrency(data.worksTotal) : '—'}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-amber-600">
-                      {data.worksTotal > 0 ? formatCurrency(data.worksTotal) : '-'}
-                    </TableCell>
-                    <TableCell className="text-right font-bold text-emerald-600">
-                      {data.total > 0 ? formatCurrency(data.total) : '-'}
+                    <TableCell className="px-6 py-4 text-right">
+                      <div className={`font-semibold ${data.total > 0 ? 'text-slate-800' : 'text-muted-foreground'}`}>
+                        {data.total > 0 ? formatCurrency(data.total) : '—'}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
                 {lotSummaryData.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      {translations.messages.noLots || 'No hay lotes disponibles'}
+                    <TableCell colSpan={4} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
+                          <span className="text-2xl text-muted-foreground">📋</span>
+                        </div>
+                        <p className="text-muted-foreground font-medium">
+                          {translations.messages.noLots || 'No hay lotes disponibles'}
+                        </p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
@@ -247,22 +250,27 @@ export default function IncomeTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={5} className="border-t-2 border-muted p-0" />
+                      <TableCell colSpan={4} className="border-t-2 border-muted p-0" />
                     </TableRow>
                     {/* Totals row */}
-                    <TableRow className="bg-muted/30 font-semibold">
-                      <TableCell className="font-bold">
+                    <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
+                      <TableCell className="px-6 py-4 font-semibold">
                         {translations.labels.total || 'TOTAL GENERAL'}
                       </TableCell>
-                      <TableCell></TableCell>
-                      <TableCell className="text-right font-bold text-blue-700">
-                        {tableTotals.maintenanceTotal > 0 ? formatCurrency(tableTotals.maintenanceTotal) : '-'}
+                      <TableCell className="px-6 py-4 text-right">
+                        <div className={`font-semibold ${tableTotals.maintenanceTotal > 0 ? 'text-slate-700' : 'text-muted-foreground'}`}>
+                          {tableTotals.maintenanceTotal > 0 ? formatCurrency(tableTotals.maintenanceTotal) : '—'}
+                        </div>
                       </TableCell>
-                      <TableCell className="text-right font-bold text-amber-700">
-                        {tableTotals.worksTotal > 0 ? formatCurrency(tableTotals.worksTotal) : '-'}
+                      <TableCell className="px-6 py-4 text-right">
+                        <div className={`font-semibold ${tableTotals.worksTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
+                          {tableTotals.worksTotal > 0 ? formatCurrency(tableTotals.worksTotal) : '—'}
+                        </div>
                       </TableCell>
-                      <TableCell className="text-right font-bold text-emerald-700 text-lg">
-                        {tableTotals.total > 0 ? formatCurrency(tableTotals.total) : '-'}
+                      <TableCell className="px-6 py-4 text-right">
+                        <div className={`font-bold ${tableTotals.total > 0 ? 'text-slate-800' : 'text-muted-foreground'}`}>
+                          {tableTotals.total > 0 ? formatCurrency(tableTotals.total) : '—'}
+                        </div>
                       </TableCell>
                     </TableRow>
                   </>
