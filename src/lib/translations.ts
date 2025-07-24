@@ -64,6 +64,10 @@ export const translations = {
     results: "resultados",
     result: "resultado",
     summary: "Resumen",
+    summaryByLot: "Resumen por Lote",
+    lotDetail: "Detalle por Lote",
+    list: "Lista",
+    view: "Vista",
   },
 
   // Status messages
