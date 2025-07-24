@@ -53,10 +53,14 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
   };
 
   const filteredExpenses = useMemo(() => {
-    if (expenseFilter === "all") {
-      return expenses;
+    let filtered = expenses;
+    
+    if (expenseFilter !== "all") {
+      filtered = filtered.filter((expense) => expense.type === expenseFilter);
     }
-    return expenses.filter((expense) => expense.type === expenseFilter);
+    
+    // Sort by date (most recent first)
+    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [expenses, expenseFilter]);
 
   // Calculate summary based on current filter
