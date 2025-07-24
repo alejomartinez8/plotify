@@ -48,8 +48,20 @@ export async function createContribution(data: {
   receiptNumber?: string | null;
 }): Promise<Contribution | null> {
   try {
+    // Parse date as local date to avoid timezone issues
+    let date: Date;
+    if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = data.date.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(data.date);
+    }
+    
     const contribution = await prisma.contribution.create({
-      data,
+      data: {
+        ...data,
+        date
+      },
     });
     return {
       ...contribution,
@@ -74,9 +86,19 @@ export async function updateContribution(
   }
 ): Promise<Contribution | null> {
   try {
+    const updateData: Record<string, unknown> = { ...data };
+    if (data.date) {
+      // Parse date as local date to avoid timezone issues
+      if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = data.date.split('-').map(Number);
+        updateData.date = new Date(year, month - 1, day);
+      } else {
+        updateData.date = new Date(data.date);
+      }
+    }
     const contribution = await prisma.contribution.update({
       where: { id },
-      data,
+      data: updateData,
     });
     return {
       ...contribution,
