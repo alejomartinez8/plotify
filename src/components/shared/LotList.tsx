@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { translations } from "@/lib/translations";
 import { deleteLotAction } from "@/lib/actions/lot-actions";
+import { ExportButton } from "@/components/shared/ExportButton";
+import { exportLotsAction } from "@/lib/actions/export-actions";
 
 interface LotListProps {
   lots: Lot[];
@@ -101,10 +103,19 @@ export default function LotList({ lots, isAuthenticated = false }: LotListProps)
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">{translations.navigation.lots}</h1>
           {isAuthenticated && (
-            <Button onClick={handleAdd} disabled={isPending}>
-              <Plus className="h-4 w-4" />
-              {translations.titles.newLot}
-            </Button>
+            <div className="flex gap-2">
+              <ExportButton 
+                onExport={exportLotsAction}
+                variant="outline"
+                size="default"
+              >
+                {translations.actions.export} {translations.navigation.lots} CSV
+              </ExportButton>
+              <Button onClick={handleAdd} disabled={isPending}>
+                <Plus className="h-4 w-4" />
+                {translations.titles.newLot}
+              </Button>
+            </div>
           )}
         </div>
         {error && (

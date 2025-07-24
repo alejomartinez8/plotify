@@ -11,6 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import SummarySection from "@/components/shared/SummarySection";
 import FilterSection from "@/components/shared/FilterSection";
 import ItemCard from "@/components/shared/ItemCard";
+import { ExportButton } from "@/components/shared/ExportButton";
+import { exportIncomesAction } from "@/lib/actions/export-actions";
 
 interface IncomeListProps {
   title: string;
@@ -274,6 +276,15 @@ export default function IncomeList({
                   : translations.labels.results}
               </p>
             </div>
+            {isAuthenticated && (
+              <ExportButton 
+                onExport={exportIncomesAction}
+                variant="outline"
+                size="sm"
+              >
+                {translations.actions.export} {translations.labels.income} CSV
+              </ExportButton>
+            )}
           </div>
 
           <div className="space-y-3">

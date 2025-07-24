@@ -12,6 +12,7 @@ export const translations = {
     income: "Ingresos",
     expenses: "Gastos",
     lots: "Lotes",
+    admin: "Admin",
   },
 
   // Common actions and buttons
@@ -29,6 +30,10 @@ export const translations = {
     filter: "Filtrar",
     search: "Buscar",
     config: "Configurar",
+    export: "Exportar",
+    import: "Importar",
+    backup: "Respaldar",
+    restore: "Restaurar",
   },
 
   // Common labels and fields
@@ -120,6 +125,79 @@ export const translations = {
     totalLots: "Total de Lotes",
     contributionsThisMonth: "Aportes este mes",
     expensesThisMonth: "Gastos este mes",
+
+  },
+
+  // Admin section
+  admin: {
+    title: "Configuración de Administrador",
+    description: "Gestiona las configuraciones y herramientas de administración de Plotify",
+    backupTab: "Backup & Exportación",
+    restoreTab: "Restauración", 
+    systemTab: "Sistema",
+    exportTitle: "Exportar Datos en CSV",
+    exportDescription: "Descarga todos los datos de la aplicación en formato CSV para respaldo y análisis",
+    restoreTitle: "Restauración de Datos",
+    restoreDescription: "Importa datos desde archivos CSV para restaurar información perdida",
+    systemTitle: "Información del Sistema",
+    systemDescription: "Información sobre la aplicación y configuraciones",
+    appInfoTitle: "Información de la Aplicación",
+    featuresTitle: "Características Disponibles",
+    supportTitle: "Soporte Técnico",
+    appLabel: "Aplicación",
+    versionLabel: "Versión", 
+    environmentLabel: "Ambiente",
+    
+    // Export descriptions
+    exportDescriptions: {
+      income: "Exporta todas las contribuciones de mantenimiento y obras",
+      expenses: "Exporta todos los gastos registrados por categoría y tipo",
+      lots: "Exporta información de lotes con resúmenes de contribuciones"
+    },
+    
+    // Import descriptions
+    importDescriptions: {
+      income: "Importa contribuciones desde un archivo CSV",
+      expenses: "Importa gastos desde un archivo CSV",
+      lots: "Importa información de lotes desde un archivo CSV"
+    },
+    
+    // Format info
+    formatInfo: {
+      title: "Información sobre el formato",
+      csvFormat: "Los archivos se descargan en formato CSV con codificación UTF-8",
+      currencyFormat: "Los montos se muestran en pesos colombianos (COP) sin decimales", 
+      dateFormat: "Las fechas están en formato local colombiano",
+      timestampFormat: "Los archivos incluyen nombres con fecha y hora de creación"
+    },
+    
+    // Import info
+    importInfo: {
+      title: "Instrucciones para la importación",
+      csvFormat: "Los archivos deben estar en formato CSV con codificación UTF-8",
+      headerMatch: "Los encabezados deben coincidir exactamente con el formato de exportación",
+      dateFormat: "Las fechas pueden estar en formato DD/MM/YYYY o YYYY-MM-DD",
+      backupFirst: "Se recomienda hacer un respaldo antes de importar datos"
+    },
+    
+    // Import warning
+    importWarning: {
+      title: "Advertencia Importante",
+      message: "La importación creará nuevos registros o actualizará los existentes. Esta acción no se puede deshacer fácilmente."
+    },
+    
+    // Features
+    features: [
+      "Gestión de lotes y propietarios",
+      "Registro de ingresos por contribuciones", 
+      "Control de gastos por categorías",
+      "Exportación de datos en CSV",
+      "Autenticación de administrador",
+      "Importación de datos CSV"
+    ],
+    
+    // Support message
+    supportMessage: "Para reportar problemas o solicitar nuevas características, contacta al administrador del sistema."
   },
 
   // Messages
@@ -143,6 +221,7 @@ export const translations = {
     // Options
     notDefined: "No definida",
     fundType: "Tipo de Fondo",
+
   },
 
   // Error messages
@@ -168,8 +247,38 @@ export const translations = {
 
     // System
     database: "Error de base de datos",
-    network: "Error de conexión",
+    network: "Error de conexión", 
     server: "Error del servidor",
+
+    // Export errors
+    export: {
+      defaultError: "Error al exportar los datos",
+      unexpectedError: "Error inesperado al exportar",
+      incomes: "Error al exportar los ingresos",
+      expenses: "Error al exportar los gastos", 
+      lots: "Error al exportar los lotes"
+    },
+
+    // Import errors
+    import: {
+      incomes: "Error al importar los ingresos",
+      expenses: "Error al importar los gastos",
+      lots: "Error al importar los lotes",
+      processing: "Error al procesar los datos",
+      csvFormat: "El archivo CSV debe tener al menos una fila de datos además del encabezado",
+      headerMismatch: "El archivo CSV no tiene el formato correcto. Encabezados esperados: ",
+      missingData: "Datos requeridos faltantes o inválidos",
+      categoryRequired: "Categoría y monto son requeridos",
+      fileRead: "Error al leer el archivo",
+      fileType: "Por favor selecciona un archivo CSV válido",
+      unexpected: "Error inesperado al importar el archivo"
+    },
+
+    // Access errors
+    access: {
+      title: "Error de Acceso",
+      noPermission: "No tienes permisos para acceder a esta página"
+    },
   },
 
   // Confirmation dialogs
