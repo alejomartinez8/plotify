@@ -140,7 +140,8 @@ export default function IncomeList({
       filtered = filtered.filter((c) => c.lotId === selectedLotId);
     }
 
-    return filtered;
+    // Sort by date (most recent first)
+    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [contributions, incomeFilter, selectedLotId]);
 
   // Calculate summary for selected lot
