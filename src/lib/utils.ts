@@ -42,3 +42,31 @@ export const calculateBalance = (
 
   return { income, expenses: expenseTotal, balance: income - expenseTotal };
 };
+
+export function formatDateToYYYYMMDD(dateInput: string | Date): string {
+  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDateForDisplay(dateInput: string | Date): string {
+  // Parse date string as local date to avoid timezone issues
+  let date: Date;
+  
+  if (typeof dateInput === 'string') {
+    // If it's a YYYY-MM-DD string, parse it as local date
+    if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = dateInput.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(dateInput);
+    }
+  } else {
+    date = dateInput;
+  }
+  
+  // Return YYYY-MM-DD format for display
+  return formatDateToYYYYMMDD(date);
+}

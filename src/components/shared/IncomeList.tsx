@@ -203,10 +203,6 @@ export default function IncomeList({
   }, [contributions, selectedLotId, incomeFilter]);
 
   const selectedLot = lots.find((lot) => lot.id === selectedLotId);
-  const colorClasses = {
-    blue: "text-blue-600",
-    orange: "text-orange-600",
-  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
