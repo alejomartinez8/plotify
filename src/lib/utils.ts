@@ -44,10 +44,19 @@ export const calculateBalance = (
 };
 
 export function formatDateToYYYYMMDD(dateInput: string | Date): string {
+  if (typeof dateInput === 'string') {
+    // If already a string in YYYY-MM-DD format, return as is
+    if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return dateInput;
+    }
+  }
+  
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  
+  // Use UTC methods to avoid timezone issues
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -67,6 +76,9 @@ export function formatDateForDisplay(dateInput: string | Date): string {
     date = dateInput;
   }
   
-  // Return YYYY-MM-DD format for display
-  return formatDateToYYYYMMDD(date);
+  // Return DD/MM/YYYY format for display
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }

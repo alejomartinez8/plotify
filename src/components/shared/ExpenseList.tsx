@@ -90,7 +90,6 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
   }, [expenses, expenseFilter]);
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
-    console.log(isUpdate ? "Updated expense:" : "Created expense:", expense);
     setEditingExpense(null);
   };
 
@@ -102,7 +101,6 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
         "@/lib/actions/expense-actions"
       );
       await deleteExpenseAction(deletingExpense.id);
-      console.log("Deleted expense:", deletingExpense);
     } catch (error) {
       console.error("Error deleting expense:", error);
     } finally {

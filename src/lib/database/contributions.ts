@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
-import { Contribution } from "@/types/contributions.types";
+import { Contribution, ContributionType } from "@/types/contributions.types";
+import { formatDateToYYYYMMDD } from "@/lib/utils";
 
 export async function getContributions(): Promise<Contribution[]> {
   try {
@@ -8,7 +9,11 @@ export async function getContributions(): Promise<Contribution[]> {
         id: "desc",
       },
     });
-    return contributions as Contribution[];
+    return contributions.map(contribution => ({
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    }));
   } catch (error) {
     console.error("Error fetching contributions:", error);
     return [];
@@ -22,7 +27,12 @@ export async function getContributionById(
     const contribution = await prisma.contribution.findUnique({
       where: { id },
     });
-    return contribution as Contribution | null;
+    if (!contribution) return null;
+    return {
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    };
   } catch (error) {
     console.error("Error fetching contribution by id:", error);
     return null;
@@ -33,7 +43,7 @@ export async function createContribution(data: {
   lotId: string;
   type: string;
   amount: number;
-  date: Date;
+  date: string;
   description: string;
   receiptNumber?: string | null;
 }): Promise<Contribution | null> {
@@ -41,7 +51,11 @@ export async function createContribution(data: {
     const contribution = await prisma.contribution.create({
       data,
     });
-    return contribution as Contribution;
+    return {
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    };
   } catch (error) {
     console.error("Error creating contribution:", error);
     return null;
@@ -54,7 +68,7 @@ export async function updateContribution(
     lotId?: string;
     type?: string;
     amount?: number;
-    date?: Date;
+    date?: string;
     description?: string;
     receiptNumber?: string | null;
   }
@@ -64,7 +78,11 @@ export async function updateContribution(
       where: { id },
       data,
     });
-    return contribution as Contribution;
+    return {
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    };
   } catch (error) {
     console.error("Error updating contribution:", error);
     return null;
@@ -93,7 +111,11 @@ export async function getContributionsByLot(
         id: "desc",
       },
     });
-    return contributions as Contribution[];
+    return contributions.map(contribution => ({
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    }));
   } catch (error) {
     console.error("Error fetching contributions by lot:", error);
     return [];
@@ -110,7 +132,11 @@ export async function getContributionsByType(
         id: "desc",
       },
     });
-    return contributions as Contribution[];
+    return contributions.map(contribution => ({
+      ...contribution,
+      type: contribution.type as ContributionType,
+      date: formatDateToYYYYMMDD(contribution.date)
+    }));
   } catch (error) {
     console.error("Error fetching contributions by type:", error);
     return [];

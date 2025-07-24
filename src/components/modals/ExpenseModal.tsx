@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn, formatDateToYYYYMMDD } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ExpenseModalProps {
   expense?: Expense | null;
@@ -143,7 +143,7 @@ export default function ExpenseModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={expense?.date ? formatDateToYYYYMMDD(expense.date) : ""}
+              defaultValue={expense?.date || ""}
               required
               disabled={isPending}
             />

@@ -25,15 +25,10 @@ export default function ActionButtons({ isAuthenticated = false }: ActionButtons
     contribution: Contribution,
     isUpdate: boolean
   ) => {
-    console.log(
-      isUpdate ? "Updated contribution:" : "Created contribution:",
-      contribution
-    );
     // The server action handles the database update and revalidation
   };
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
-    console.log(isUpdate ? "Updated expense:" : "Created expense:", expense);
     // The server action handles the database update and revalidation
   };
 

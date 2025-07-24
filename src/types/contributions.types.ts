@@ -5,7 +5,7 @@ export interface Contribution {
   lotId: string | number;
   type: ContributionType;
   amount: number;
-  date: Date;
+  date: string;
   description: string;
   receiptNumber?: string | null;
 }

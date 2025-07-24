@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn, formatDateToYYYYMMDD } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ContributionModalProps {
   contribution?: Contribution | null;
@@ -63,7 +63,7 @@ export default function ContributionModal({
         lotId: formData.get("lotId") as string,
         type: formData.get("type") as "maintenance" | "works",
         amount: parseFloat(formData.get("amount") as string),
-        date: new Date(formData.get("date") as string),
+        date: formData.get("date") as string,
         description: formData.get("description") as string,
         receiptNumber: formData.get("receiptNumber") as string,
       };
@@ -188,11 +188,7 @@ export default function ContributionModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={
-                contribution?.date
-                  ? formatDateToYYYYMMDD(contribution.date)
-                  : ""
-              }
+              defaultValue={contribution?.date || ""}
               required
               disabled={isPending}
             />
