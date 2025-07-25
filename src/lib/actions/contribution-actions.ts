@@ -11,7 +11,7 @@ import { translations } from "@/lib/translations";
 
 const ContributionSchema = z.object({
   lotId: z.string().min(1, translations.errors.lotRequired),
-  type: z.enum(["maintenance", "works"], {
+  type: z.enum(["maintenance", "works", "others"], {
     message: translations.errors.typeRequired,
   }),
   amount: z.coerce.number().positive(translations.errors.amountPositive),
@@ -84,8 +84,7 @@ export async function createContributionAction(
     };
   }
 
-  revalidatePath("/maintenance");
-  revalidatePath("/works");
+  revalidatePath("/income");
   revalidatePath("/");
   return { message: `${translations.messages.created}.`, success: true };
 }
@@ -137,8 +136,7 @@ export async function updateContributionAction(
     };
   }
 
-  revalidatePath("/maintenance");
-  revalidatePath("/works");
+  revalidatePath("/income");
   revalidatePath("/");
   return { message: `${translations.messages.updated}.`, success: true };
 }
@@ -154,8 +152,7 @@ export async function deleteContributionAction(id: number) {
       };
     }
 
-    revalidatePath("/maintenance");
-    revalidatePath("/works");
+    revalidatePath("/income");
     revalidatePath("/");
     return { message: `${translations.messages.deleted}.`, success: true };
   } catch (error) {

@@ -1,4 +1,4 @@
-export type ContributionType = "maintenance" | "works";
+export type ContributionType = "maintenance" | "works" | "others";
 
 export interface Contribution {
   id: number;

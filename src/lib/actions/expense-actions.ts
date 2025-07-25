@@ -11,7 +11,7 @@ import { translations } from "@/lib/translations";
 
 // Zod schema for validation
 const ExpenseSchema = z.object({
-  type: z.enum(["maintenance", "works"], {
+  type: z.enum(["maintenance", "works", "others"], {
     message: translations.errors.typeRequired,
   }),
   amount: z.coerce.number().positive(translations.errors.amountPositive),
