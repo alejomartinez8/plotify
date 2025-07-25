@@ -1,8 +1,9 @@
 import SummaryCard from "@/components/shared/SummaryCard";
 import { translations } from "@/lib/translations";
+import { ContributionType } from "@/types/contributions.types";
 
 interface SummaryItem {
-  type: "maintenance" | "works";
+  type: ContributionType;
   total: number;
   show: boolean;
 }
@@ -19,23 +20,27 @@ export default function SummarySection({
   
   if (visibleItems.length === 0) return null;
 
-  const getTextColor = (type: string) => {
+  const getTextColor = (type: ContributionType) => {
     switch (type) {
       case "maintenance":
         return "text-primary";
       case "works":
         return "text-secondary-foreground";
+      case "others":
+        return "text-purple-600";
       default:
         return "text-primary";
     }
   };
 
-  const getTitle = (type: string) => {
+  const getTitle = (type: ContributionType) => {
     switch (type) {
       case "maintenance":
         return translations.labels.maintenance;
       case "works":
         return translations.labels.works;
+      case "others":
+        return translations.labels.others;
       default:
         return type;
     }

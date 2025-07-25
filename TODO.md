@@ -10,9 +10,9 @@
 ### Phase 1: Foundation
 
 - [ ] **Design cash flow database schema** - Add balance tracking tables
-- [ ] **Create income type classification** - Maintenance, Works, Activities
+- ✅ **Create income type classification** - Added "Others" type for contributions like gate control _(2025-01-25)_
 - [ ] **Initial balance module** - Set starting balances for each fund type
-- [ ] **Basic cash dashboard** - Show current balances by type
+- ✅ **Basic cash dashboard** - Implemented funds overview with 3 funds + consolidated total _(2025-01-25)_
 
 ### Phase 2: Operations
 

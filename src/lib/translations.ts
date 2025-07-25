@@ -58,6 +58,7 @@ export const translations = {
     total: "Total",
     maintenance: "Mantenimientos",
     works: "Obras",
+    others: "Otros",
 
     // Quantities
     payments: "pagos",
@@ -118,12 +119,15 @@ export const translations = {
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",
     worksContributions: "Aportes de Obras",
+    othersContributions: "Otros Aportes",
     maintenanceExpenses: "Gastos de Mantenimiento",
     worksExpenses: "Gastos de Obras",
 
     // Fund types
     maintenanceFund: "Fondo de Mantenimiento",
     worksFund: "Fondo de Obras",
+    othersFund: "Fondo de Otros Aportes",
+    consolidatedFund: "Total Consolidado",
 
     // Stats
     totalLots: "Total de Lotes",

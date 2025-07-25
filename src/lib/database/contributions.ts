@@ -164,3 +164,87 @@ export async function getContributionsByType(
     return [];
   }
 }
+
+export async function getIncomeByType(type: ContributionType): Promise<number> {
+  try {
+    const result = await prisma.contribution.aggregate({
+      where: { type },
+      _sum: {
+        amount: true,
+      },
+    });
+    return result._sum.amount || 0;
+  } catch (error) {
+    console.error(`Error calculating income for type ${type}:`, error);
+    return 0;
+  }
+}
+
+export async function getExpensesByType(type: ContributionType): Promise<number> {
+  try {
+    const result = await prisma.expense.aggregate({
+      where: { type },
+      _sum: {
+        amount: true,
+      },
+    });
+    return result._sum.amount || 0;
+  } catch (error) {
+    console.error(`Error calculating expenses for type ${type}:`, error);
+    return 0;
+  }
+}
+
+export async function getFundBalance(type: ContributionType): Promise<{ income: number; expenses: number; balance: number }> {
+  try {
+    const [income, expenses] = await Promise.all([
+      getIncomeByType(type),
+      getExpensesByType(type)
+    ]);
+    
+    return {
+      income,
+      expenses,
+      balance: income - expenses
+    };
+  } catch (error) {
+    console.error(`Error calculating fund balance for type ${type}:`, error);
+    return { income: 0, expenses: 0, balance: 0 };
+  }
+}
+
+export async function getAllFundsBalances(): Promise<{
+  maintenance: { income: number; expenses: number; balance: number };
+  works: { income: number; expenses: number; balance: number };
+  others: { income: number; expenses: number; balance: number };
+  consolidated: { income: number; expenses: number; balance: number };
+}> {
+  try {
+    const [maintenance, works, others] = await Promise.all([
+      getFundBalance("maintenance"),
+      getFundBalance("works"),
+      getFundBalance("others")
+    ]);
+
+    const consolidated = {
+      income: maintenance.income + works.income + others.income,
+      expenses: maintenance.expenses + works.expenses + others.expenses,
+      balance: maintenance.balance + works.balance + others.balance
+    };
+
+    return {
+      maintenance,
+      works,
+      others,
+      consolidated
+    };
+  } catch (error) {
+    console.error("Error calculating all funds balances:", error);
+    return {
+      maintenance: { income: 0, expenses: 0, balance: 0 },
+      works: { income: 0, expenses: 0, balance: 0 },
+      others: { income: 0, expenses: 0, balance: 0 },
+      consolidated: { income: 0, expenses: 0, balance: 0 }
+    };
+  }
+}

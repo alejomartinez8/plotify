@@ -80,6 +80,25 @@ const [optimisticData, updateOptimistic] = useOptimistic(
 const [state, formAction] = useActionState(serverAction, initialState);
 ```
 
+### Internationalization Standards
+
+- **NEVER use hardcoded text**: All user-facing text must come from `src/lib/translations.ts`
+- **Import translations**: Always import `{ translations }` from `src/lib/translations.ts`
+- **Add missing translations**: If a text doesn't exist in translations.ts, add it there first
+- **Use proper translation keys**: Follow the existing structure (e.g., `translations.labels.amount`)
+
+```typescript
+import { translations } from "@/lib/translations";
+
+// ✅ Good - Using translations
+const message = translations.messages.created;
+const buttonText = translations.actions.save;
+
+// ❌ Bad - Hardcoded text
+const message = "Created successfully";
+const buttonText = "Save";
+```
+
 ### Server Actions Standards
 
 ```typescript
@@ -93,7 +112,7 @@ export async function createItemAction(
   if (!validated.success) {
     return {
       errors: validated.error.flatten().fieldErrors,
-      message: "Validation failed",
+      message: translations.errors.missingFields,
     };
   }
 
@@ -105,9 +124,9 @@ export async function createItemAction(
     revalidatePath("/items");
 
     // 4. Success response
-    return { message: "Item created successfully", errors: {} };
+    return { message: translations.messages.created, errors: {} };
   } catch (error) {
-    return { message: "Database error", errors: {} };
+    return { message: translations.errors.database, errors: {} };
   }
 }
 ```
@@ -138,3 +157,11 @@ export async function createItemAction(
 - ESLint and Prettier for code formatting
 - Server-first approach with progressive enhancement
 - Modern React patterns with Server Actions for data mutations
+
+## Memories
+
+### Code Standards
+- to memorize. Always use `@src/lib/translations.ts`
+
+### Deployment Standards
+- to memorize, when is a deploy to prod never reset the DB

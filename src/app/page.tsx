@@ -1,50 +1,17 @@
-import { getLots } from "@/lib/database/lots";
-import { getContributions } from "@/lib/database/contributions";
-import { getExpenses } from "@/lib/database/expenses";
-import { calculateBalance } from "@/lib/utils";
-import FinancialCard from "@/components/shared/FinancialCard";
-import QuickStats from "@/components/shared/QuickStats";
+import { getAllFundsBalances } from "@/lib/database/contributions";
+import FundsOverview from "@/components/shared/FundsOverview";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function Home() {
   try {
-    const [lots, contributions, expenses] = await Promise.all([
-      getLots(),
-      getContributions(),
-      getExpenses(),
-    ]);
-
-    const maintenanceBalance = calculateBalance(
-      "maintenance",
-      contributions,
-      expenses
-    );
-    const worksBalance = calculateBalance("works", contributions, expenses);
+    const fundsData = await getAllFundsBalances();
 
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          {/* Financial Summary */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <FinancialCard
-              title={translations.titles.maintenanceFund}
-              balance={maintenanceBalance}
-              variant="default"
-            />
-            <FinancialCard
-              title={translations.titles.worksFund}
-              balance={worksBalance}
-              variant="secondary"
-            />
-          </div>
-
-          {/* Quick Stats */}
-          <QuickStats
-            lots={lots}
-            contributions={contributions}
-            expenses={expenses}
-          />
+          {/* Funds Overview */}
+          <FundsOverview fundsData={fundsData} />
         </div>
       </div>
     );

@@ -1,6 +1,3 @@
-import { FundBalance } from "@/types/common.types";
-import { Contribution, ContributionType } from "@/types/contributions.types";
-import { Expense } from "@/types/expenses.types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -27,21 +24,6 @@ export async function fetchData<T>(endpoint: string): Promise<T> {
   return response.json();
 }
 
-export const calculateBalance = (
-  type: ContributionType,
-  contributions: Contribution[],
-  expenses: Expense[]
-): FundBalance => {
-  const income = contributions
-    .filter((c) => c.type === type)
-    .reduce((sum, c) => sum + c.amount, 0);
-
-  const expenseTotal = expenses
-    .filter((e) => e.type === type)
-    .reduce((sum, e) => sum + e.amount, 0);
-
-  return { income, expenses: expenseTotal, balance: income - expenseTotal };
-};
 
 export function formatDateForStorage(dateInput: string | Date): string {
   if (typeof dateInput === 'string') {

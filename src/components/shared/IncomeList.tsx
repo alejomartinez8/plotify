@@ -9,12 +9,13 @@ import SummarySection from "@/components/shared/SummarySection";
 import ItemCard from "@/components/shared/ItemCard";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportIncomesAction } from "@/lib/actions/export-actions";
+export type IncomeType = "all" | "maintenance" | "works" | "others";
 
 interface IncomeListProps {
   contributions: Contribution[];
   lots: Lot[];
   selectedLotId: string;
-  incomeFilter: "all" | "maintenance" | "works";
+  incomeFilter: IncomeType;
   isAuthenticated?: boolean;
   onEdit: (contribution: Contribution) => void;
   onDelete: (contribution: Contribution) => void;
@@ -64,6 +65,9 @@ export default function IncomeList({
     const worksContributions = lotContributions.filter(
       (c) => c.type === "works"
     );
+    const othersContributions = lotContributions.filter(
+      (c) => c.type === "others"
+    );
 
     return {
       maintenance: {
@@ -73,6 +77,10 @@ export default function IncomeList({
       works: {
         count: worksContributions.length,
         total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+      others: {
+        count: othersContributions.length,
+        total: othersContributions.reduce((sum, c) => sum + c.amount, 0),
       },
     };
   }, [contributions, selectedLotId]);
@@ -96,6 +104,9 @@ export default function IncomeList({
     const worksContributions = contributionsToSummarize.filter(
       (c) => c.type === "works"
     );
+    const othersContributions = contributionsToSummarize.filter(
+      (c) => c.type === "others"
+    );
 
     return {
       maintenance: {
@@ -105,6 +116,10 @@ export default function IncomeList({
       works: {
         count: worksContributions.length,
         total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+      others: {
+        count: othersContributions.length,
+        total: othersContributions.reduce((sum, c) => sum + c.amount, 0),
       },
     };
   }, [contributions, selectedLotId, incomeFilter]);
@@ -132,6 +147,11 @@ export default function IncomeList({
                 total: lotSummary.works.total,
                 show: incomeFilter === "all" || incomeFilter === "works",
               },
+              {
+                type: "others",
+                total: lotSummary.others.total,
+                show: incomeFilter === "all" || incomeFilter === "others",
+              },
             ]}
           />
         </div>
@@ -151,6 +171,11 @@ export default function IncomeList({
               type: "works",
               total: allLotsSummary.works.total,
               show: incomeFilter === "all" || incomeFilter === "works",
+            },
+            {
+              type: "others",
+              total: allLotsSummary.others.total,
+              show: incomeFilter === "all" || incomeFilter === "others",
             },
           ]}
         />

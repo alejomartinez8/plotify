@@ -2,12 +2,13 @@ import { Edit, Trash2, Calendar, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
+import { ContributionType } from "@/types/contributions.types";
 
 interface ItemCardProps {
   id: string | number;
   date: string | Date;
   title: string;
-  type: "maintenance" | "works";
+  type: ContributionType;
   amount: number;
   description?: string;
   receiptNumber?: string | null;
@@ -34,14 +35,30 @@ export default function ItemCard({
   deleteTitle,
 }: ItemCardProps) {
 
-  const getTypeColor = (type: string) => {
-    return type === "maintenance" 
-      ? "bg-blue-50 text-blue-700 border-blue-200" 
-      : "bg-amber-50 text-amber-700 border-amber-200";
+  const getTypeColor = (type: ContributionType) => {
+    switch (type) {
+      case "maintenance":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "works":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+      case "others":
+        return "bg-purple-50 text-purple-700 border-purple-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
   };
 
-  const getTypeIcon = (type: string) => {
-    return type === "maintenance" ? "🔧" : "🏗️";
+  const getTypeIcon = (type: ContributionType) => {
+    switch (type) {
+      case "maintenance":
+        return "🔧";
+      case "works":
+        return "🏗️";
+      case "others":
+        return "⚡";
+      default:
+        return "📄";
+    }
   };
 
   return (
@@ -50,7 +67,9 @@ export default function ItemCard({
       <div className="absolute top-3 right-3">
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeColor(type)}`}>
           <span className="text-xs">{getTypeIcon(type)}</span>
-          {type === "maintenance" ? translations.labels.maintenance : translations.labels.works}
+          {type === "maintenance" ? translations.labels.maintenance : 
+           type === "works" ? translations.labels.works : 
+           translations.labels.others}
         </span>
       </div>
 

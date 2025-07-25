@@ -8,7 +8,7 @@ import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import FilterSection from "@/components/shared/FilterSection";
-import IncomeList from "@/components/shared/IncomeList";
+import IncomeList, { IncomeType } from "@/components/shared/IncomeList";
 import IncomeTable from "@/components/shared/IncomeTable";
 
 interface IncomeViewProps {
@@ -18,7 +18,6 @@ interface IncomeViewProps {
   isAuthenticated?: boolean;
 }
 
-type IncomeType = "all" | "maintenance" | "works";
 
 export default function IncomeView({
   title,
@@ -55,7 +54,10 @@ export default function IncomeView({
       setSelectedLotId("");
     }
 
-    if (typeParam && ["all", "maintenance", "works"].includes(typeParam)) {
+    if (
+      typeParam &&
+      ["all", "maintenance", "works", "others"].includes(typeParam)
+    ) {
       setIncomeFilter(typeParam);
     } else if (typeParam) {
       // If type in URL is invalid, clear it
@@ -151,7 +153,7 @@ export default function IncomeView({
   const handleLotClickFromSummary = (lotId: string) => {
     setActiveTab("list");
     handleLotFilterChange(lotId);
-    
+
     // Update tab in URL
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", "list");
@@ -181,14 +183,19 @@ export default function IncomeView({
             { value: "all", label: translations.filters.allIncome },
             { value: "maintenance", label: translations.labels.maintenance },
             { value: "works", label: translations.labels.works },
+            { value: "others", label: translations.labels.others },
           ],
         }}
-        lotFilter={activeTab === "list" ? {
-          value: selectedLotId,
-          onChange: (value) =>
-            handleLotFilterChange(value === "__all__" ? "" : value),
-          lots: lots,
-        } : undefined}
+        lotFilter={
+          activeTab === "list"
+            ? {
+                value: selectedLotId,
+                onChange: (value) =>
+                  handleLotFilterChange(value === "__all__" ? "" : value),
+                lots: lots,
+              }
+            : undefined
+        }
       />
 
       <div className="mt-6">

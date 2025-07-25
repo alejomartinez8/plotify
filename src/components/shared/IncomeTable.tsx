@@ -7,6 +7,7 @@ import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { IncomeType } from "@/components/shared/IncomeList";
 import {
   Table,
   TableBody,
@@ -20,17 +21,18 @@ interface LotSummaryData {
   lot: Lot;
   maintenanceTotal: number;
   worksTotal: number;
+  othersTotal: number;
   total: number;
 }
 
 interface IncomeTableProps {
   lots: Lot[];
   contributions: Contribution[];
-  incomeFilter: "all" | "maintenance" | "works";
+  incomeFilter: IncomeType;
   onLotClick?: (lotId: string) => void;
 }
 
-type SortField = 'lotNumber' | 'owner' | 'maintenanceTotal' | 'worksTotal' | 'total';
+type SortField = 'lotNumber' | 'owner' | 'maintenanceTotal' | 'worksTotal' | 'othersTotal' | 'total';
 type SortDirection = 'asc' | 'desc';
 
 export default function IncomeTable({
@@ -60,12 +62,16 @@ export default function IncomeTable({
       const worksTotal = lotContributions
         .filter((c) => c.type === 'works')
         .reduce((sum, c) => sum + c.amount, 0);
+      const othersTotal = lotContributions
+        .filter((c) => c.type === 'others')
+        .reduce((sum, c) => sum + c.amount, 0);
 
       return {
         lot,
         maintenanceTotal,
         worksTotal,
-        total: maintenanceTotal + worksTotal,
+        othersTotal,
+        total: maintenanceTotal + worksTotal + othersTotal,
       };
     });
 
@@ -90,6 +96,10 @@ export default function IncomeTable({
         case 'worksTotal':
           aValue = a.worksTotal;
           bValue = b.worksTotal;
+          break;
+        case 'othersTotal':
+          aValue = a.othersTotal;
+          bValue = b.othersTotal;
           break;
         case 'total':
           aValue = a.total;
@@ -117,11 +127,13 @@ export default function IncomeTable({
   const tableTotals = useMemo(() => {
     const maintenanceTotal = lotSummaryData.reduce((sum, data) => sum + data.maintenanceTotal, 0);
     const worksTotal = lotSummaryData.reduce((sum, data) => sum + data.worksTotal, 0);
+    const othersTotal = lotSummaryData.reduce((sum, data) => sum + data.othersTotal, 0);
     
     return {
       maintenanceTotal,
       worksTotal,
-      total: maintenanceTotal + worksTotal,
+      othersTotal,
+      total: maintenanceTotal + worksTotal + othersTotal,
     };
   }, [lotSummaryData]);
 
@@ -191,6 +203,15 @@ export default function IncomeTable({
                     </div>
                   </TableHead>
                   <TableHead
+                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
+                    onClick={() => handleSort('othersTotal')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      {translations.labels.others}
+                      {getSortIcon('othersTotal')}
+                    </div>
+                  </TableHead>
+                  <TableHead
                     className="cursor-pointer select-none px-6 py-4 text-right font-bold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('total')}
                   >
@@ -226,6 +247,11 @@ export default function IncomeTable({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
+                      <div className={`font-medium ${data.othersTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
+                        {data.othersTotal > 0 ? formatCurrency(data.othersTotal) : '—'}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right">
                       <div className={`font-semibold ${data.total > 0 ? 'text-slate-800' : 'text-muted-foreground'}`}>
                         {data.total > 0 ? formatCurrency(data.total) : '—'}
                       </div>
@@ -234,7 +260,7 @@ export default function IncomeTable({
                 ))}
                 {lotSummaryData.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="px-6 py-12 text-center">
+                    <TableCell colSpan={5} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
                           <span className="text-2xl text-muted-foreground">📋</span>
@@ -250,7 +276,7 @@ export default function IncomeTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={4} className="border-t-2 border-muted p-0" />
+                      <TableCell colSpan={5} className="border-t-2 border-muted p-0" />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
@@ -265,6 +291,11 @@ export default function IncomeTable({
                       <TableCell className="px-6 py-4 text-right">
                         <div className={`font-semibold ${tableTotals.worksTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
                           {tableTotals.worksTotal > 0 ? formatCurrency(tableTotals.worksTotal) : '—'}
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-right">
+                        <div className={`font-semibold ${tableTotals.othersTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
+                          {tableTotals.othersTotal > 0 ? formatCurrency(tableTotals.othersTotal) : '—'}
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
