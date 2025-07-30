@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { generateToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,13 +31,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Set authentication cookie
+    // Generate JWT token
+    const token = generateToken();
+
+    // Set secure authentication cookie with JWT
     const cookieStore = await cookies();
-    cookieStore.set("admin-auth", "true", {
+    cookieStore.set("admin-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
     });
 
     return NextResponse.json({ success: true });

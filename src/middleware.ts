@@ -1,25 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
-  // Check if user is trying to access admin-only actions
-  const isAdminAction = 
-    request.nextUrl.pathname.includes("/api/") && 
-    (request.nextUrl.pathname.includes("/contribution") ||
-     request.nextUrl.pathname.includes("/expense")) &&
-    (request.method === "POST" || request.method === "PUT" || request.method === "DELETE");
+// Rate limiting storage (in production, use Redis or database)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-  if (isAdminAction) {
-    const isAuthenticated = request.cookies.get("admin-auth")?.value === "true";
-    
-    if (!isAuthenticated) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
+function isRateLimited(ip: string, limit: number = 100, windowMs: number = 15 * 60 * 1000): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return false;
   }
 
-  return NextResponse.next();
+  if (record.count >= limit) {
+    return true;
+  }
+
+  record.count++;
+  return false;
+}
+
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  const cfIP = request.headers.get("cf-connecting-ip");
+  
+  return cfIP || realIP || forwarded?.split(",")[0] || "unknown";
+}
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+  
+  // Add security headers
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  
+  if (process.env.NODE_ENV === "production") {
+    response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+
+  // Rate limiting check
+  const clientIP = getClientIP(request);
+  if (isRateLimited(clientIP)) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429 }
+    );
+  }
+
+  return response;
 }
 
 export const config = {
