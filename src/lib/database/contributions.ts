@@ -46,6 +46,9 @@ export async function createContribution(data: {
   date: string;
   description: string;
   receiptNumber?: string | null;
+  receiptFileId?: string | null;
+  receiptFileUrl?: string | null;
+  receiptFileName?: string | null;
 }): Promise<Contribution | null> {
   try {
     // Parse date as local date to avoid timezone issues
@@ -83,6 +86,9 @@ export async function updateContribution(
     date?: string;
     description?: string;
     receiptNumber?: string | null;
+    receiptFileId?: string | null;
+    receiptFileUrl?: string | null;
+    receiptFileName?: string | null;
   }
 ): Promise<Contribution | null> {
   try {

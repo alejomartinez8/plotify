@@ -24,6 +24,9 @@ model Contribution {
   date          DateTime @default(now())
   description   String
   receiptNumber String?
+  receiptFileId String?
+  receiptFileUrl String?
+  receiptFileName String?
   lot           Lot      @relation(fields: [lotId], references: [id])
 
   @@map("contributions")
@@ -37,6 +40,9 @@ model Expense {
   description   String
   category      String
   receiptNumber String?
+  receiptFileId String?
+  receiptFileUrl String?
+  receiptFileName String?
 
   @@map("expenses")
 }
