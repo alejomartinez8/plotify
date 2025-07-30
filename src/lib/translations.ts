@@ -246,7 +246,7 @@ export const translations = {
     lotRequired: "El lote es requerido",
     typeRequired: "El tipo debe ser mantenimiento u obras",
     amountRequired: "El monto es requerido",
-    amountPositive: "El monto debe ser positivo",
+    amountPositive: "El monto debe ser mayor o igual a cero",
     dateRequired: "La fecha es requerida",
     dateValid: "Fecha válida es requerida",
     categoryRequired: "La categoría es requerida",

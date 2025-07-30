@@ -31,6 +31,7 @@ interface FilterSectionProps {
     onChange: (value: string) => void;
     options: FilterOption[];
   };
+  actionButton?: React.ReactNode;
 }
 
 export default function FilterSection({
@@ -38,11 +39,15 @@ export default function FilterSection({
   typeFilter,
   lotFilter,
   viewFilter,
+  actionButton,
 }: FilterSectionProps) {
   return (
     <div className="mb-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+          <h1 className="text-2xl font-bold">{title}</h1>
+          {actionButton}
+        </div>
 
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
           {/* View Filter (optional) */}

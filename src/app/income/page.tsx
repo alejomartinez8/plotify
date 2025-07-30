@@ -15,7 +15,6 @@ export default async function IncomePage() {
 
     return (
       <IncomeView
-        title={translations.navigation.income}
         lots={lots}
         contributions={contributions}
         isAuthenticated={isAdmin}
