@@ -29,7 +29,7 @@ export default function NewExpenseButton({
       <Button 
         onClick={() => setShowExpenseModal(true)} 
         variant="default"
-        size="sm"
+        size="default"
       >
         <Plus className="h-4 w-4" />
         <span>{translations.titles.newExpense}</span>

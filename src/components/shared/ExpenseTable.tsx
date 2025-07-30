@@ -25,7 +25,6 @@ interface ExpenseTableProps {
   isAuthenticated?: boolean;
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
-  exportButton?: React.ReactNode;
 }
 
 type SortField = 'date' | 'description' | 'type' | 'amount' | 'receiptNumber';
@@ -37,7 +36,6 @@ export default function ExpenseTable({
   isAuthenticated = false,
   onEdit,
   onDelete,
-  exportButton,
 }: ExpenseTableProps) {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -144,11 +142,6 @@ export default function ExpenseTable({
     <div className="space-y-6">
       {/* Expense Table */}
       <Card className="shadow-sm">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-end">
-            {exportButton}
-          </div>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden rounded-md border-0">
             <Table className="border-separate border-spacing-0">

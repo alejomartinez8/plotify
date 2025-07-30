@@ -16,7 +16,7 @@ interface FilterOption {
 
 interface FilterSectionProps {
   title: string;
-  typeFilter: {
+  typeFilter?: {
     value: string;
     onChange: (value: string) => void;
     options: FilterOption[];
@@ -44,11 +44,13 @@ export default function FilterSection({
   return (
     <div className="mb-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left side: Title and Action buttons */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
           <h1 className="text-2xl font-bold">{title}</h1>
           {actionButton}
         </div>
 
+        {/* Right side: Filters */}
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
           {/* View Filter (optional) */}
           {viewFilter && (
@@ -74,25 +76,27 @@ export default function FilterSection({
             </div>
           )}
 
-          {/* Type Filter */}
-          <div className="flex items-center space-x-2">
-            <Filter className="text-muted-foreground h-4 w-4" />
-            <Select
-              value={typeFilter.value}
-              onValueChange={typeFilter.onChange}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {typeFilter.options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Type Filter (optional) */}
+          {typeFilter && (
+            <div className="flex items-center space-x-2">
+              <Filter className="text-muted-foreground h-4 w-4" />
+              <Select
+                value={typeFilter.value}
+                onValueChange={typeFilter.onChange}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {typeFilter.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Lot Filter (optional) */}
           {lotFilter && (

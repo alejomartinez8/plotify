@@ -57,7 +57,7 @@ export default function NewContributionButton({
         onClick={handleOpenContributionModal}
         disabled={lotsLoading}
         variant="default"
-        size="sm"
+        size="default"
       >
         {lotsLoading ? <Spinner size="sm" /> : <Plus className="h-4 w-4" />}
         <span>{translations.titles.newContribution}</span>
