@@ -12,6 +12,7 @@ import FilterSection from "@/components/shared/FilterSection";
 import ItemCard from "@/components/shared/ItemCard";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportExpensesAction } from "@/lib/actions/export-actions";
+import NewExpenseButton from "@/components/shared/NewExpenseButton";
 
 interface ExpenseListProps {
   title: string;
@@ -115,6 +116,9 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
       {/* Header with filters */}
       <FilterSection
         title={title}
+        actionButton={
+          <NewExpenseButton isAuthenticated={isAuthenticated} />
+        }
         typeFilter={{
           value: expenseFilter,
           onChange: (value) => handleExpenseFilterChange(value as ExpenseType),

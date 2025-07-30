@@ -13,7 +13,6 @@ import {
 import { translations } from "@/lib/translations";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ActionButtons from "./ActionButtons";
 
 interface NavigationProps {
   isAuthenticated?: boolean;
@@ -102,10 +101,6 @@ export default function Navigation({ isAuthenticated = false }: NavigationProps)
             <Menu className="h-5 w-5" />
           </Button>
 
-          {/* Action Buttons - Hidden on mobile when menu is closed */}
-          <div className="hidden sm:flex">
-            <ActionButtons isAuthenticated={isAuthenticated} />
-          </div>
         </div>
 
         {/* Mobile Navigation Menu */}
@@ -149,9 +144,6 @@ export default function Navigation({ isAuthenticated = false }: NavigationProps)
                 );
               })}
             </nav>
-            <div className="border-t border-gray-200 px-4 py-3">
-              <ActionButtons isAuthenticated={isAuthenticated} />
-            </div>
           </div>
         )}
       </div>

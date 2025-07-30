@@ -3,33 +3,27 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import ContributionModal from "../modals/ContributionModal";
-import ExpenseModal from "../modals/ExpenseModal";
 import Spinner from "../ui/Spinner";
 import { Button } from "@/components/ui/button";
-import { Contribution } from "@/types/contributions.types";
-import { Expense } from "@/types/expenses.types";
 import { Lot } from "@/types/lots.types";
 import { translations } from "@/lib/translations";
 
-interface ActionButtonsProps {
+interface NewContributionButtonProps {
   isAuthenticated?: boolean;
+  lots?: Lot[];
 }
 
-export default function ActionButtons({ isAuthenticated = false }: ActionButtonsProps) {
+export default function NewContributionButton({ 
+  isAuthenticated = false,
+  lots: propLots = []
+}: NewContributionButtonProps) {
   const [showContributionModal, setShowContributionModal] = useState(false);
-  const [showExpenseModal, setShowExpenseModal] = useState(false);
-  const [lots, setLots] = useState<Lot[]>([]);
+  const [lots, setLots] = useState<Lot[]>(propLots);
   const [lotsLoading, setLotsLoading] = useState(false);
 
-  const handleContributionSuccess = (
-    contribution: Contribution,
-    isUpdate: boolean
-  ) => {
+  const handleContributionSuccess = () => {
     // The server action handles the database update and revalidation
-  };
-
-  const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
-    // The server action handles the database update and revalidation
+    setShowContributionModal(false);
   };
 
   const loadLots = async () => {
@@ -59,35 +53,23 @@ export default function ActionButtons({ isAuthenticated = false }: ActionButtons
 
   return (
     <>
-      <div className="flex space-x-2 py-2">
-        <Button
-          onClick={handleOpenContributionModal}
-          disabled={lotsLoading}
-          variant="default"
-        >
-          {lotsLoading ? <Spinner size="sm" /> : <Plus className="h-4 w-4" />}
-          <span>{translations.titles.newContribution}</span>
-        </Button>
-        <Button onClick={() => setShowExpenseModal(true)} variant="secondary">
-          <Plus className="h-4 w-4" />
-          <span>{translations.titles.newExpense}</span>
-        </Button>
-      </div>
+      <Button
+        onClick={handleOpenContributionModal}
+        disabled={lotsLoading}
+        variant="default"
+        size="sm"
+      >
+        {lotsLoading ? <Spinner size="sm" /> : <Plus className="h-4 w-4" />}
+        <span>{translations.titles.newContribution}</span>
+      </Button>
 
-      {/* Modals */}
+      {/* Modal */}
       {showContributionModal && (
         <ContributionModal
           onClose={() => setShowContributionModal(false)}
           onSuccess={handleContributionSuccess}
           lots={lots}
           lotsLoading={lotsLoading}
-        />
-      )}
-
-      {showExpenseModal && (
-        <ExpenseModal
-          onClose={() => setShowExpenseModal(false)}
-          onSuccess={handleExpenseSuccess}
         />
       )}
     </>

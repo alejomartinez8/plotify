@@ -10,9 +10,9 @@ import ConfirmationModal from "../modals/ConfirmationModal";
 import FilterSection from "@/components/shared/FilterSection";
 import IncomeList, { IncomeType } from "@/components/shared/IncomeList";
 import IncomeTable from "@/components/shared/IncomeTable";
+import NewContributionButton from "@/components/shared/NewContributionButton";
 
 interface IncomeViewProps {
-  title: string;
   contributions: Contribution[];
   lots: Lot[];
   isAuthenticated?: boolean;
@@ -20,7 +20,6 @@ interface IncomeViewProps {
 
 
 export default function IncomeView({
-  title,
   contributions,
   lots,
   isAuthenticated = false,
@@ -114,10 +113,7 @@ export default function IncomeView({
     return lots.find((lot) => lot.id === lotId);
   };
 
-  const handleContributionSuccess = (
-    contribution: Contribution,
-    isUpdate: boolean
-  ) => {
+  const handleContributionSuccess = () => {
     setEditingContribution(null);
   };
 
@@ -168,6 +164,12 @@ export default function IncomeView({
       {/* Header with unified filters and actions */}
       <FilterSection
         title="Aportes"
+        actionButton={
+          <NewContributionButton 
+            isAuthenticated={isAuthenticated}
+            lots={lots}
+          />
+        }
         viewFilter={{
           value: activeTab,
           onChange: handleTabChange,

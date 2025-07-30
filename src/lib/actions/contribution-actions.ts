@@ -14,7 +14,7 @@ const ContributionSchema = z.object({
   type: z.enum(["maintenance", "works", "others"], {
     message: translations.errors.typeRequired,
   }),
-  amount: z.coerce.number().positive(translations.errors.amountPositive),
+  amount: z.coerce.number().min(0, translations.errors.amountPositive),
   date: z.string().min(1, translations.errors.dateValid),
   description: z.string().optional(),
   receiptNumber: z.string().optional(),
