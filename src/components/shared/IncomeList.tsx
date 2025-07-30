@@ -7,8 +7,6 @@ import { translations } from "@/lib/translations";
 import { Card, CardContent } from "@/components/ui/Card";
 import SummarySection from "@/components/shared/SummarySection";
 import ItemCard from "@/components/shared/ItemCard";
-import { ExportButton } from "@/components/shared/ExportButton";
-import { exportIncomesAction } from "@/lib/actions/export-actions";
 export type IncomeType = "all" | "maintenance" | "works" | "others";
 
 interface IncomeListProps {
@@ -128,6 +126,7 @@ export default function IncomeList({
 
   return (
     <div>
+
       {/* Lot Summary - appears when a lot is selected */}
       {lotSummary && selectedLot && (
         <div className="mb-6">
@@ -185,23 +184,13 @@ export default function IncomeList({
       <Card>
         <CardContent className="p-6">
           {/* Results Header */}
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">
-                {filteredContributions.length}{" "}
-                {filteredContributions.length === 1
-                  ? translations.labels.result
-                  : translations.labels.results}
-              </p>
-            </div>
-            <ExportButton
-              onExport={exportIncomesAction}
-              variant="outline"
-              size="sm"
-            >
-              {translations.actions.export} {translations.labels.income}{" "}
-              CSV
-            </ExportButton>
+          <div className="mb-4">
+            <p className="text-sm text-gray-600">
+              {filteredContributions.length}{" "}
+              {filteredContributions.length === 1
+                ? translations.labels.result
+                : translations.labels.results}
+            </p>
           </div>
 
           <div className="space-y-3">

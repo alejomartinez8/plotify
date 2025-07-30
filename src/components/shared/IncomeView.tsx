@@ -11,6 +11,8 @@ import FilterSection from "@/components/shared/FilterSection";
 import IncomeList, { IncomeType } from "@/components/shared/IncomeList";
 import IncomeTable from "@/components/shared/IncomeTable";
 import NewContributionButton from "@/components/shared/NewContributionButton";
+import { ExportButton } from "@/components/shared/ExportButton";
+import { exportIncomesAction } from "@/lib/actions/export-actions";
 
 interface IncomeViewProps {
   contributions: Contribution[];
@@ -165,10 +167,21 @@ export default function IncomeView({
       <FilterSection
         title="Aportes"
         actionButton={
-          <NewContributionButton 
-            isAuthenticated={isAuthenticated}
-            lots={lots}
-          />
+          isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <ExportButton 
+                onExport={exportIncomesAction}
+                variant="outline"
+                size="default"
+              >
+                {translations.actions.export} {translations.labels.income} CSV
+              </ExportButton>
+              <NewContributionButton 
+                isAuthenticated={isAuthenticated}
+                lots={lots}
+              />
+            </div>
+          ) : null
         }
         viewFilter={{
           value: activeTab,

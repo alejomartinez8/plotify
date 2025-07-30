@@ -11,6 +11,7 @@ import { translations } from "@/lib/translations";
 import { deleteLotAction } from "@/lib/actions/lot-actions";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportLotsAction } from "@/lib/actions/export-actions";
+import FilterSection from "@/components/shared/FilterSection";
 
 interface LotListProps {
   lots: Lot[];
@@ -99,11 +100,11 @@ export default function LotList({ lots, isAuthenticated = false }: LotListProps)
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold">{translations.navigation.lots}</h1>
-          {isAuthenticated && (
-            <div className="flex gap-2">
+      <FilterSection
+        title={translations.navigation.lots}
+        actionButton={
+          isAuthenticated ? (
+            <div className="flex items-center gap-2">
               <ExportButton 
                 onExport={exportLotsAction}
                 variant="outline"
@@ -116,14 +117,15 @@ export default function LotList({ lots, isAuthenticated = false }: LotListProps)
                 {translations.titles.newLot}
               </Button>
             </div>
-          )}
+          ) : null
+        }
+      />
+      
+      {error && (
+        <div className="bg-destructive/10 border-destructive/20 text-destructive mb-6 rounded border px-4 py-3">
+          {error}
         </div>
-        {error && (
-          <div className="bg-destructive/10 border-destructive/20 text-destructive mt-4 rounded border px-4 py-3">
-            {error}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Lots Card */}
       <Card>

@@ -122,7 +122,18 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
       <FilterSection
         title={title}
         actionButton={
-          <NewExpenseButton isAuthenticated={isAuthenticated} />
+          isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <ExportButton 
+                onExport={exportExpensesAction}
+                variant="outline"
+                size="default"
+              >
+                {translations.actions.export} {translations.labels.expenses} CSV
+              </ExportButton>
+              <NewExpenseButton isAuthenticated={isAuthenticated} />
+            </div>
+          ) : null
         }
         typeFilter={{
           value: expenseFilter,
@@ -164,15 +175,6 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
         isAuthenticated={isAuthenticated}
         onEdit={setEditingExpense}
         onDelete={setDeletingExpense}
-        exportButton={
-          <ExportButton 
-            onExport={exportExpensesAction}
-            variant="outline"
-            size="sm"
-          >
-            {translations.actions.export} {translations.labels.expenses} CSV
-          </ExportButton>
-        }
       />
 
       {/* Edit Modal */}

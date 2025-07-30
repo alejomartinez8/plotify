@@ -6,7 +6,7 @@ import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { IncomeType } from "@/components/shared/IncomeList";
 import {
   Table,
@@ -165,11 +165,6 @@ export default function IncomeTable({
     <div className="space-y-6">
       {/* Lot Summary Table */}
       <Card className="shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-medium flex items-center gap-2">
-            📋 {translations.labels.lotDetail}
-          </CardTitle>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden rounded-md border-0">
             <Table className="border-separate border-spacing-0">
