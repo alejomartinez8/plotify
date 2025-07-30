@@ -11,8 +11,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/AlertDialog";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 interface ConfirmationModalProps {

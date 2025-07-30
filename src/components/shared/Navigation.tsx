@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { translations } from "@/lib/translations";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 interface NavigationProps {
   isAuthenticated?: boolean;
