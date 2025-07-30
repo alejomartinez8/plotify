@@ -1,9 +1,39 @@
 import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-key-change-in-production";
+const TOKEN_EXPIRY = "7d";
+
+export interface JWTPayload {
+  role: "admin";
+  iat: number;
+  exp: number;
+}
+
+export function generateToken(): string {
+  return jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+}
+
+export function verifyToken(token: string): JWTPayload | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    return null;
+  }
+}
 
 export async function isAuthenticated(): Promise<boolean> {
   try {
     const cookieStore = await cookies();
-    return cookieStore.get("admin-auth")?.value === "true";
+    const token = cookieStore.get("admin-token")?.value;
+    
+    if (!token) {
+      return false;
+    }
+
+    const payload = verifyToken(token);
+    return payload !== null && payload.role === "admin";
   } catch (error) {
     console.error("Error checking authentication:", error);
     return false;
