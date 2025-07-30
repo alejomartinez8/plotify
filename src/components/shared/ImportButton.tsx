@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { translations } from "@/lib/translations";
 

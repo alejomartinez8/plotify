@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import ContributionModal from "../modals/ContributionModal";
 import Spinner from "../ui/Spinner";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Lot } from "@/types/lots.types";
 import { translations } from "@/lib/translations";
 

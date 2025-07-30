@@ -6,13 +6,12 @@ import { Expense } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import { Card, CardContent } from "@/components/ui/card";
 import SummarySection from "@/components/shared/SummarySection";
 import FilterSection from "@/components/shared/FilterSection";
-import ItemCard from "@/components/shared/ItemCard";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportExpensesAction } from "@/lib/actions/export-actions";
 import NewExpenseButton from "@/components/shared/NewExpenseButton";
+import ExpenseTable from "@/components/shared/ExpenseTable";
 
 interface ExpenseListProps {
   title: string;
@@ -20,7 +19,7 @@ interface ExpenseListProps {
   isAuthenticated?: boolean;
 }
 
-type ExpenseType = "all" | "maintenance" | "works";
+type ExpenseType = "all" | "maintenance" | "works" | "others";
 
 export default function ExpenseList({ title, expenses, isAuthenticated = false }: ExpenseListProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -34,7 +33,7 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
   useEffect(() => {
     const typeParam = searchParams.get("type") as ExpenseType;
 
-    if (typeParam && (typeParam === "maintenance" || typeParam === "works")) {
+    if (typeParam && (typeParam === "maintenance" || typeParam === "works" || typeParam === "others")) {
       setExpenseFilter(typeParam);
     } else {
       setExpenseFilter("all");
@@ -81,6 +80,9 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
     const worksExpenses = expensesToSummarize.filter(
       (e) => e.type === "works"
     );
+    const othersExpenses = expensesToSummarize.filter(
+      (e) => e.type === "others"
+    );
 
     return {
       maintenance: {
@@ -88,6 +90,9 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
       },
       works: {
         total: worksExpenses.reduce((sum, e) => sum + e.amount, 0),
+      },
+      others: {
+        total: othersExpenses.reduce((sum, e) => sum + e.amount, 0),
       },
     };
   }, [expenses, expenseFilter]);
@@ -126,6 +131,7 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
             { value: "all", label: translations.filters.allExpenses },
             { value: "maintenance", label: translations.labels.maintenance },
             { value: "works", label: translations.labels.works },
+            { value: "others", label: translations.labels.others },
           ],
         }}
       />
@@ -143,65 +149,31 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
             total: expenseSummary.works.total,
             show: expenseFilter === "all" || expenseFilter === "works",
           },
+          {
+            type: "others",
+            total: expenseSummary.others.total,
+            show: expenseFilter === "all" || expenseFilter === "others",
+          },
         ]}
       />
 
-      {/* Expenses List Card */}
-      <Card>
-        <CardContent className="p-6">
-          {/* Results Header with Export */}
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">
-                {filteredExpenses.length}{" "}
-                {filteredExpenses.length === 1
-                  ? "resultado"
-                  : "resultados"}
-              </p>
-            </div>
-            <ExportButton 
-              onExport={exportExpensesAction}
-              variant="outline"
-              size="sm"
-            >
-              {translations.actions.export} {translations.labels.expenses} CSV
-            </ExportButton>
-          </div>
-
-          <div className="space-y-3">
-            {filteredExpenses.map((expense) => (
-              <ItemCard
-                key={expense.id}
-                id={expense.id}
-                date={expense.date}
-                title={expense.description}
-                type={expense.type}
-                amount={expense.amount}
-                receiptNumber={expense.receiptNumber}
-                amountColorClass="text-destructive"
-                isAuthenticated={isAuthenticated}
-                onEdit={() => setEditingExpense(expense)}
-                onDelete={() => setDeletingExpense(expense)}
-                editTitle={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
-                deleteTitle={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
-              />
-            ))}
-            {filteredExpenses.length === 0 && (
-              <div className="py-12 text-center">
-                <div className="text-muted-foreground mb-4 text-6xl">💳</div>
-                <p className="text-muted-foreground mb-2 text-lg">
-                  {translations.messages.noExpenses}
-                </p>
-                {expenseFilter !== "all" && (
-                  <p className="text-muted-foreground text-sm">
-                    Intenta cambiar el filtro de tipo de gasto
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Expenses Table */}
+      <ExpenseTable
+        expenses={filteredExpenses}
+        expenseFilter={expenseFilter}
+        isAuthenticated={isAuthenticated}
+        onEdit={setEditingExpense}
+        onDelete={setDeletingExpense}
+        exportButton={
+          <ExportButton 
+            onExport={exportExpensesAction}
+            variant="outline"
+            size="sm"
+          >
+            {translations.actions.export} {translations.labels.expenses} CSV
+          </ExportButton>
+        }
+      />
 
       {/* Edit Modal */}
       {editingExpense && isAuthenticated && (

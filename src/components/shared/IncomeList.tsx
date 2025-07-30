@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import SummarySection from "@/components/shared/SummarySection";
 import ItemCard from "@/components/shared/ItemCard";
 import { ExportButton } from "@/components/shared/ExportButton";

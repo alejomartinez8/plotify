@@ -1,6 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
+import TypeBadge from "@/components/shared/TypeBadge";
+import { ContributionType } from "@/types/contributions.types";
 
 interface FundBalance {
   income: number;
@@ -20,25 +22,19 @@ interface FundsOverviewProps {
 export default function FundsOverview({ fundsData }: FundsOverviewProps) {
   const funds = [
     {
-      key: "maintenance",
+      key: "maintenance" as ContributionType,
       title: translations.titles.maintenanceFund,
       data: fundsData.maintenance,
-      icon: "🔧",
-      badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     },
     {
-      key: "works",  
+      key: "works" as ContributionType,  
       title: translations.titles.worksFund,
       data: fundsData.works,
-      icon: "🏗️",
-      badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
     },
     {
-      key: "others",
+      key: "others" as ContributionType,
       title: translations.titles.othersFund,
       data: fundsData.others,
-      icon: "⚡",
-      badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
     },
   ];
 
@@ -59,10 +55,7 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
                 <CardTitle className="text-lg font-semibold text-gray-800">
                   {fund.title}
                 </CardTitle>
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${fund.badgeColor}`}>
-                  <span className="text-xs">{fund.icon}</span>
-                  {fund.key === "maintenance" ? "Mant." : fund.key === "works" ? "Obras" : "Otros"}
-                </span>
+                <TypeBadge type={fund.key} />
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
