@@ -34,6 +34,7 @@ export const translations = {
     import: "Importar",
     backup: "Respaldar",
     restore: "Restaurar",
+    uploadFile: "Subir archivo",
   },
 
   // Common labels and fields
@@ -50,6 +51,7 @@ export const translations = {
     month: "Mes",
     actions: "Acciones",
     receiptNumber: "Número de Comprobante",
+    receiptFile: "Comprobante",
 
     // Financial terms
     income: "Ingresos",

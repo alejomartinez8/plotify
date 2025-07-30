@@ -19,6 +19,9 @@ const ExpenseSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, translations.errors.categoryRequired),
   receiptNumber: z.string().optional(),
+  receiptFileId: z.string().optional(),
+  receiptFileUrl: z.string().optional(),
+  receiptFileName: z.string().optional(),
 });
 
 const CreateExpense = ExpenseSchema;
@@ -51,6 +54,9 @@ export async function createExpenseAction(
     description: formData.get("description"),
     category: formData.get("category"),
     receiptNumber: formData.get("receiptNumber"),
+    receiptFileId: formData.get("receiptFileId"),
+    receiptFileUrl: formData.get("receiptFileUrl"),
+    receiptFileName: formData.get("receiptFileName"),
   });
 
   if (!validatedFields.success) {
@@ -61,7 +67,7 @@ export async function createExpenseAction(
     };
   }
 
-  const { type, amount, date, description, category, receiptNumber } = validatedFields.data;
+  const { type, amount, date, description, category, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
 
   try {
     const result = await createExpense({
@@ -71,6 +77,9 @@ export async function createExpenseAction(
       description: description || "",
       category,
       receiptNumber: receiptNumber || null,
+      receiptFileId: receiptFileId || null,
+      receiptFileUrl: receiptFileUrl || null,
+      receiptFileName: receiptFileName || null,
     });
 
     if (!result) {
@@ -103,6 +112,9 @@ export async function updateExpenseAction(
     description: formData.get("description"),
     category: formData.get("category"),
     receiptNumber: formData.get("receiptNumber"),
+    receiptFileId: formData.get("receiptFileId"),
+    receiptFileUrl: formData.get("receiptFileUrl"),
+    receiptFileName: formData.get("receiptFileName"),
   });
 
   if (!validatedFields.success) {
@@ -113,7 +125,7 @@ export async function updateExpenseAction(
     };
   }
 
-  const { id, type, amount, date, description, category, receiptNumber } =
+  const { id, type, amount, date, description, category, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } =
     validatedFields.data;
 
   try {
@@ -124,6 +136,9 @@ export async function updateExpenseAction(
       description: description || "",
       category,
       receiptNumber: receiptNumber || null,
+      receiptFileId: receiptFileId || null,
+      receiptFileUrl: receiptFileUrl || null,
+      receiptFileName: receiptFileName || null,
     });
 
     if (!result) {

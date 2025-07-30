@@ -18,6 +18,9 @@ const ContributionSchema = z.object({
   date: z.string().min(1, translations.errors.dateValid),
   description: z.string().optional(),
   receiptNumber: z.string().optional(),
+  receiptFileId: z.string().optional(),
+  receiptFileUrl: z.string().optional(),
+  receiptFileName: z.string().optional(),
 });
 
 const CreateContribution = ContributionSchema;
@@ -49,6 +52,9 @@ export async function createContributionAction(
     date: formData.get("date"),
     description: formData.get("description"),
     receiptNumber: formData.get("receiptNumber"),
+    receiptFileId: formData.get("receiptFileId"),
+    receiptFileUrl: formData.get("receiptFileUrl"),
+    receiptFileName: formData.get("receiptFileName"),
   });
 
   if (!validatedFields.success) {
@@ -59,7 +65,7 @@ export async function createContributionAction(
     };
   }
 
-  const { lotId, type, amount, date, description, receiptNumber } = validatedFields.data;
+  const { lotId, type, amount, date, description, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
 
   try {
     const result = await createContribution({
@@ -69,6 +75,9 @@ export async function createContributionAction(
       date,
       description: description || "",
       receiptNumber: receiptNumber || null,
+      receiptFileId: receiptFileId || null,
+      receiptFileUrl: receiptFileUrl || null,
+      receiptFileName: receiptFileName || null,
     });
 
     if (!result) {
@@ -101,6 +110,9 @@ export async function updateContributionAction(
     date: formData.get("date"),
     description: formData.get("description"),
     receiptNumber: formData.get("receiptNumber"),
+    receiptFileId: formData.get("receiptFileId"),
+    receiptFileUrl: formData.get("receiptFileUrl"),
+    receiptFileName: formData.get("receiptFileName"),
   });
 
   if (!validatedFields.success) {
@@ -111,7 +123,7 @@ export async function updateContributionAction(
     };
   }
 
-  const { id, lotId, type, amount, date, description, receiptNumber } = validatedFields.data;
+  const { id, lotId, type, amount, date, description, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
 
   try {
     const result = await updateContribution(id, {
@@ -121,6 +133,9 @@ export async function updateContributionAction(
       date,
       description: description || "",
       receiptNumber: receiptNumber || null,
+      receiptFileId: receiptFileId || null,
+      receiptFileUrl: receiptFileUrl || null,
+      receiptFileName: receiptFileName || null,
     });
 
     if (!result) {

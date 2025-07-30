@@ -8,4 +8,7 @@ export interface Contribution {
   date: string;
   description: string;
   receiptNumber?: string | null;
+  receiptFileId?: string | null;
+  receiptFileUrl?: string | null;
+  receiptFileName?: string | null;
 }

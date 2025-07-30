@@ -8,4 +8,7 @@ export interface Expense {
   description: string;
   category: string;
   receiptNumber?: string | null;
+  receiptFileId?: string | null;
+  receiptFileUrl?: string | null;
+  receiptFileName?: string | null;
 }

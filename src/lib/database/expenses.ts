@@ -45,6 +45,9 @@ export async function createExpense(data: {
   description: string;
   category: string;
   receiptNumber?: string | null;
+  receiptFileId?: string | null;
+  receiptFileUrl?: string | null;
+  receiptFileName?: string | null;
 }): Promise<Expense | null> {
   try {
     const expense = await prisma.expense.create({
@@ -70,6 +73,9 @@ export async function updateExpense(
     description?: string;
     category?: string;
     receiptNumber?: string | null;
+    receiptFileId?: string | null;
+    receiptFileUrl?: string | null;
+    receiptFileName?: string | null;
   }
 ): Promise<Expense | null> {
   try {
