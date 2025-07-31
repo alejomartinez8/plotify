@@ -192,7 +192,7 @@ export default function ExpenseTable({
                       {getSortIcon('receiptNumber')}
                     </div>
                   </TableHead>
-                  {(isAuthenticated || expenses.some(e => e.receiptFileUrl)) && (
+                  {isAuthenticated && (
                     <TableHead className="px-6 py-4 text-center font-semibold tracking-wide border-b-2 border-border">
                       {translations.labels.actions}
                     </TableHead>
@@ -239,42 +239,27 @@ export default function ExpenseTable({
                         <span>{expense.receiptNumber || '—'}</span>
                       </div>
                     </TableCell>
-                    {(isAuthenticated || expense.receiptFileUrl) && (
+                    {isAuthenticated && (
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          {expense.receiptFileUrl && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(expense.receiptFileUrl!, '_blank')}
-                              className="h-8 w-8 p-0 hover:bg-green-50"
-                              title={translations.actions.viewReceipt}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {isAuthenticated && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onEdit?.(expense)}
-                                className="h-8 w-8 p-0 hover:bg-muted"
-                                title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onDelete?.(expense)}
-                                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-                                title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onEdit?.(expense)}
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onDelete?.(expense)}
+                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                            title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     )}
@@ -282,7 +267,7 @@ export default function ExpenseTable({
                 ))}
                 {sortedExpenses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 6 : 5} className="px-6 py-12 text-center">
+                    <TableCell colSpan={isAuthenticated ? 6 : 5} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
                           <span className="text-2xl text-muted-foreground">💳</span>
@@ -303,7 +288,7 @@ export default function ExpenseTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 6 : 5} className="border-t-2 border-muted p-0" />
+                      <TableCell colSpan={isAuthenticated ? 6 : 5} className="border-t-2 border-muted p-0" />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
@@ -315,7 +300,7 @@ export default function ExpenseTable({
                           {formatCurrency(tableTotals.total)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 2 : 1} />
+                      <TableCell colSpan={isAuthenticated ? 2 : 1} />
                     </TableRow>
                   </>
                 )}
