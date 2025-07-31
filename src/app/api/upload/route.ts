@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
     
     // Optional fields based on type
     const lotNumber = formData.get("lotNumber") as string;
-    const fundType = formData.get("fundType") as string;
     const category = formData.get("category") as string;
 
     // Validate required fields
@@ -72,7 +71,6 @@ export async function POST(req: NextRequest) {
       type,
       lotNumber,
       category,
-      fundType,
       amount,
       receiptNumber,
     });

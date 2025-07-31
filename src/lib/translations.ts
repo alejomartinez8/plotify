@@ -35,6 +35,7 @@ export const translations = {
     backup: "Respaldar",
     restore: "Restaurar",
     uploadFile: "Subir archivo",
+    viewReceipt: "Ver Comprobante",
   },
 
   // Common labels and fields

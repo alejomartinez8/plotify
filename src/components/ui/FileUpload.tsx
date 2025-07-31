@@ -18,6 +18,7 @@ interface FileUploadProps {
   className?: string;
   showPreview?: boolean;
   previewFileName?: string;
+  onRemovePreview?: () => void;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -38,6 +39,7 @@ export function FileUpload({
   className,
   showPreview = true,
   previewFileName,
+  onRemovePreview,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -105,9 +107,15 @@ export function FileUpload({
   };
 
   const handleRemoveFile = () => {
+    // Clear any selected file
     handleFileSelect(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+    
+    // If there's a preview file and a remove callback, call it
+    if (previewFileName && onRemovePreview) {
+      onRemovePreview();
     }
   };
 

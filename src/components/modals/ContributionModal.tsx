@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useActionState, useTransition, useState } from "react";
+import { useReceiptUpload } from "@/hooks/useReceiptUpload";
 import { Lot } from "@/types/lots.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import {
@@ -27,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { cn } from "@/lib/utils";
+import { cn, formatDateForStorage } from "@/lib/utils";
 
 interface ContributionModalProps {
   contribution?: Contribution | null;
@@ -49,9 +50,13 @@ export default function ContributionModal({
     ? updateContributionAction
     : createContributionAction;
   const [state, formAction] = useActionState(action, initialState);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewFileName, setPreviewFileName] = useState<string | undefined>(
+    contribution?.receiptFileName || undefined
+  );
+  const { uploadReceipt, isUploading } = useReceiptUpload();
 
   useEffect(() => {
     if (state?.success) {
@@ -60,48 +65,27 @@ export default function ContributionModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsUploading(true);
-    
+    setIsSubmitting(true);
+
     try {
-      let fileData = null;
-      
-      // Upload file if selected
-      if (selectedFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", selectedFile);
-        uploadFormData.append("type", "income");
-        uploadFormData.append("date", formData.get("date") as string);
-        uploadFormData.append("amount", formData.get("amount") as string);
-        uploadFormData.append("receiptNumber", formData.get("receiptNumber") as string || "");
-        
-        // Add lot info for file naming
-        const selectedLot = lots.find(lot => lot.id === formData.get("lotId"));
-        if (selectedLot) {
-          uploadFormData.append("lotNumber", selectedLot.lotNumber);
-        }
-        uploadFormData.append("fundType", formData.get("type") as string);
+      // Handle receipt upload using the custom hook
+      const selectedLot = lots.find((lot) => lot.id === formData.get("lotId"));
+      const additionalData: Record<string, string> = {
+        fundType: formData.get("type") as string,
+      };
 
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: uploadFormData,
-        });
-
-        if (!uploadResponse.ok) {
-          const errorDetails = await uploadResponse.json();
-          console.error("Upload failed:", errorDetails);
-          throw new Error(errorDetails.details || errorDetails.error || "Failed to upload file");
-        }
-
-        const uploadResult = await uploadResponse.json();
-        fileData = uploadResult.file;
+      if (selectedLot) {
+        additionalData.lotNumber = selectedLot.lotNumber;
       }
 
-      // Add file data to form
-      if (fileData) {
-        formData.append("receiptFileId", fileData.id);
-        formData.append("receiptFileUrl", fileData.url);
-        formData.append("receiptFileName", fileData.name);
-      }
+      await uploadReceipt({
+        type: "income",
+        formData,
+        selectedFile,
+        existingRecord: contribution,
+        previewFileName,
+        additionalData,
+      });
 
       startTransition(() => {
         const updatedContribution: Contribution = {
@@ -119,15 +103,17 @@ export default function ContributionModal({
     } catch (error) {
       console.error("Error submitting form:", error);
       // Show error to user
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      alert(
+        `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`
+      );
     } finally {
-      setIsUploading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {contribution
@@ -163,7 +149,7 @@ export default function ContributionModal({
               name="lotId"
               defaultValue={contribution?.lotId?.toString() || ""}
               required
-              disabled={lotsLoading || isPending}
+              disabled={lotsLoading || isSubmitting}
             >
               <SelectTrigger>
                 <SelectValue
@@ -195,7 +181,7 @@ export default function ContributionModal({
               name="type"
               defaultValue={contribution?.type || "maintenance"}
               required
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -229,7 +215,7 @@ export default function ContributionModal({
               required
               min="0"
               step="1"
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.amount && (
               <div className="text-destructive text-sm">
@@ -244,9 +230,13 @@ export default function ContributionModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={contribution?.date || ""}
+              defaultValue={
+                contribution?.date
+                  ? formatDateForStorage(contribution.date)
+                  : ""
+              }
               required
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.date && (
               <div className="text-destructive text-sm">
@@ -265,7 +255,7 @@ export default function ContributionModal({
               id="description"
               defaultValue={contribution?.description || ""}
               placeholder={translations.placeholders.optionalDescription}
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.description && (
               <div className="text-destructive text-sm">
@@ -284,7 +274,7 @@ export default function ContributionModal({
               id="receiptNumber"
               defaultValue={contribution?.receiptNumber || ""}
               placeholder={translations.placeholders.receiptNumber}
-              disabled={isPending || isUploading}
+              disabled={isSubmitting}
             />
             {state.errors?.receiptNumber && (
               <div className="text-destructive text-sm">
@@ -296,9 +286,10 @@ export default function ContributionModal({
           <FileUpload
             onFileSelect={setSelectedFile}
             value={selectedFile}
-            disabled={isPending || isUploading}
+            disabled={isSubmitting || isUploading}
             showPreview={true}
-            previewFileName={contribution?.receiptFileName || undefined}
+            previewFileName={previewFileName}
+            onRemovePreview={() => setPreviewFileName(undefined)}
           />
         </form>
         <DialogFooter>
@@ -306,15 +297,19 @@ export default function ContributionModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isPending}
+            disabled={isSubmitting || isUploading}
           >
             {translations.actions.cancel}
           </Button>
-          <Button type="submit" form="contribution-form" disabled={isPending || isUploading}>
-            {isPending || isUploading
+          <Button
+            type="submit"
+            form="contribution-form"
+            disabled={isSubmitting || isUploading}
+          >
+            {isSubmitting || isUploading
               ? translations.status.processing
               : contribution
-                ? "Update"
+                ? translations.actions.update
                 : translations.actions.save}
           </Button>
         </DialogFooter>
