@@ -206,6 +206,7 @@ export default function IncomeList({
                   amount={contribution.amount}
                   description={contribution.description}
                   receiptNumber={contribution.receiptNumber}
+                  receiptFileUrl={contribution.receiptFileUrl}
                   amountColorClass="text-emerald-600"
                   isAuthenticated={isAuthenticated}
                   onEdit={() => onEdit(contribution)}

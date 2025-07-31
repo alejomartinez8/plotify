@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useActionState, useTransition, useState } from "react";
+import { useReceiptUpload } from "@/hooks/useReceiptUpload";
 import { Expense } from "@/types/expenses.types";
 import {
   createExpenseAction,
@@ -26,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { cn } from "@/lib/utils";
+import { cn, formatDateForStorage } from "@/lib/utils";
 
 interface ExpenseModalProps {
   expense?: Expense | null;
@@ -42,9 +43,13 @@ export default function ExpenseModal({
   const initialState: ExpenseState = { message: null, errors: {} };
   const action = expense ? updateExpenseAction : createExpenseAction;
   const [state, formAction] = useActionState(action, initialState);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewFileName, setPreviewFileName] = useState<string | undefined>(
+    expense?.receiptFileName || undefined
+  );
+  const { uploadReceipt, isUploading } = useReceiptUpload();
 
   useEffect(() => {
     if (state?.success) {
@@ -53,42 +58,22 @@ export default function ExpenseModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsUploading(true);
+    setIsSubmitting(true);
     
     try {
-      let fileData = null;
-      
-      // Upload file if selected
-      if (selectedFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", selectedFile);
-        uploadFormData.append("type", "expense");
-        uploadFormData.append("date", formData.get("date") as string);
-        uploadFormData.append("amount", formData.get("amount") as string);
-        uploadFormData.append("receiptNumber", formData.get("receiptNumber") as string || "");
-        uploadFormData.append("category", formData.get("category") as string);
+      // Handle receipt upload using the custom hook
+      const additionalData: Record<string, string> = {
+        category: formData.get("category") as string,
+      };
 
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: uploadFormData,
-        });
-
-        if (!uploadResponse.ok) {
-          const errorDetails = await uploadResponse.json();
-          console.error("Upload failed:", errorDetails);
-          throw new Error(errorDetails.details || errorDetails.error || "Failed to upload file");
-        }
-
-        const uploadResult = await uploadResponse.json();
-        fileData = uploadResult.file;
-      }
-
-      // Add file data to form
-      if (fileData) {
-        formData.append("receiptFileId", fileData.id);
-        formData.append("receiptFileUrl", fileData.url);
-        formData.append("receiptFileName", fileData.name);
-      }
+      await uploadReceipt({
+        type: "expense",
+        formData,
+        selectedFile,
+        existingRecord: expense,
+        previewFileName,
+        additionalData,
+      });
 
       startTransition(() => {
         const updatedExpense: Expense = {
@@ -108,13 +93,13 @@ export default function ExpenseModal({
       // Show error to user
       alert(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
     } finally {
-      setIsUploading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {expense
@@ -144,7 +129,7 @@ export default function ExpenseModal({
               name="type"
               defaultValue={expense?.type || "maintenance"}
               required
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -175,7 +160,7 @@ export default function ExpenseModal({
               required
               min="0"
               step="1"
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.amount && (
               <div className="text-destructive text-sm">
@@ -190,9 +175,9 @@ export default function ExpenseModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={expense?.date || ""}
+              defaultValue={expense?.date ? formatDateForStorage(expense.date) : ""}
               required
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.date && (
               <div className="text-destructive text-sm">
@@ -211,7 +196,7 @@ export default function ExpenseModal({
               id="description"
               defaultValue={expense?.description || ""}
               placeholder={translations.placeholders.optionalDescription}
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.description && (
               <div className="text-destructive text-sm">
@@ -229,7 +214,7 @@ export default function ExpenseModal({
               defaultValue={expense?.category || ""}
               placeholder={translations.placeholders.categoryExample}
               required
-              disabled={isPending}
+              disabled={isSubmitting}
             />
             {state.errors?.category && (
               <div className="text-destructive text-sm">
@@ -248,7 +233,7 @@ export default function ExpenseModal({
               id="receiptNumber"
               defaultValue={expense?.receiptNumber || ""}
               placeholder={translations.placeholders.receiptNumber}
-              disabled={isPending || isUploading}
+              disabled={isSubmitting}
             />
             {state.errors?.receiptNumber && (
               <div className="text-destructive text-sm">
@@ -260,9 +245,10 @@ export default function ExpenseModal({
           <FileUpload
             onFileSelect={setSelectedFile}
             value={selectedFile}
-            disabled={isPending || isUploading}
+            disabled={isSubmitting || isUploading}
             showPreview={true}
-            previewFileName={expense?.receiptFileName || undefined}
+            previewFileName={previewFileName}
+            onRemovePreview={() => setPreviewFileName(undefined)}
           />
         </form>
         <DialogFooter>
@@ -270,7 +256,7 @@ export default function ExpenseModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isPending}
+            disabled={isSubmitting || isUploading}
           >
             {translations.actions.cancel}
           </Button>
@@ -278,9 +264,9 @@ export default function ExpenseModal({
             type="submit"
             form="expense-form"
             variant="secondary"
-            disabled={isPending || isUploading}
+            disabled={isSubmitting || isUploading}
           >
-            {isPending || isUploading
+            {isSubmitting || isUploading
               ? translations.status.processing
               : expense
                 ? translations.actions.update

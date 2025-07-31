@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ChevronUp, ChevronDown, Edit, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Edit, Trash2, Eye, FileText } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
@@ -192,7 +192,7 @@ export default function ExpenseTable({
                       {getSortIcon('receiptNumber')}
                     </div>
                   </TableHead>
-                  {isAuthenticated && (
+                  {(isAuthenticated || expenses.some(e => e.receiptFileUrl)) && (
                     <TableHead className="px-6 py-4 text-center font-semibold tracking-wide border-b-2 border-border">
                       {translations.labels.actions}
                     </TableHead>
@@ -226,31 +226,55 @@ export default function ExpenseTable({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4">
-                      <div className="text-muted-foreground">
-                        {expense.receiptNumber || '—'}
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        {expense.receiptFileUrl && (
+                          <div 
+                            className="p-1 bg-green-100 rounded cursor-pointer hover:bg-green-200 transition-colors"
+                            onClick={() => window.open(expense.receiptFileUrl!, '_blank')}
+                            title={translations.actions.viewReceipt}
+                          >
+                            <FileText className="h-3.5 w-3.5 text-green-600" />
+                          </div>
+                        )}
+                        <span>{expense.receiptNumber || '—'}</span>
                       </div>
                     </TableCell>
-                    {isAuthenticated && (
+                    {(isAuthenticated || expense.receiptFileUrl) && (
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onEdit?.(expense)}
-                            className="h-8 w-8 p-0 hover:bg-muted"
-                            title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onDelete?.(expense)}
-                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-                            title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {expense.receiptFileUrl && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(expense.receiptFileUrl!, '_blank')}
+                              className="h-8 w-8 p-0 hover:bg-green-50"
+                              title={translations.actions.viewReceipt}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {isAuthenticated && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onEdit?.(expense)}
+                                className="h-8 w-8 p-0 hover:bg-muted"
+                                title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onDelete?.(expense)}
+                                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                                title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     )}
@@ -258,7 +282,7 @@ export default function ExpenseTable({
                 ))}
                 {sortedExpenses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={isAuthenticated ? 6 : 5} className="px-6 py-12 text-center">
+                    <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 6 : 5} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
                           <span className="text-2xl text-muted-foreground">💳</span>
@@ -279,7 +303,7 @@ export default function ExpenseTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={isAuthenticated ? 6 : 5} className="border-t-2 border-muted p-0" />
+                      <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 6 : 5} className="border-t-2 border-muted p-0" />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
@@ -291,7 +315,7 @@ export default function ExpenseTable({
                           {formatCurrency(tableTotals.total)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={isAuthenticated ? 2 : 1} />
+                      <TableCell colSpan={(isAuthenticated || expenses.some(e => e.receiptFileUrl)) ? 2 : 1} />
                     </TableRow>
                   </>
                 )}
