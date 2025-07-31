@@ -242,17 +242,6 @@ export default function ExpenseTable({
                     {(isAuthenticated || expense.receiptFileUrl) && (
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          {expense.receiptFileUrl && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(expense.receiptFileUrl!, '_blank')}
-                              className="h-8 w-8 p-0 hover:bg-green-50"
-                              title={translations.actions.viewReceipt}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          )}
                           {isAuthenticated && (
                             <>
                               <Button
