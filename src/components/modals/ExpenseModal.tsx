@@ -61,8 +61,8 @@ export default function ExpenseModal({
     setIsSubmitting(true);
     
     try {
-      // Only handle receipt upload if there's actually a file to upload
-      if (selectedFile) {
+      // Handle receipt upload for new files OR preserve existing receipt data
+      if (selectedFile || (expense && expense.receiptFileId)) {
         const additionalData: Record<string, string> = {
           category: formData.get("category") as string,
         };
@@ -72,7 +72,6 @@ export default function ExpenseModal({
           formData,
           selectedFile,
           existingRecord: expense,
-          previewFileName,
           additionalData,
         });
       }
