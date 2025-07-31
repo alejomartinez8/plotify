@@ -51,7 +51,7 @@ export const translations = {
     year: "Año",
     month: "Mes",
     actions: "Acciones",
-    receiptNumber: "Número de Comprobante",
+    receiptNumber: "Comprobante",
     receiptFile: "Comprobante",
 
     // Financial terms

@@ -49,15 +49,19 @@ export default function FilterSection({
 }: FilterSectionProps) {
   return (
     <div className="mb-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Left side: Title and Action buttons */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-          <h1 className="text-2xl font-bold">{title}</h1>
-          {actionButton}
-        </div>
+      {/* Top row: Title and Action buttons */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h1 className="text-2xl font-bold">{title}</h1>
+        {actionButton && (
+          <div className="flex items-center">
+            {actionButton}
+          </div>
+        )}
+      </div>
 
-        {/* Right side: Filters */}
-        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+      {/* Second row: Filters */}
+      {(viewFilter || typeFilter || yearFilter || lotFilter) && (
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:flex-wrap border-t pt-4">
           {/* View Filter (optional) */}
           {viewFilter && (
             <div className="flex items-center space-x-2">
@@ -149,7 +153,7 @@ export default function FilterSection({
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
