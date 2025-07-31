@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
@@ -32,6 +32,7 @@ export default function IncomeView({
     useState<Contribution | null>(null);
   const [selectedLotId, setSelectedLotId] = useState<string>("");
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
+  const [yearFilter, setYearFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("list");
 
   const searchParams = useSearchParams();
@@ -41,6 +42,7 @@ export default function IncomeView({
   useEffect(() => {
     const lotParam = searchParams.get("lot");
     const typeParam = searchParams.get("type") as IncomeType;
+    const yearParam = searchParams.get("year");
     const tabParam = searchParams.get("tab");
 
     if (lotParam && lots.some((lot) => lot.id === lotParam)) {
@@ -66,6 +68,12 @@ export default function IncomeView({
       params.delete("type");
       router.replace(`?${params.toString()}`, { scroll: false });
       setIncomeFilter("all");
+    }
+
+    if (yearParam) {
+      setYearFilter(yearParam);
+    } else {
+      setYearFilter("all");
     }
 
     if (tabParam && ["list", "summary"].includes(tabParam)) {
@@ -105,6 +113,20 @@ export default function IncomeView({
       params.set("type", incomeType);
     } else {
       params.delete("type");
+    }
+
+    // Update URL without causing a page refresh
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleYearFilterChange = (year: string) => {
+    setYearFilter(year);
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (year !== "all") {
+      params.set("year", year);
+    } else {
+      params.delete("year");
     }
 
     // Update URL without causing a page refresh
@@ -161,6 +183,34 @@ export default function IncomeView({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  // Extract unique years from contributions for filter options
+  const availableYears = React.useMemo(() => {
+    const years = new Set<string>();
+    contributions.forEach(contribution => {
+      const date = new Date(contribution.date);
+      if (!isNaN(date.getTime())) {
+        years.add(date.getFullYear().toString());
+      }
+    });
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
+  }, [contributions]);
+
+  const yearFilterOptions = React.useMemo(() => [
+    { value: "all", label: translations.filters.allYears },
+    ...availableYears.map(year => ({ value: year, label: year }))
+  ], [availableYears]);
+
+  // Filter contributions by year
+  const filteredContributions = React.useMemo(() => {
+    if (yearFilter === "all") {
+      return contributions;
+    }
+    return contributions.filter(contribution => {
+      const date = new Date(contribution.date);
+      return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
+    });
+  }, [contributions, yearFilter]);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with unified filters and actions */}
@@ -201,6 +251,11 @@ export default function IncomeView({
             { value: "others", label: translations.labels.others },
           ],
         }}
+        yearFilter={{
+          value: yearFilter,
+          onChange: handleYearFilterChange,
+          options: yearFilterOptions,
+        }}
         lotFilter={
           activeTab === "list"
             ? {
@@ -216,7 +271,7 @@ export default function IncomeView({
       <div className="mt-6">
         {activeTab === "list" && (
           <IncomeReceiptTable
-            contributions={contributions}
+            contributions={filteredContributions}
             lots={lots}
             selectedLotId={selectedLotId}
             incomeFilter={incomeFilter}
@@ -229,7 +284,7 @@ export default function IncomeView({
         {activeTab === "summary" && (
           <IncomeTable
             lots={lots}
-            contributions={contributions}
+            contributions={filteredContributions}
             incomeFilter={incomeFilter}
             onLotClick={handleLotClickFromSummary}
           />
