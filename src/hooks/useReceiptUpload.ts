@@ -9,7 +9,6 @@ interface ReceiptUploadParams {
     receiptFileUrl?: string | null;
     receiptFileName?: string | null;
   } | null;
-  previewFileName?: string;
   additionalData?: Record<string, string>;
 }
 
@@ -28,7 +27,6 @@ export function useReceiptUpload() {
     formData,
     selectedFile,
     existingRecord,
-    previewFileName,
     additionalData = {},
   }: ReceiptUploadParams): Promise<void> => {
     let fileData: FileUploadResult | null = null;
@@ -57,7 +55,6 @@ export function useReceiptUpload() {
 
         if (!uploadResponse.ok) {
           const errorDetails = await uploadResponse.json();
-          console.error("Upload failed:", errorDetails);
           throw new Error(errorDetails.details || errorDetails.error || "Failed to upload file");
         }
 
@@ -74,8 +71,9 @@ export function useReceiptUpload() {
       formData.append("receiptFileId", fileData.id);
       formData.append("receiptFileUrl", fileData.url);
       formData.append("receiptFileName", fileData.name);
-    } else if (existingRecord?.receiptFileId && !selectedFile && previewFileName) {
-      // Preserve existing file data when updating without new file and preview not removed
+    } else if (existingRecord?.receiptFileId && !selectedFile) {
+      // Preserve existing file data when updating without new file
+      // This allows users to edit other fields while keeping their existing receipt
       formData.append("receiptFileId", existingRecord.receiptFileId);
       formData.append("receiptFileUrl", existingRecord.receiptFileUrl || "");
       formData.append("receiptFileName", existingRecord.receiptFileName || "");

@@ -68,24 +68,25 @@ export default function ContributionModal({
     setIsSubmitting(true);
 
     try {
-      // Handle receipt upload using the custom hook
-      const selectedLot = lots.find((lot) => lot.id === formData.get("lotId"));
-      const additionalData: Record<string, string> = {
-        fundType: formData.get("type") as string,
-      };
+      // Handle receipt upload for new files OR preserve existing receipt data
+      if (selectedFile || (contribution && contribution.receiptFileId)) {
+        const selectedLot = lots.find((lot) => lot.id === formData.get("lotId"));
+        const additionalData: Record<string, string> = {
+          fundType: formData.get("type") as string,
+        };
 
-      if (selectedLot) {
-        additionalData.lotNumber = selectedLot.lotNumber;
+        if (selectedLot) {
+          additionalData.lotNumber = selectedLot.lotNumber;
+        }
+
+        await uploadReceipt({
+          type: "income",
+          formData,
+          selectedFile,
+          existingRecord: contribution,
+          additionalData,
+        });
       }
-
-      await uploadReceipt({
-        type: "income",
-        formData,
-        selectedFile,
-        existingRecord: contribution,
-        previewFileName,
-        additionalData,
-      });
 
       startTransition(() => {
         const updatedContribution: Contribution = {
@@ -100,11 +101,13 @@ export default function ContributionModal({
         onSuccess(updatedContribution, !!contribution);
         formAction(formData);
       });
+
     } catch (error) {
-      console.error("Error submitting form:", error);
+      const errorInstance = error instanceof Error ? error : new Error(String(error));
+      
       // Show error to user
       alert(
-        `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`
+        `Error: ${errorInstance.message}`
       );
     } finally {
       setIsSubmitting(false);

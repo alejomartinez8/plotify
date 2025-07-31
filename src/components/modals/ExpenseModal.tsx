@@ -61,19 +61,21 @@ export default function ExpenseModal({
     setIsSubmitting(true);
     
     try {
-      // Handle receipt upload using the custom hook
-      const additionalData: Record<string, string> = {
-        category: formData.get("category") as string,
-      };
+      // Only handle receipt upload if there's actually a file to upload
+      if (selectedFile) {
+        const additionalData: Record<string, string> = {
+          category: formData.get("category") as string,
+        };
 
-      await uploadReceipt({
-        type: "expense",
-        formData,
-        selectedFile,
-        existingRecord: expense,
-        previewFileName,
-        additionalData,
-      });
+        await uploadReceipt({
+          type: "expense",
+          formData,
+          selectedFile,
+          existingRecord: expense,
+          previewFileName,
+          additionalData,
+        });
+      }
 
       startTransition(() => {
         const updatedExpense: Expense = {
@@ -89,9 +91,9 @@ export default function ExpenseModal({
         formAction(formData);
       });
     } catch (error) {
-      console.error("Error submitting form:", error);
+      const errorInstance = error instanceof Error ? error : new Error(String(error));
       // Show error to user
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      alert(`Error: ${errorInstance.message}`);
     } finally {
       setIsSubmitting(false);
     }

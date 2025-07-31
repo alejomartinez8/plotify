@@ -8,6 +8,7 @@ import {
   deleteContribution,
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
+import { logger } from "@/lib/logger";
 
 const ContributionSchema = z.object({
   lotId: z.string().min(1, translations.errors.lotRequired),
@@ -18,9 +19,9 @@ const ContributionSchema = z.object({
   date: z.string().min(1, translations.errors.dateValid),
   description: z.string().optional(),
   receiptNumber: z.string().optional(),
-  receiptFileId: z.string().optional(),
-  receiptFileUrl: z.string().optional(),
-  receiptFileName: z.string().optional(),
+  receiptFileId: z.string().nullable().optional(),
+  receiptFileUrl: z.string().nullable().optional(),
+  receiptFileName: z.string().nullable().optional(),
 });
 
 const CreateContribution = ContributionSchema;
@@ -45,7 +46,9 @@ export async function createContributionAction(
   prevState: ContributionState,
   formData: FormData
 ): Promise<ContributionState> {
-  const validatedFields = CreateContribution.safeParse({
+  const actionTimer = logger.timer('Create Contribution Action');
+  
+  const rawData = {
     lotId: formData.get("lotId"),
     type: formData.get("type"),
     amount: formData.get("amount"),
@@ -55,9 +58,17 @@ export async function createContributionAction(
     receiptFileId: formData.get("receiptFileId"),
     receiptFileUrl: formData.get("receiptFileUrl"),
     receiptFileName: formData.get("receiptFileName"),
-  });
+  };
+
+  const validatedFields = CreateContribution.safeParse(rawData);
 
   if (!validatedFields.success) {
+    logger.error("Contribution validation failed", new Error("Validation error"), {
+      component: 'createContributionAction',
+      errors: validatedFields.error.flatten().fieldErrors
+    });
+    
+    actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: `${translations.errors.missingFields}. Failed to create contribution.`,
@@ -81,12 +92,21 @@ export async function createContributionAction(
     });
 
     if (!result) {
+      logger.error("Database operation failed", new Error("Create contribution returned null"), {
+        component: 'createContributionAction'
+      });
+      actionTimer.end();
       return {
         message: "Database Error: Failed to create contribution.",
         success: false,
       };
     }
   } catch (error) {
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Database error during contribution creation", errorInstance, {
+      component: 'createContributionAction'
+    });
+    actionTimer.end();
     return {
       message: `${translations.errors.database}: Failed to create contribution.`,
       success: false,
@@ -95,6 +115,8 @@ export async function createContributionAction(
 
   revalidatePath("/income");
   revalidatePath("/");
+  actionTimer.end();
+  
   return { message: `${translations.messages.created}.`, success: true };
 }
 
