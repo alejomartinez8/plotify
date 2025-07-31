@@ -101,6 +101,7 @@ export const translations = {
     allIncome: "Todos los Ingresos",
     allLots: "Todos los Lotes",
     allExpenses: "Todos los Gastos",
+    allYears: "Todos los Años",
   },
 
   // Modal and form titles

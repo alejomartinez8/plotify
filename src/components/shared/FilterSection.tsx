@@ -31,6 +31,11 @@ interface FilterSectionProps {
     onChange: (value: string) => void;
     options: FilterOption[];
   };
+  yearFilter?: {
+    value: string;
+    onChange: (value: string) => void;
+    options: FilterOption[];
+  };
   actionButton?: React.ReactNode;
 }
 
@@ -39,6 +44,7 @@ export default function FilterSection({
   typeFilter,
   lotFilter,
   viewFilter,
+  yearFilter,
   actionButton,
 }: FilterSectionProps) {
   return (
@@ -89,6 +95,27 @@ export default function FilterSection({
                 </SelectTrigger>
                 <SelectContent>
                   {typeFilter.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Year Filter (optional) */}
+          {yearFilter && (
+            <div className="flex items-center space-x-2">
+              <Select
+                value={yearFilter.value}
+                onValueChange={yearFilter.onChange}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {yearFilter.options.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
