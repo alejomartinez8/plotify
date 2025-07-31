@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { getExpenses } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
+import { logger } from "@/lib/logger";
 
 
 function formatDate(date: string | Date): string {
@@ -22,6 +23,8 @@ export async function exportIncomesAction(): Promise<{
   filename?: string;
   error?: string;
 }> {
+  const actionTimer = logger.timer('Export Incomes Action');
+  
   try {
     // Get contributions with lot information
     const contributionsWithLots = await prisma.contribution.findMany({
@@ -70,13 +73,19 @@ export async function exportIncomesAction(): Promise<{
 
     const filename = `ingresos_${generateTimestamp()}.csv`;
 
+    actionTimer.end();
     return {
       success: true,
       data: csvWithBOM,
       filename,
     };
   } catch (error) {
-    console.error("Error exporting incomes:", error);
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error exporting incomes", errorInstance, {
+      component: 'exportIncomesAction'
+    });
+    actionTimer.end();
+    
     return {
       success: false,
       error: translations.errors.export.incomes,
@@ -90,6 +99,8 @@ export async function exportExpensesAction(): Promise<{
   filename?: string;
   error?: string;
 }> {
+  const actionTimer = logger.timer('Export Expenses Action');
+  
   try {
     const expenses = await getExpenses();
 
@@ -128,13 +139,19 @@ export async function exportExpensesAction(): Promise<{
 
     const filename = `gastos_${generateTimestamp()}.csv`;
 
+    actionTimer.end();
     return {
       success: true,
       data: csvWithBOM,
       filename,
     };
   } catch (error) {
-    console.error("Error exporting expenses:", error);
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error exporting expenses", errorInstance, {
+      component: 'exportExpensesAction'
+    });
+    actionTimer.end();
+    
     return {
       success: false,
       error: translations.errors.export.expenses,

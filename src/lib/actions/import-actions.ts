@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { translations } from "@/lib/translations";
+import { logger } from "@/lib/logger";
 
 interface ImportResult {
   success: boolean;
@@ -66,6 +67,8 @@ function parseDate(dateString: string): Date {
 }
 
 export async function importLotsAction(csvContent: string): Promise<ImportResult> {
+  const actionTimer = logger.timer('Import Lots Action');
+  
   try {
     await requireAuth();
 
@@ -135,6 +138,7 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
 
     revalidatePath("/lots");
 
+    actionTimer.end();
     return {
       success: true,
       message: `Se importaron ${imported} lotes exitosamente`,
@@ -143,7 +147,12 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
     };
 
   } catch (error) {
-    console.error("Error importing lots:", error);
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error importing lots", errorInstance, {
+      component: 'importLotsAction'
+    });
+    actionTimer.end();
+    
     return {
       success: false,
       message: translations.errors.import.lots
@@ -152,6 +161,8 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
 }
 
 export async function importIncomesAction(csvContent: string): Promise<ImportResult> {
+  const actionTimer = logger.timer('Import Incomes Action');
+  
   try {
     await requireAuth();
 
@@ -232,6 +243,7 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
     revalidatePath("/");
     revalidatePath("/lots");
 
+    actionTimer.end();
     return {
       success: true,
       message: `Se importaron ${imported} ingresos exitosamente`,
@@ -240,7 +252,12 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
     };
 
   } catch (error) {
-    console.error("Error importing incomes:", error);
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error importing incomes", errorInstance, {
+      component: 'importIncomesAction'
+    });
+    actionTimer.end();
+    
     return {
       success: false,
       message: translations.errors.import.incomes
@@ -249,6 +266,8 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
 }
 
 export async function importExpensesAction(csvContent: string): Promise<ImportResult> {
+  const actionTimer = logger.timer('Import Expenses Action');
+  
   try {
     await requireAuth();
 
@@ -313,6 +332,7 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
 
     revalidatePath("/expenses");
 
+    actionTimer.end();
     return {
       success: true,
       message: `Se importaron ${imported} gastos exitosamente`,
@@ -321,7 +341,12 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
     };
 
   } catch (error) {
-    console.error("Error importing expenses:", error);
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error importing expenses", errorInstance, {
+      component: 'importExpensesAction'
+    });
+    actionTimer.end();
+    
     return {
       success: false,
       message: translations.errors.import.expenses
