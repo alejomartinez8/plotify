@@ -160,25 +160,35 @@ class GoogleOAuthService {
     try {
       // Extract year from date
       const year = new Date(date).getFullYear().toString();
+      const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
+      
+      console.log(`Creating folder structure: ${year}/${typeFolderName}`);
       
       // Check if year folder exists
       let yearFolderId = await this.findFolder(year, rootFolderId);
       if (!yearFolderId) {
+        console.log(`Year folder '${year}' not found, creating...`);
         yearFolderId = await this.createFolder(year, rootFolderId);
-        console.log(`Created year folder: ${year}`);
+        console.log(`Year folder created: ${year} (ID: ${yearFolderId})`);
+      } else {
+        console.log(`Year folder found: ${year} (ID: ${yearFolderId})`);
       }
 
       // Check if type folder exists within year folder (Ingresos/Gastos)
-      const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
       let typeFolderId = await this.findFolder(typeFolderName, yearFolderId);
       if (!typeFolderId) {
+        console.log(`Type folder '${typeFolderName}' not found in year '${year}', creating...`);
         typeFolderId = await this.createFolder(typeFolderName, yearFolderId);
-        console.log(`Created type folder: ${year}/${typeFolderName}`);
+        console.log(`Type folder created: ${year}/${typeFolderName} (ID: ${typeFolderId})`);
+      } else {
+        console.log(`Type folder found: ${year}/${typeFolderName} (ID: ${typeFolderId})`);
       }
 
+      console.log(`Folder structure ready: ${year}/${typeFolderName} (Final ID: ${typeFolderId})`);
       return typeFolderId;
     } catch (error) {
       console.error("Error creating folder structure:", error);
+      console.log("Falling back to root folder");
       return rootFolderId; // Fallback to root folder
     }
   }
@@ -190,12 +200,25 @@ class GoogleOAuthService {
     try {
       const response = await this.drive.files.list({
         q: `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-        fields: "files(id, name)",
+        fields: "files(id, name, createdTime)",
+        orderBy: "createdTime",
       });
 
       const folders = response.data.files || [];
       if (folders.length > 1) {
-        console.warn(`Found ${folders.length} folders with name '${name}' in parent '${parentId}'. Using first one.`);
+        console.warn(`Found ${folders.length} duplicate folders with name '${name}' in parent '${parentId}'`);
+        
+        // Use the oldest folder (first created) and log the duplicates
+        const primaryFolder = folders[0];
+        const duplicates = folders.slice(1);
+        
+        console.log(`Using primary folder: ${primaryFolder.name} (ID: ${primaryFolder.id}, Created: ${primaryFolder.createdTime})`);
+        console.log(`Found ${duplicates.length} duplicate folders that should be cleaned up:`, 
+          duplicates.map(f => `${f.name} (ID: ${f.id}, Created: ${f.createdTime})`));
+        
+        // TODO: In the future, we could implement automatic cleanup of empty duplicate folders
+        
+        return primaryFolder.id || null;
       }
 
       return folders[0]?.id || null;
@@ -206,7 +229,7 @@ class GoogleOAuthService {
   }
 
   /**
-   * Creates a new folder (with duplicate check)
+   * Creates a new folder (with duplicate check and retry logic)
    */
   private async createFolder(name: string, parentId: string): Promise<string> {
     try {
@@ -217,6 +240,7 @@ class GoogleOAuthService {
         return existingFolder;
       }
 
+      console.log(`Creating new folder '${name}' in parent '${parentId}'`);
       const response = await this.drive.files.create({
         requestBody: {
           name,
@@ -230,10 +254,27 @@ class GoogleOAuthService {
         throw new Error(`Failed to create folder: ${name}`);
       }
 
-      console.log(`Created new folder '${name}':`, response.data.id);
+      console.log(`Successfully created new folder '${name}':`, response.data.id);
+      
+      // Wait a moment for Google Drive to sync
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Verify the folder was created and return its ID
+      const verifyFolder = await this.findFolder(name, parentId);
+      if (verifyFolder) {
+        return verifyFolder;
+      }
+      
       return response.data.id;
     } catch (error) {
       console.error(`Error creating folder '${name}':`, error);
+      
+      // If creation failed, try one more time to find existing folder
+      const existingFolder = await this.findFolder(name, parentId);
+      if (existingFolder) {
+        console.log(`Found existing folder after failed creation: '${name}':`, existingFolder);
+        return existingFolder;
+      }
       throw error;
     }
   }

@@ -70,7 +70,7 @@ export const translations = {
     summary: "Resumen",
     summaryByLot: "Resumen por Lote",
     lotDetail: "Detalle por Lote",
-    list: "Lista",
+    list: "Vista por Comprobante",
     view: "Vista",
   },
 

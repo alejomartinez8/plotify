@@ -8,7 +8,7 @@ import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import FilterSection from "@/components/shared/FilterSection";
-import IncomeList, { IncomeType } from "@/components/shared/IncomeList";
+import IncomeReceiptTable, { IncomeType } from "@/components/shared/IncomeReceiptTable";
 import IncomeTable from "@/components/shared/IncomeTable";
 import NewContributionButton from "@/components/shared/NewContributionButton";
 import { ExportButton } from "@/components/shared/ExportButton";
@@ -32,7 +32,7 @@ export default function IncomeView({
     useState<Contribution | null>(null);
   const [selectedLotId, setSelectedLotId] = useState<string>("");
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
-  const [activeTab, setActiveTab] = useState<string>("summary");
+  const [activeTab, setActiveTab] = useState<string>("list");
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -75,9 +75,9 @@ export default function IncomeView({
       const params = new URLSearchParams(searchParams.toString());
       params.delete("tab");
       router.replace(`?${params.toString()}`, { scroll: false });
-      setActiveTab("summary");
+      setActiveTab("list");
     } else if (!tabParam) {
-      setActiveTab("summary");
+      setActiveTab("list");
     }
   }, [searchParams, lots, router]);
 
@@ -138,7 +138,7 @@ export default function IncomeView({
     setActiveTab(tabValue);
 
     const params = new URLSearchParams(searchParams.toString());
-    if (tabValue !== "summary") {
+    if (tabValue !== "list") {
       params.set("tab", tabValue);
     } else {
       params.delete("tab");
@@ -187,8 +187,8 @@ export default function IncomeView({
           value: activeTab,
           onChange: handleTabChange,
           options: [
-            { value: "summary", label: translations.labels.summaryByLot },
             { value: "list", label: translations.labels.list },
+            { value: "summary", label: translations.labels.summaryByLot },
           ],
         }}
         typeFilter={{
@@ -215,7 +215,7 @@ export default function IncomeView({
 
       <div className="mt-6">
         {activeTab === "list" && (
-          <IncomeList
+          <IncomeReceiptTable
             contributions={contributions}
             lots={lots}
             selectedLotId={selectedLotId}
@@ -223,7 +223,6 @@ export default function IncomeView({
             isAuthenticated={isAuthenticated}
             onEdit={setEditingContribution}
             onDelete={setDeletingContribution}
-            getLotInfo={getLotInfo}
           />
         )}
 
