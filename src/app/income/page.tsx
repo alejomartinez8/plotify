@@ -20,7 +20,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
     const lots = await getLots();
     const lotExists = lots.some(lot => lot.id === lotParam);
     if (lotExists) {
-      redirect(`/lots/${lotParam}`);
+      redirect(`/income/${lotParam}`);
     }
   }
   try {

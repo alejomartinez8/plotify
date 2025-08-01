@@ -94,3 +94,22 @@ export async function getLotWithContributions(id: string) {
     return null;
   }
 }
+
+export async function getLotWithContributionsByNumber(lotNumber: string) {
+  try {
+    const lot = await prisma.lot.findUnique({
+      where: { lotNumber },
+      include: {
+        contributions: {
+          orderBy: {
+            date: "desc",
+          },
+        },
+      },
+    });
+    return lot;
+  } catch (error) {
+    console.error("Error fetching lot with contributions by number:", error);
+    return null;
+  }
+}

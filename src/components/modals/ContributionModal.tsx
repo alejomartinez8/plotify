@@ -36,6 +36,7 @@ interface ContributionModalProps {
   onSuccess: (contribution: Contribution, isUpdate: boolean) => void;
   lots: Lot[];
   lotsLoading?: boolean;
+  defaultLotId?: string;
 }
 
 export default function ContributionModal({
@@ -44,6 +45,7 @@ export default function ContributionModal({
   onSuccess,
   lots,
   lotsLoading = false,
+  defaultLotId,
 }: ContributionModalProps) {
   const initialState: ContributionState = { message: null, errors: {} };
   const action = contribution
@@ -150,7 +152,7 @@ export default function ContributionModal({
             <Label htmlFor="lotId">{translations.labels.lot}</Label>
             <Select
               name="lotId"
-              defaultValue={contribution?.lotId?.toString() || ""}
+              defaultValue={contribution?.lotId?.toString() || defaultLotId || ""}
               required
               disabled={lotsLoading || isSubmitting}
             >

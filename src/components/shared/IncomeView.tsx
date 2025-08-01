@@ -91,6 +91,12 @@ export default function IncomeView({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  const handleLotNavigation = (lotId: string) => {
+    if (lotId !== "__all__") {
+      router.push(`/income/${lotId}`);
+    }
+  };
+
   const getLotInfo = (lotId: string | number) => {
     return lots.find((lot) => lot.id === lotId);
   };
@@ -211,6 +217,11 @@ export default function IncomeView({
           value: yearFilter,
           onChange: handleYearFilterChange,
           options: yearFilterOptions,
+        }}
+        lotFilter={{
+          value: "__all__",
+          onChange: handleLotNavigation,
+          lots: lots,
         }}
       />
 
