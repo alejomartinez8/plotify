@@ -217,6 +217,15 @@ export default function IncomeReceiptTable({
                     <div className="flex items-center gap-1">
                       {translations.labels.receiptNumber}
                       {getSortIcon('receiptNumber')}
+                      {(() => {
+                        const withReceipts = sortedContributions.filter(c => c.receiptFileUrl || c.receiptNumber).length;
+                        const total = sortedContributions.length;
+                        return total > 0 ? (
+                          <span className="ml-2 text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                            {withReceipts}/{total}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                   </TableHead>
                   {(isAuthenticated || contributions.some(c => c.receiptFileUrl)) && (
