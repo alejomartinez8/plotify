@@ -190,6 +190,15 @@ export default function ExpenseTable({
                     <div className="flex items-center gap-1">
                       {translations.labels.receiptNumber}
                       {getSortIcon('receiptNumber')}
+                      {(() => {
+                        const withReceipts = sortedExpenses.filter(e => e.receiptFileUrl || e.receiptNumber).length;
+                        const total = sortedExpenses.length;
+                        return total > 0 ? (
+                          <span className="ml-2 text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                            {withReceipts}/{total}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                   </TableHead>
                   {isAuthenticated && (
