@@ -1,60 +1,48 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { formatCurrency } from "@/lib/utils";
 import { translations } from "@/lib/translations";
+import TypeBadge from "@/components/shared/TypeBadge";
+import { ContributionType } from "@/types/contributions.types";
 
 interface SummaryCardProps {
   title: string;
   total: number;
+  type?: ContributionType;
   textColorClass?: string;
 }
 
 export default function SummaryCard({
   title,
   total,
-  textColorClass = "text-primary",
+  type,
+  textColorClass = "text-emerald-600",
 }: SummaryCardProps) {
   const getTypeIcon = (title: string) => {
     if (title === translations.labels.maintenance) {
       return "🔧";
     } else if (title === translations.labels.works) {
       return "🏗️";
+    } else if (title === translations.labels.others) {
+      return "📋";
     }
     return "💰"; // default for other summaries
   };
 
-  const getBadgeClasses = (colorClass: string) => {
-    if (colorClass.includes("primary")) {
-      return "bg-blue-600 hover:bg-blue-700";
-    } else if (colorClass.includes("secondary")) {
-      return "bg-slate-600 hover:bg-slate-700";
-    } else if (colorClass.includes("emerald")) {
-      return "bg-emerald-600 hover:bg-emerald-700";
-    } else if (colorClass.includes("destructive")) {
-      return "bg-red-600 hover:bg-red-700";
-    }
-    return "bg-blue-600 hover:bg-blue-700"; // default
-  };
-
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <span>{getTypeIcon(title)}</span>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">
           {title}
         </CardTitle>
+        {type ? (
+          <TypeBadge type={type} />
+        ) : (
+          <div className="h-4 w-4 text-muted-foreground">{getTypeIcon(title)}</div>
+        )}
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="font-semibold">
-            {translations.labels.total}:
-          </span>
-          <Badge
-            variant="default"
-            className={`font-bold ${getBadgeClasses(textColorClass)}`}
-          >
-            {formatCurrency(total)}
-          </Badge>
+      <CardContent>
+        <div className={`text-2xl font-bold ${textColorClass}`}>
+          {formatCurrency(total)}
         </div>
       </CardContent>
     </Card>

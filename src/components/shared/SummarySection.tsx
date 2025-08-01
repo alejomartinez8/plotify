@@ -10,10 +10,12 @@ interface SummaryItem {
 
 interface SummarySectionProps {
   items: SummaryItem[];
+  isExpense?: boolean;
 }
 
 export default function SummarySection({
   items,
+  isExpense = false,
 }: SummarySectionProps) {
   // Only render if there are items to show
   const visibleItems = items.filter(item => item.show && item.total > 0);
@@ -21,16 +23,10 @@ export default function SummarySection({
   if (visibleItems.length === 0) return null;
 
   const getTextColor = (type: ContributionType) => {
-    switch (type) {
-      case "maintenance":
-        return "text-primary";
-      case "works":
-        return "text-secondary-foreground";
-      case "others":
-        return "text-purple-600";
-      default:
-        return "text-primary";
+    if (isExpense) {
+      return "text-destructive";
     }
+    return "text-emerald-600";
   };
 
   const getTitle = (type: ContributionType) => {
@@ -47,12 +43,13 @@ export default function SummarySection({
   };
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {visibleItems.map((item) => (
         <SummaryCard
           key={item.type}
           title={getTitle(item.type)}
           total={item.total}
+          type={item.type}
           textColorClass={getTextColor(item.type)}
         />
       ))}
