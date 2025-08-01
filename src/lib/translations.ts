@@ -74,6 +74,7 @@ export const translations = {
     view: "Vista",
     back: "Volver",
     changeTo: "Cambiar a:",
+    filters: "Filtros",
   },
 
   // Status messages
