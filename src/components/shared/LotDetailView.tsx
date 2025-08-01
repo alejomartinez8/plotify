@@ -358,20 +358,20 @@ export default function LotDetailView({
                   </TableHead>
                   <TableHead
                     className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('description')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {translations.labels.description}
-                      {getSortIcon('description')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('type')}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.type}
                       {getSortIcon('type')}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
+                    onClick={() => handleSort('description')}
+                  >
+                    <div className="flex items-center gap-1">
+                      {translations.labels.description}
+                      {getSortIcon('description')}
                     </div>
                   </TableHead>
                   <TableHead
@@ -424,12 +424,12 @@ export default function LotDetailView({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4">
+                      <TypeBadge type={contribution.type} />
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
                       <div className="font-medium">
                         {contribution.description}
                       </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-4">
-                      <TypeBadge type={contribution.type} />
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       <div className="font-semibold text-emerald-600">

@@ -13,7 +13,7 @@ import { exportExpensesAction } from "@/lib/actions/export-actions";
 import NewExpenseButton from "@/components/shared/NewExpenseButton";
 import ExpenseTable from "@/components/shared/ExpenseTable";
 
-interface ExpenseListProps {
+interface ExpenseViewProps {
   title: string;
   expenses: Expense[];
   isAuthenticated?: boolean;
@@ -21,7 +21,7 @@ interface ExpenseListProps {
 
 type ExpenseType = "all" | "maintenance" | "works" | "others";
 
-export default function ExpenseList({ title, expenses, isAuthenticated = false }: ExpenseListProps) {
+export default function ExpenseView({ title, expenses, isAuthenticated = false }: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [expenseFilter, setExpenseFilter] = useState<ExpenseType>("all");
@@ -210,6 +210,7 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
 
       {/* Expenses Summary */}
       <SummarySection
+        isExpense={true}
         items={[
           {
             type: "maintenance",
