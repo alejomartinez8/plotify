@@ -9,7 +9,7 @@ export const translations = {
   // Navigation
   navigation: {
     home: "Inicio",
-    income: "Ingresos",
+    income: "Aportes",
     expenses: "Gastos",
     lots: "Lotes",
     admin: "Admin",
@@ -55,7 +55,7 @@ export const translations = {
     receiptFile: "Comprobante",
 
     // Financial terms
-    income: "Ingresos",
+    income: "Aportes",
     expenses: "Gastos",
     balance: "Saldo",
     total: "Total",
@@ -102,7 +102,7 @@ export const translations = {
   // Filter options
   filters: {
     all: "Todos",
-    allIncome: "Todos los Ingresos",
+    allIncome: "Todos los Aportes",
     allLots: "Todos los Lotes",
     allExpenses: "Todos los Gastos",
     allYears: "Todos los Años",
@@ -130,7 +130,7 @@ export const translations = {
     othersContributions: "Otros Aportes",
     maintenanceExpenses: "Gastos de Mantenimiento",
     worksExpenses: "Gastos de Obras",
-    
+
     // Lot page specific
     lotPage: "Página del Lote",
     paymentHistory: "Historial de Pagos",
@@ -241,7 +241,7 @@ export const translations = {
     noExpenses: "No hay gastos registrados",
     noLots: "No hay lotes",
     noResults: "No se encontraron resultados",
-    
+
     // Instructions
     clickLotForDetail: "Haz clic en cualquier lote para ver su detalle",
 
