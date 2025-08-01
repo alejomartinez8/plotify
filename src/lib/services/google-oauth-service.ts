@@ -75,7 +75,7 @@ class GoogleOAuthService {
     receiptNumber?: string;
     fileExtension: string;
   }, folderId: string): Promise<string> {
-    const { date, type, lotNumber, category, receiptNumber, fileExtension } = data;
+    const { date, type, lotNumber, category, fileExtension } = data;
     
     // Format date as YYYY-MM-DD
     const formattedDate = new Date(date).toISOString().split('T')[0];
@@ -90,9 +90,7 @@ class GoogleOAuthService {
       baseFileName = `${formattedDate}_gasto-${cat}`;
     }
     
-    // Add receipt part if provided
-    const receiptPart = receiptNumber ? `_recibo-${receiptNumber}` : "";
-    baseFileName += receiptPart;
+    // Receipt number is not added to filename - stored only in database
     
     // Find next available counter
     const counter = await this.getNextFileCounter(baseFileName, fileExtension, folderId);

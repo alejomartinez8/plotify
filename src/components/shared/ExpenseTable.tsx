@@ -212,8 +212,8 @@ export default function ExpenseTable({
                         {formatDateForDisplay(expense.date)}
                       </div>
                     </TableCell>
-                    <TableCell className="px-6 py-4 max-w-xs">
-                      <div className="font-medium truncate" title={expense.description}>
+                    <TableCell className="px-6 py-4">
+                      <div className="font-medium">
                         {expense.description}
                       </div>
                     </TableCell>

@@ -226,8 +226,8 @@ export default function IncomeTable({
                     } ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}
                     onClick={() => handleRowClick(data.lot.id)}
                   >
-                    <TableCell className="px-6 py-4 max-w-xs">
-                      <div className="font-medium truncate" title={`Lote ${data.lot.lotNumber} - ${data.lot.owner}`}>
+                    <TableCell className="px-6 py-4">
+                      <div className="font-medium">
                         Lote {data.lot.lotNumber} - {data.lot.owner}
                       </div>
                     </TableCell>

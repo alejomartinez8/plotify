@@ -247,13 +247,13 @@ export default function IncomeReceiptTable({
                           {formatDateForDisplay(contribution.date)}
                         </div>
                       </TableCell>
-                      <TableCell className="px-6 py-4 max-w-xs">
-                        <div className="font-medium truncate" title={lotInfo ? `${lotInfo.lotNumber} - ${lotInfo.owner}` : contribution.lotId.toString()}>
+                      <TableCell className="px-6 py-4">
+                        <div className="font-medium">
                           {lotInfo ? `${lotInfo.lotNumber} - ${lotInfo.owner}` : contribution.lotId}
                         </div>
                       </TableCell>
-                      <TableCell className="px-6 py-4 max-w-xs">
-                        <div className="font-medium truncate" title={contribution.description}>
+                      <TableCell className="px-6 py-4">
+                        <div className="font-medium">
                           {contribution.description}
                         </div>
                       </TableCell>
