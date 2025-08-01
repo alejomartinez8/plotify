@@ -187,14 +187,16 @@ export default function ExpenseTable({
                     className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('receiptNumber')}
                   >
-                    <div className="flex items-center gap-1">
-                      {translations.labels.receiptNumber}
-                      {getSortIcon('receiptNumber')}
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1">
+                        {translations.labels.receiptNumber}
+                        {getSortIcon('receiptNumber')}
+                      </div>
                       {(() => {
                         const withReceipts = sortedExpenses.filter(e => e.receiptFileUrl || e.receiptNumber).length;
                         const total = sortedExpenses.length;
                         return total > 0 ? (
-                          <span className="ml-2 text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                          <span className="text-xs text-muted-foreground mt-1">
                             {withReceipts}/{total}
                           </span>
                         ) : null;

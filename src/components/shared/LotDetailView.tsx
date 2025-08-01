@@ -357,14 +357,16 @@ export default function LotDetailView({
                     className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                     onClick={() => handleSort('receiptNumber')}
                   >
-                    <div className="flex items-center gap-1">
-                      {translations.labels.receiptNumber}
-                      {getSortIcon('receiptNumber')}
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1">
+                        {translations.labels.receiptNumber}
+                        {getSortIcon('receiptNumber')}
+                      </div>
                       {(() => {
                         const withReceipts = sortedContributions.filter(c => c.receiptFileUrl || c.receiptNumber).length;
                         const total = sortedContributions.length;
                         return total > 0 ? (
-                          <span className="ml-2 text-xs bg-muted/50 px-2 py-1 rounded-full text-muted-foreground">
+                          <span className="text-xs text-muted-foreground mt-1">
                             {withReceipts}/{total}
                           </span>
                         ) : null;
