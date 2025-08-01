@@ -25,6 +25,7 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [expenseFilter, setExpenseFilter] = useState<ExpenseType>("all");
+  const [yearFilter, setYearFilter] = useState<string>("all");
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -32,11 +33,18 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
   // Initialize filters from URL parameters
   useEffect(() => {
     const typeParam = searchParams.get("type") as ExpenseType;
+    const yearParam = searchParams.get("year");
 
     if (typeParam && (typeParam === "maintenance" || typeParam === "works" || typeParam === "others")) {
       setExpenseFilter(typeParam);
     } else {
       setExpenseFilter("all");
+    }
+
+    if (yearParam) {
+      setYearFilter(yearParam);
+    } else {
+      setYearFilter("all");
     }
   }, [searchParams]);
 
@@ -54,24 +62,72 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  const handleYearFilterChange = (year: string) => {
+    setYearFilter(year);
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (year !== "all") {
+      params.set("year", year);
+    } else {
+      params.delete("year");
+    }
+
+    // Update URL without causing a page refresh
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Extract unique years from expenses for filter options
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    expenses.forEach(expense => {
+      const date = new Date(expense.date);
+      if (!isNaN(date.getTime())) {
+        years.add(date.getFullYear().toString());
+      }
+    });
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
+  }, [expenses]);
+
+  const yearFilterOptions = useMemo(() => [
+    { value: "all", label: translations.filters.allYears },
+    ...availableYears.map(year => ({ value: year, label: year }))
+  ], [availableYears]);
+
   const filteredExpenses = useMemo(() => {
     let filtered = expenses;
     
+    // Filter by expense type
     if (expenseFilter !== "all") {
       filtered = filtered.filter((expense) => expense.type === expenseFilter);
     }
     
+    // Filter by year
+    if (yearFilter !== "all") {
+      filtered = filtered.filter(expense => {
+        const date = new Date(expense.date);
+        return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
+      });
+    }
+    
     // Sort by date (most recent first)
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [expenses, expenseFilter]);
+  }, [expenses, expenseFilter, yearFilter]);
 
-  // Calculate summary based on current filter
+  // Calculate summary based on current filters
   const expenseSummary = useMemo(() => {
     let expensesToSummarize = expenses;
     
-    // If filter is applied, only use filtered expenses for summary
+    // Apply year filter
+    if (yearFilter !== "all") {
+      expensesToSummarize = expensesToSummarize.filter(expense => {
+        const date = new Date(expense.date);
+        return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
+      });
+    }
+    
+    // If type filter is applied, only use filtered expenses for summary
     if (expenseFilter !== "all") {
-      expensesToSummarize = expenses.filter((e) => e.type === expenseFilter);
+      expensesToSummarize = expensesToSummarize.filter((e) => e.type === expenseFilter);
     }
 
     const maintenanceExpenses = expensesToSummarize.filter(
@@ -95,7 +151,7 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
         total: othersExpenses.reduce((sum, e) => sum + e.amount, 0),
       },
     };
-  }, [expenses, expenseFilter]);
+  }, [expenses, expenseFilter, yearFilter]);
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
     setEditingExpense(null);
@@ -144,6 +200,11 @@ export default function ExpenseList({ title, expenses, isAuthenticated = false }
             { value: "works", label: translations.labels.works },
             { value: "others", label: translations.labels.others },
           ],
+        }}
+        yearFilter={{
+          value: yearFilter,
+          onChange: handleYearFilterChange,
+          options: yearFilterOptions,
         }}
       />
 

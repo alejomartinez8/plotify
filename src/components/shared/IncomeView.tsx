@@ -9,7 +9,7 @@ import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import FilterSection from "@/components/shared/FilterSection";
 import IncomeReceiptTable, { IncomeType } from "@/components/shared/IncomeReceiptTable";
-import IncomeTable from "@/components/shared/IncomeTable";
+import SummarySection from "@/components/shared/SummarySection";
 import NewContributionButton from "@/components/shared/NewContributionButton";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportIncomesAction } from "@/lib/actions/export-actions";
@@ -30,32 +30,16 @@ export default function IncomeView({
     useState<Contribution | null>(null);
   const [deletingContribution, setDeletingContribution] =
     useState<Contribution | null>(null);
-  const [selectedLotId, setSelectedLotId] = useState<string>("");
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState<string>("list");
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
   // Initialize filters from URL parameters
   useEffect(() => {
-    const lotParam = searchParams.get("lot");
     const typeParam = searchParams.get("type") as IncomeType;
     const yearParam = searchParams.get("year");
-    const tabParam = searchParams.get("tab");
-
-    if (lotParam && lots.some((lot) => lot.id === lotParam)) {
-      setSelectedLotId(lotParam);
-    } else if (lotParam && !lots.some((lot) => lot.id === lotParam)) {
-      // If lot ID in URL doesn't exist, clear the parameter
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("lot");
-      router.replace(`?${params.toString()}`, { scroll: false });
-      setSelectedLotId("");
-    } else if (!lotParam) {
-      setSelectedLotId("");
-    }
 
     if (
       typeParam &&
@@ -75,35 +59,9 @@ export default function IncomeView({
     } else {
       setYearFilter("all");
     }
-
-    if (tabParam && ["list", "summary"].includes(tabParam)) {
-      setActiveTab(tabParam);
-    } else if (tabParam) {
-      // If tab in URL is invalid, clear it
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("tab");
-      router.replace(`?${params.toString()}`, { scroll: false });
-      setActiveTab("list");
-    } else if (!tabParam) {
-      setActiveTab("list");
-    }
-  }, [searchParams, lots, router]);
+  }, [searchParams, router]);
 
   // Update URL when filters change
-  const handleLotFilterChange = (lotId: string) => {
-    const actualLotId = lotId === "__all__" ? "" : lotId;
-    setSelectedLotId(actualLotId);
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (actualLotId) {
-      params.set("lot", actualLotId);
-    } else {
-      params.delete("lot");
-    }
-
-    // Update URL without causing a page refresh
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
 
   const handleIncomeFilterChange = (incomeType: IncomeType) => {
     setIncomeFilter(incomeType);
@@ -156,32 +114,6 @@ export default function IncomeView({
     }
   };
 
-  const handleTabChange = (tabValue: string) => {
-    setActiveTab(tabValue);
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (tabValue !== "list") {
-      params.set("tab", tabValue);
-    } else {
-      params.delete("tab");
-    }
-
-    // Update URL without causing a page refresh
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
-  const handleLotClickFromSummary = (lotId: string) => {
-    setActiveTab("list");
-    handleLotFilterChange(lotId);
-
-    // Update tab in URL
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", "list");
-    if (lotId) {
-      params.set("lot", lotId);
-    }
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
 
   // Extract unique years from contributions for filter options
   const availableYears = React.useMemo(() => {
@@ -211,6 +143,38 @@ export default function IncomeView({
     });
   }, [contributions, yearFilter]);
 
+  // Calculate summary based on current filters
+  const incomeSummary = React.useMemo(() => {
+    let contributionsToSummarize = filteredContributions;
+    
+    // If type filter is applied, only use filtered contributions for summary
+    if (incomeFilter !== "all") {
+      contributionsToSummarize = contributionsToSummarize.filter((c) => c.type === incomeFilter);
+    }
+
+    const maintenanceContributions = contributionsToSummarize.filter(
+      (c) => c.type === "maintenance"
+    );
+    const worksContributions = contributionsToSummarize.filter(
+      (c) => c.type === "works"
+    );
+    const othersContributions = contributionsToSummarize.filter(
+      (c) => c.type === "others"
+    );
+
+    return {
+      maintenance: {
+        total: maintenanceContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+      works: {
+        total: worksContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+      others: {
+        total: othersContributions.reduce((sum, c) => sum + c.amount, 0),
+      },
+    };
+  }, [filteredContributions, incomeFilter]);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header with unified filters and actions */}
@@ -233,14 +197,6 @@ export default function IncomeView({
             </div>
           ) : null
         }
-        viewFilter={{
-          value: activeTab,
-          onChange: handleTabChange,
-          options: [
-            { value: "list", label: translations.labels.list },
-            { value: "summary", label: translations.labels.summaryByLot },
-          ],
-        }}
         typeFilter={{
           value: incomeFilter,
           onChange: (value) => handleIncomeFilterChange(value as IncomeType),
@@ -256,39 +212,38 @@ export default function IncomeView({
           onChange: handleYearFilterChange,
           options: yearFilterOptions,
         }}
-        lotFilter={
-          activeTab === "list"
-            ? {
-                value: selectedLotId,
-                onChange: (value) =>
-                  handleLotFilterChange(value === "__all__" ? "" : value),
-                lots: lots,
-              }
-            : undefined
-        }
+      />
+
+      {/* Income Summary */}
+      <SummarySection
+        items={[
+          {
+            type: "maintenance",
+            total: incomeSummary.maintenance.total,
+            show: incomeFilter === "all" || incomeFilter === "maintenance",
+          },
+          {
+            type: "works",
+            total: incomeSummary.works.total,
+            show: incomeFilter === "all" || incomeFilter === "works",
+          },
+          {
+            type: "others",
+            total: incomeSummary.others.total,
+            show: incomeFilter === "all" || incomeFilter === "others",
+          },
+        ]}
       />
 
       <div className="mt-6">
-        {activeTab === "list" && (
-          <IncomeReceiptTable
-            contributions={filteredContributions}
-            lots={lots}
-            selectedLotId={selectedLotId}
-            incomeFilter={incomeFilter}
-            isAuthenticated={isAuthenticated}
-            onEdit={setEditingContribution}
-            onDelete={setDeletingContribution}
-          />
-        )}
-
-        {activeTab === "summary" && (
-          <IncomeTable
-            lots={lots}
-            contributions={filteredContributions}
-            incomeFilter={incomeFilter}
-            onLotClick={handleLotClickFromSummary}
-          />
-        )}
+        <IncomeReceiptTable
+          contributions={filteredContributions}
+          lots={lots}
+          incomeFilter={incomeFilter}
+          isAuthenticated={isAuthenticated}
+          onEdit={setEditingContribution}
+          onDelete={setDeletingContribution}
+        />
       </div>
 
       {/* Edit Modal */}

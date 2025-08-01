@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { ChevronUp, ChevronDown, Edit, Trash2, FileText } from "lucide-react";
 import { Contribution } from "@/types/contributions.types";
 import { Lot } from "@/types/lots.types";
@@ -24,7 +25,6 @@ interface IncomeReceiptTableProps {
   contributions: Contribution[];
   lots: Lot[];
   incomeFilter: IncomeType;
-  selectedLotId?: string;
   isAuthenticated?: boolean;
   onEdit?: (contribution: Contribution) => void;
   onDelete?: (contribution: Contribution) => void;
@@ -37,7 +37,6 @@ export default function IncomeReceiptTable({
   contributions,
   lots,
   incomeFilter,
-  selectedLotId,
   isAuthenticated = false,
   onEdit,
   onDelete,
@@ -61,13 +60,8 @@ export default function IncomeReceiptTable({
       filtered = filtered.filter((contribution) => contribution.type === incomeFilter);
     }
     
-    // Filter by selected lot
-    if (selectedLotId) {
-      filtered = filtered.filter((contribution) => contribution.lotId === selectedLotId);
-    }
-    
     return filtered;
-  }, [contributions, incomeFilter, selectedLotId]);
+  }, [contributions, incomeFilter]);
 
   // Sort contributions
   const sortedContributions = useMemo(() => {
@@ -248,9 +242,18 @@ export default function IncomeReceiptTable({
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4">
-                        <div className="font-medium">
-                          {lotInfo ? `${lotInfo.lotNumber} - ${lotInfo.owner}` : contribution.lotId}
-                        </div>
+                        {lotInfo ? (
+                          <Link 
+                            href={`/lots/${contribution.lotId}`}
+                            className="font-medium text-primary hover:text-primary/80 hover:underline transition-colors"
+                          >
+                            {`${lotInfo.lotNumber} - ${lotInfo.owner}`}
+                          </Link>
+                        ) : (
+                          <div className="font-medium">
+                            {contribution.lotId}
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="px-6 py-4">
                         <div className="font-medium">
