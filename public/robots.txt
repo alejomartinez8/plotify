@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /income/
+Disallow: /expenses/
+Disallow: /admin/
+Disallow: /api/
+
+# Allow only public pages
+Allow: /
+
+# Sitemap (if you add one later)
+# Sitemap: https://yourdomain.com/sitemap.xml
