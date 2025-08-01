@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ChevronUp, ChevronDown, Edit, Trash2, FileText, ArrowLeft } from "lucide-react";
+import { ChevronUp, ChevronDown, Edit, Trash2, FileText, ArrowLeft, Plus } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
@@ -49,6 +49,7 @@ export default function LotDetailView({
 }: LotDetailViewProps) {
   const [editingContribution, setEditingContribution] = useState<Contribution | null>(null);
   const [deletingContribution, setDeletingContribution] = useState<Contribution | null>(null);
+  const [showNewContributionModal, setShowNewContributionModal] = useState(false);
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [isPending, startTransition] = useTransition();
@@ -180,9 +181,19 @@ export default function LotDetailView({
     router.refresh();
   };
 
+  const handleNewContributionSuccess = () => {
+    setShowNewContributionModal(false);
+    router.refresh();
+  };
+
   const handleLotChange = (selectedLotId: string) => {
     if (selectedLotId !== lot.id) {
-      router.push(`/lots/${selectedLotId}`);
+      // Check if we're in income context
+      if (window.location.pathname.startsWith('/income/')) {
+        router.push(`/income/${selectedLotId}`);
+      } else {
+        router.push(`/income/${selectedLotId}`);
+      }
     }
   };
 
@@ -192,7 +203,14 @@ export default function LotDetailView({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Button
           variant="ghost"
-          onClick={() => router.back()}
+          onClick={() => {
+            // Check if we came from income page
+            if (window.location.pathname.startsWith('/income/')) {
+              router.push('/income');
+            } else {
+              router.back();
+            }
+          }}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {translations.labels.back}
@@ -310,7 +328,19 @@ export default function LotDetailView({
       {/* Payments Table */}
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle>{translations.titles.paymentHistory}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>{translations.titles.paymentHistory}</CardTitle>
+            {isAuthenticated && (
+              <Button
+                onClick={() => setShowNewContributionModal(true)}
+                size="sm"
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                {translations.titles.newContribution}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-hidden rounded-md border-0">
@@ -499,6 +529,17 @@ export default function LotDetailView({
           onSuccess={handleContributionSuccess}
           lots={[lot]}
           lotsLoading={false}
+        />
+      )}
+
+      {/* New Contribution Modal */}
+      {showNewContributionModal && isAuthenticated && (
+        <ContributionModal
+          onClose={() => setShowNewContributionModal(false)}
+          onSuccess={handleNewContributionSuccess}
+          lots={[lot]}
+          lotsLoading={false}
+          defaultLotId={lot.id}
         />
       )}
 

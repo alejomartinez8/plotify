@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: LotPageProps) {
   }
 
   return {
-    title: `${translations.labels.lot} ${lot.lotNumber} - ${lot.owner} | ${translations.app.title}`,
-    description: `Detalles de aportes y pagos del ${translations.labels.lot.toLowerCase()} ${lot.lotNumber} - ${lot.owner}`,
+    title: `${translations.labels.income} - ${translations.labels.lot} ${lot.lotNumber} (${lot.owner}) | ${translations.app.title}`,
+    description: `Historial de aportes e ingresos del ${translations.labels.lot.toLowerCase()} ${lot.lotNumber} - ${lot.owner}`,
   };
 }

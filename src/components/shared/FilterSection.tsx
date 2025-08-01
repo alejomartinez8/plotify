@@ -139,6 +139,9 @@ export default function FilterSection({
               {/* Lot Filter */}
               {lotFilter && (
                 <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {translations.labels.goToLot}
+                  </span>
                   <Select
                     value={lotFilter.value || "__all__"}
                     onValueChange={lotFilter.onChange}

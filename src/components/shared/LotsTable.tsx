@@ -268,7 +268,7 @@ export default function LotsTable({
                 >
                   <TableCell className="px-6 py-4">
                     <Link 
-                      href={`/lots/${lot.id}`}
+                      href={`/income/${lot.id}`}
                       className="font-medium text-primary hover:text-primary/80 hover:underline transition-colors group flex items-center gap-2"
                     >
                       <div>
@@ -280,7 +280,7 @@ export default function LotsTable({
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
                     <Link 
-                      href={`/lots/${lot.id}`}
+                      href={`/income/${lot.id}`}
                       className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
                     >
                       {formatCurrency(lot.totals.maintenance)}
@@ -288,7 +288,7 @@ export default function LotsTable({
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
                     <Link 
-                      href={`/lots/${lot.id}`}
+                      href={`/income/${lot.id}`}
                       className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
                     >
                       {formatCurrency(lot.totals.works)}
@@ -296,7 +296,7 @@ export default function LotsTable({
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
                     <Link 
-                      href={`/lots/${lot.id}`}
+                      href={`/income/${lot.id}`}
                       className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
                     >
                       {formatCurrency(lot.totals.others)}
@@ -304,7 +304,7 @@ export default function LotsTable({
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
                     <Link 
-                      href={`/lots/${lot.id}`}
+                      href={`/income/${lot.id}`}
                       className="font-bold text-emerald-600 hover:text-emerald-500 transition-colors"
                     >
                       {formatCurrency(lot.totals.total)}

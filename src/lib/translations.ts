@@ -75,6 +75,7 @@ export const translations = {
     back: "Volver",
     changeTo: "Cambiar a:",
     filters: "Filtros",
+    goToLot: "Ir a Lote:",
   },
 
   // Status messages
