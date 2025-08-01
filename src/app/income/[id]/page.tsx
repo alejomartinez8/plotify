@@ -35,29 +35,12 @@ export default async function LotPage({ params }: LotPageProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              {translations.labels.lot} {lot.lotNumber}
-            </h1>
-            <p className="text-lg text-muted-foreground mt-1">
-              {lot.owner}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Lot Detail Component */}
-      <LotDetailView 
-        lot={lot}
-        contributions={lot.contributions}
-        allLots={allLots}
-        isAuthenticated={isAdmin}
-      />
-    </div>
+    <LotDetailView 
+      lot={lot}
+      contributions={lot.contributions}
+      allLots={allLots}
+      isAuthenticated={isAdmin}
+    />
   );
 }
 

@@ -198,43 +198,65 @@ export default function LotDetailView({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Back Button and Lot Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            // Check if we came from income page
-            if (window.location.pathname.startsWith('/income/')) {
-              router.push('/income');
-            } else {
-              router.back();
-            }
-          }}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {translations.labels.back}
-        </Button>
-        
-        {/* Lot Selector */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            {translations.labels.changeTo}
-          </span>
-          <Select value={lot.id} onValueChange={handleLotChange}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {allLots.map((lotOption) => (
-                <SelectItem key={lotOption.id} value={lotOption.id}>
-                  Lote {lotOption.lotNumber} - {lotOption.owner}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Filter Section with Back Button and Lot Selector */}
+      <div className="mb-8">
+        <div className="flex flex-col gap-6 sm:gap-4">
+          {/* Back Button and Title Row */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  // Check if we came from income page
+                  if (window.location.pathname.startsWith('/income/')) {
+                    router.push('/income');
+                  } else {
+                    router.back();
+                  }
+                }}
+                className="self-start"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {translations.labels.back}
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  {translations.labels.lot} {lot.lotNumber}
+                </h1>
+                <p className="text-lg text-muted-foreground mt-1">
+                  {lot.owner}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Lot Selector Section - Only for admins */}
+          {isAuthenticated && (
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  {translations.labels.goToLot}
+                </span>
+                <Select value={lot.id} onValueChange={handleLotChange}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allLots.map((lotOption) => (
+                      <SelectItem key={lotOption.id} value={lotOption.id}>
+                        Lote {lotOption.lotNumber} - {lotOption.owner}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      <div className="space-y-8">
 
       {/* Summary Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -554,6 +576,7 @@ export default function LotDetailView({
           variant="danger"
         />
       )}
+      </div>
     </div>
   );
 }
