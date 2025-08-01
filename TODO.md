@@ -13,6 +13,7 @@
 - ✅ **Create income type classification** - Added "Others" type for contributions like gate control _(2025-01-25)_
 - [ ] **Initial balance module** - Set starting balances for each fund type
 - ✅ **Basic cash dashboard** - Implemented funds overview with 3 funds + consolidated total _(2025-01-25)_
+- Is necessary to change http://localhost:3000/api/auth/google/callback for specific domain deployed
 
 ### Phase 2: Operations
 

@@ -72,6 +72,8 @@ export const translations = {
     lotDetail: "Detalle por Lote",
     list: "Vista por Comprobante",
     view: "Vista",
+    back: "Volver",
+    changeTo: "Cambiar a:",
   },
 
   // Status messages
@@ -126,6 +128,14 @@ export const translations = {
     othersContributions: "Otros Aportes",
     maintenanceExpenses: "Gastos de Mantenimiento",
     worksExpenses: "Gastos de Obras",
+    
+    // Lot page specific
+    lotPage: "Página del Lote",
+    paymentHistory: "Historial de Pagos",
+    paymentSummary: "Resumen de Pagos",
+    totalPayments: "Pagos totales",
+    thisYear: "Este año",
+    thisMonth: "Este mes",
 
     // Fund types
     maintenanceFund: "Fondo de Mantenimiento",
@@ -229,6 +239,9 @@ export const translations = {
     noExpenses: "No hay gastos registrados",
     noLots: "No hay lotes",
     noResults: "No se encontraron resultados",
+    
+    // Instructions
+    clickLotForDetail: "Haz clic en cualquier lote para ver su detalle",
 
     // Success
     created: "Creado exitosamente",
