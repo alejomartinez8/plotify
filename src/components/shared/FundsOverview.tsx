@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
@@ -20,21 +21,21 @@ interface FundsOverviewProps {
 }
 
 export default function FundsOverview({ fundsData }: FundsOverviewProps) {
-  const funds = [
+  const incomeCategories = [
     {
       key: "maintenance" as ContributionType,
-      title: translations.titles.maintenanceFund,
-      data: fundsData.maintenance,
+      title: translations.labels.maintenance,
+      amount: fundsData.maintenance.income,
     },
     {
       key: "works" as ContributionType,  
-      title: translations.titles.worksFund,
-      data: fundsData.works,
+      title: translations.labels.works,
+      amount: fundsData.works.income,
     },
     {
       key: "others" as ContributionType,
-      title: translations.titles.othersFund,
-      data: fundsData.others,
+      title: translations.labels.others,
+      amount: fundsData.others.income,
     },
   ];
 
@@ -46,87 +47,50 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Individual Funds */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {funds.map((fund) => (
-          <Card key={fund.key} className="bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-gray-800">
-                  {fund.title}
-                </CardTitle>
-                <TypeBadge type={fund.key} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
-                  {translations.labels.income}:
-                </span>
-                <span className="font-medium">
-                  {formatCurrency(fund.data.income)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
-                  {translations.labels.expenses}:
-                </span>
-                <span className="font-medium">
-                  {formatCurrency(fund.data.expenses)}
-                </span>
-              </div>
-              <div className="border-t pt-2 mt-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-700">
-                    {translations.labels.balance}:
-                  </span>
-                  <span
-                    className={`font-bold text-lg ${getBalanceColorClass(
-                      fund.data.balance
-                    )}`}
-                  >
-                    {formatCurrency(fund.data.balance)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Consolidated Fund */}
+      {/* Single Consolidated Financial Summary Card */}
       <Card className="bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold text-gray-800">
-              {translations.titles.consolidatedFund}
+              {translations.titles.financialSummary}
             </CardTitle>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-50 text-gray-700 border-gray-200">
-              <span className="text-xs">💰</span>
-              Total
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200">
+              <span className="text-xs">📊</span>
+              {translations.labels.consolidated}
             </span>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">
-                {translations.labels.income}
+        <CardContent className="space-y-6">
+          {/* Main Financial Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/income" className="block">
+              <div className="text-center p-4 bg-emerald-50 rounded-lg border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 transition-all duration-200 cursor-pointer hover:shadow-md">
+                <div className="text-sm text-emerald-700 mb-2 font-medium">
+                  {translations.labels.income}
+                </div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {formatCurrency(fundsData.consolidated.income)}
+                </div>
+                <div className="text-xs text-emerald-600 mt-1 opacity-70">
+                  {translations.labels.clickForDetails}
+                </div>
               </div>
-              <div className="text-lg font-semibold">
-                {formatCurrency(fundsData.consolidated.income)}
+            </Link>
+            <Link href="/expenses" className="block">
+              <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 hover:border-red-300 transition-all duration-200 cursor-pointer hover:shadow-md">
+                <div className="text-sm text-red-700 mb-2 font-medium">
+                  {translations.labels.expenses}
+                </div>
+                <div className="text-2xl font-bold text-red-600">
+                  {formatCurrency(fundsData.consolidated.expenses)}
+                </div>
+                <div className="text-xs text-red-600 mt-1 opacity-70">
+                  {translations.labels.clickForDetails}
+                </div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">
-                {translations.labels.expenses}
-              </div>
-              <div className="text-lg font-semibold">
-                {formatCurrency(fundsData.consolidated.expenses)}
-              </div>
-            </div>
-            <div className="text-center md:col-span-1 col-span-2">
-              <div className="text-sm text-gray-600 mb-1">
+            </Link>
+            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="text-sm text-gray-700 mb-2 font-medium">
                 {translations.labels.balance}
               </div>
               <div
@@ -136,6 +100,26 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
               >
                 {formatCurrency(fundsData.consolidated.balance)}
               </div>
+            </div>
+          </div>
+
+          {/* Income Breakdown by Categories */}
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+              {translations.labels.breakdownOf} {translations.labels.income}:
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {incomeCategories.map((category) => (
+                <div key={category.key} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <TypeBadge type={category.key} />
+                    <span className="text-sm text-gray-600">{category.title}</span>
+                  </div>
+                  <span className="font-semibold text-gray-800">
+                    {formatCurrency(category.amount)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </CardContent>

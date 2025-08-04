@@ -6,7 +6,6 @@ import { Expense } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
-import SummarySection from "@/components/shared/SummarySection";
 import FilterSection from "@/components/shared/FilterSection";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportExpensesAction } from "@/lib/actions/export-actions";
@@ -113,45 +112,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [expenses, expenseFilter, yearFilter]);
 
-  // Calculate summary based on current filters
-  const expenseSummary = useMemo(() => {
-    let expensesToSummarize = expenses;
-    
-    // Apply year filter
-    if (yearFilter !== "all") {
-      expensesToSummarize = expensesToSummarize.filter(expense => {
-        const date = new Date(expense.date);
-        return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
-      });
-    }
-    
-    // If type filter is applied, only use filtered expenses for summary
-    if (expenseFilter !== "all") {
-      expensesToSummarize = expensesToSummarize.filter((e) => e.type === expenseFilter);
-    }
-
-    const maintenanceExpenses = expensesToSummarize.filter(
-      (e) => e.type === "maintenance"
-    );
-    const worksExpenses = expensesToSummarize.filter(
-      (e) => e.type === "works"
-    );
-    const othersExpenses = expensesToSummarize.filter(
-      (e) => e.type === "others"
-    );
-
-    return {
-      maintenance: {
-        total: maintenanceExpenses.reduce((sum, e) => sum + e.amount, 0),
-      },
-      works: {
-        total: worksExpenses.reduce((sum, e) => sum + e.amount, 0),
-      },
-      others: {
-        total: othersExpenses.reduce((sum, e) => sum + e.amount, 0),
-      },
-    };
-  }, [expenses, expenseFilter, yearFilter]);
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
     setEditingExpense(null);
@@ -206,28 +166,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
           onChange: handleYearFilterChange,
           options: yearFilterOptions,
         }}
-      />
-
-      {/* Expenses Summary */}
-      <SummarySection
-        isExpense={true}
-        items={[
-          {
-            type: "maintenance",
-            total: expenseSummary.maintenance.total,
-            show: expenseFilter === "all" || expenseFilter === "maintenance",
-          },
-          {
-            type: "works",
-            total: expenseSummary.works.total,
-            show: expenseFilter === "all" || expenseFilter === "works",
-          },
-          {
-            type: "others",
-            total: expenseSummary.others.total,
-            show: expenseFilter === "all" || expenseFilter === "others",
-          },
-        ]}
       />
 
       {/* Expenses Table */}

@@ -27,9 +27,6 @@ import {
 interface LotWithSummary extends Lot {
   contributions: Contribution[];
   totals: {
-    maintenance: number;
-    works: number;
-    others: number;
     total: number;
   };
 }
@@ -40,7 +37,7 @@ interface LotsTableProps {
   isAuthenticated?: boolean;
 }
 
-type SortField = 'lot' | 'maintenance' | 'works' | 'others' | 'total';
+type SortField = 'lot' | 'total';
 type SortDirection = 'asc' | 'desc';
 
 export default function LotsTable({
@@ -61,26 +58,14 @@ export default function LotsTable({
     return lots.map(lot => {
       const lotContributions = contributions.filter(contrib => contrib.lotId === lot.id);
       
-      const maintenanceTotal = lotContributions
-        .filter(c => c.type === 'maintenance')
-        .reduce((sum, c) => sum + c.amount, 0);
-      
-      const worksTotal = lotContributions
-        .filter(c => c.type === 'works')
-        .reduce((sum, c) => sum + c.amount, 0);
-      
-      const othersTotal = lotContributions
-        .filter(c => c.type === 'others')
+      const totalContributions = lotContributions
         .reduce((sum, c) => sum + c.amount, 0);
 
       return {
         ...lot,
         contributions: lotContributions,
         totals: {
-          maintenance: maintenanceTotal,
-          works: worksTotal,
-          others: othersTotal,
-          total: maintenanceTotal + worksTotal + othersTotal,
+          total: totalContributions,
         },
       };
     });
@@ -99,18 +84,6 @@ export default function LotsTable({
           const bLot = `${b.lotNumber} - ${b.owner}`;
           aValue = aLot;
           bValue = bLot;
-          break;
-        case 'maintenance':
-          aValue = a.totals.maintenance;
-          bValue = b.totals.maintenance;
-          break;
-        case 'works':
-          aValue = a.totals.works;
-          bValue = b.totals.works;
-          break;
-        case 'others':
-          aValue = a.totals.others;
-          bValue = b.totals.others;
           break;
         case 'total':
           aValue = a.totals.total;
@@ -138,12 +111,9 @@ export default function LotsTable({
   const overallTotals = useMemo(() => {
     return lotsWithSummary.reduce(
       (acc, lot) => ({
-        maintenance: acc.maintenance + lot.totals.maintenance,
-        works: acc.works + lot.totals.works,
-        others: acc.others + lot.totals.others,
         total: acc.total + lot.totals.total,
       }),
-      { maintenance: 0, works: 0, others: 0, total: 0 }
+      { total: 0 }
     );
   }, [lotsWithSummary]);
 
@@ -217,37 +187,10 @@ export default function LotsTable({
                 </TableHead>
                 <TableHead
                   className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('maintenance')}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <TypeBadge type="maintenance" />
-                    {getSortIcon('maintenance')}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('works')}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <TypeBadge type="works" />
-                    {getSortIcon('works')}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('others')}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <TypeBadge type="others" />
-                    {getSortIcon('others')}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
                   onClick={() => handleSort('total')}
                 >
                   <div className="flex items-center justify-end gap-1">
-                    {translations.labels.total}
+                    {translations.labels.totalContributions}
                     {getSortIcon('total')}
                   </div>
                 </TableHead>
@@ -276,30 +219,6 @@ export default function LotsTable({
                         <div className="text-sm text-muted-foreground">{lot.owner}</div>
                       </div>
                       <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                    </Link>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <Link 
-                      href={`/income/${lot.id}`}
-                      className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
-                    >
-                      {formatCurrency(lot.totals.maintenance)}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <Link 
-                      href={`/income/${lot.id}`}
-                      className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
-                    >
-                      {formatCurrency(lot.totals.works)}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <Link 
-                      href={`/income/${lot.id}`}
-                      className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
-                    >
-                      {formatCurrency(lot.totals.others)}
                     </Link>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
@@ -345,7 +264,7 @@ export default function LotsTable({
               ))}
               {sortedLots.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={isAuthenticated ? 6 : 5} className="px-6 py-12 text-center">
+                  <TableCell colSpan={isAuthenticated ? 3 : 2} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
                         <span className="text-2xl text-muted-foreground">🏠</span>
@@ -361,27 +280,12 @@ export default function LotsTable({
                 <>
                   {/* Separator row */}
                   <TableRow>
-                    <TableCell colSpan={isAuthenticated ? 6 : 5} className="border-t-2 border-muted p-0" />
+                    <TableCell colSpan={isAuthenticated ? 3 : 2} className="border-t-2 border-muted p-0" />
                   </TableRow>
                   {/* Totals row */}
                   <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
                     <TableCell className="px-6 py-4 font-semibold">
                       {translations.labels.total || 'TOTAL'}
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-right">
-                      <div className="font-bold text-emerald-600">
-                        {formatCurrency(overallTotals.maintenance)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-right">
-                      <div className="font-bold text-emerald-600">
-                        {formatCurrency(overallTotals.works)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-right">
-                      <div className="font-bold text-emerald-600">
-                        {formatCurrency(overallTotals.others)}
-                      </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       <div className="font-bold text-emerald-600">

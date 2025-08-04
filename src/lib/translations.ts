@@ -62,6 +62,10 @@ export const translations = {
     maintenance: "Mantenimientos",
     works: "Obras",
     others: "Otros",
+    totalContributions: "Total Aportes",
+    consolidated: "Consolidado",
+    clickForDetails: "Haz clic para ver detalles",
+    breakdownOf: "Desglose de",
 
     // Quantities
     payments: "pagos",
@@ -144,6 +148,7 @@ export const translations = {
     worksFund: "Fondo de Obras",
     othersFund: "Fondo de Otros Aportes",
     consolidatedFund: "Total Consolidado",
+    financialSummary: "Resumen Financiero",
 
     // Stats
     totalLots: "Total de Lotes",
