@@ -111,10 +111,7 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {incomeCategories.map((category) => (
                 <div key={category.key} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <TypeBadge type={category.key} />
-                    <span className="text-sm text-gray-600">{category.title}</span>
-                  </div>
+                  <TypeBadge type={category.key} />
                   <span className="font-semibold text-gray-800">
                     {formatCurrency(category.amount)}
                   </span>
