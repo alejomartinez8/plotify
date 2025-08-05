@@ -12,13 +12,13 @@ export const translations = {
     income: "Aportes",
     expenses: "Gastos",
     lots: "Lotes",
+    quotas: "Cuotas",
     admin: "Admin",
   },
 
   // Common actions and buttons
   actions: {
     new: "Nuevo",
-    add: "Agregar",
     edit: "Editar",
     save: "Guardar",
     update: "Actualizar",
@@ -26,14 +26,10 @@ export const translations = {
     delete: "Eliminar",
     cancel: "Cancelar",
     confirm: "Confirmar",
-    close: "Cerrar",
     filter: "Filtrar",
     search: "Buscar",
-    config: "Configurar",
     export: "Exportar",
     import: "Importar",
-    backup: "Respaldar",
-    restore: "Restaurar",
     uploadFile: "Subir archivo",
     viewReceipt: "Ver Comprobante",
   },
@@ -76,18 +72,23 @@ export const translations = {
     lotDetail: "Detalle por Lote",
     list: "Vista por Comprobante",
     view: "Vista",
-    back: "Volver",
-    changeTo: "Cambiar a:",
     filters: "Filtros",
     goToLot: "Ir a Lote:",
+
+    // Quota related labels
+    quotas: "Cuotas",
+    quota: "Cuota",
+    dueDate: "Vencimiento",
+    status: "Estado",
+    current: "Al día",
+    overdue: "Atrasado",
+    initialDebt: "Deuda Inicial",
   },
 
   // Status messages
   status: {
     loading: "Cargando...",
     processing: "Procesando...",
-    saving: "Guardando...",
-    deleting: "Eliminando...",
   },
 
   // Form placeholders and options
@@ -97,8 +98,6 @@ export const translations = {
     categoryExample: "ej. Jardinería, Seguridad, Servicios",
     lotIdExample: "ej. 22, E2-1, 18 y 19",
     ownerName: "Ingrese el nombre del propietario",
-    monthlyAmount: "60000",
-    selectMonth: "Seleccionar mes",
     search: "Buscar...",
     receiptNumber: "ej. 001234, FV-001",
   },
@@ -127,6 +126,19 @@ export const translations = {
     // Lots
     newLot: "Nuevo Lote",
     editLot: "Editar Lote",
+
+    // Quotas
+    quotasSystem: "Sistema de Cuotas",
+    quotasDashboard: "Panel de Cuotas",
+    newQuota: "Nueva Cuota",
+    editQuota: "Editar Cuota",
+    quotaConfiguration: "Configuración de Cuotas",
+    quotaTypesMaintenance: "Mantenimiento",
+    quotaTypesWorks: "Obras",
+    quotaAmountPlaceholder: "60000",
+    quotaDescriptionPlaceholder: "Descripción de la cuota",
+    quotaDeleteConfirmation: "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
+    noQuotasConfigured: "No hay cuotas configuradas",
 
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",

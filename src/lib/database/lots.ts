@@ -30,12 +30,14 @@ export async function getLotById(id: string): Promise<Lot | null> {
 export async function createLot(data: {
   lotNumber: string;
   owner: string;
+  initialWorksDebt?: number;
 }): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.create({
       data: {
         lotNumber: data.lotNumber,
         owner: data.owner,
+        initialWorksDebt: data.initialWorksDebt || 0,
       },
     });
     return lot;
@@ -47,7 +49,7 @@ export async function createLot(data: {
 
 export async function updateLot(
   id: string,
-  data: { lotNumber?: string; owner?: string }
+  data: { lotNumber?: string; owner?: string; initialWorksDebt?: number }
 ): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.update({
@@ -55,6 +57,7 @@ export async function updateLot(
       data: {
         ...(data.lotNumber && { lotNumber: data.lotNumber }),
         ...(data.owner && { owner: data.owner }),
+        ...(data.initialWorksDebt !== undefined && { initialWorksDebt: data.initialWorksDebt }),
       },
     });
     return lot;

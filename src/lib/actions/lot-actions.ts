@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 const LotSchema = z.object({
   lotNumber: z.string().min(1, translations.errors.required),
   owner: z.string().min(1, translations.errors.ownerRequired),
+  initialWorksDebt: z.number().min(0, translations.errors.amountPositive).optional(),
 });
 
 const CreateLot = LotSchema;
@@ -17,10 +18,17 @@ const UpdateLot = LotSchema.extend({
   id: z.string().min(1, translations.errors.required),
 });
 
+const UpdateInitialDebt = z.object({
+  lotId: z.string().min(1, translations.errors.required),
+  initialWorksDebt: z.number().min(0, translations.errors.amountPositive),
+});
+
 export type State = {
   errors?: {
     lotNumber?: string[];
     owner?: string[];
+    lotId?: string[];
+    initialWorksDebt?: string[];
   };
   message?: string | null;
   success?: boolean;
@@ -36,6 +44,7 @@ export async function createLotAction(
   const rawData = {
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
+    initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
   };
 
   const validatedFields = CreateLot.safeParse(rawData);
@@ -54,10 +63,10 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner } = validatedFields.data;
+  const { lotNumber, owner, initialWorksDebt } = validatedFields.data;
 
   try {
-    await createLot({ lotNumber, owner });
+    await createLot({ lotNumber, owner, initialWorksDebt });
   } catch (error) {
     const errorInstance = error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot creation", errorInstance, {
@@ -88,6 +97,7 @@ export async function updateLotAction(
     id: formData.get("id"),
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
+    initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
   };
 
   const validatedFields = UpdateLot.safeParse(rawData);
@@ -106,10 +116,10 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner } = validatedFields.data;
+  const { id, lotNumber, owner, initialWorksDebt } = validatedFields.data;
 
   try {
-    await updateLot(id, { lotNumber, owner });
+    await updateLot(id, { lotNumber, owner, initialWorksDebt });
   } catch (error) {
     const errorInstance = error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot update", errorInstance, {
@@ -153,6 +163,59 @@ export async function deleteLotAction(id: string) {
       success: false,
     };
   }
+}
+
+export async function updateInitialDebtAction(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
+  const actionTimer = logger.timer('Update Initial Debt Action');
+  
+  const rawData = {
+    lotId: formData.get("lotId"),
+    initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+  };
+
+  const validatedFields = UpdateInitialDebt.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    logger.error("Initial debt update validation failed", new Error("Validation error"), {
+      component: 'updateInitialDebtAction',
+      errors: validatedFields.error.flatten().fieldErrors
+    });
+    
+    actionTimer.end();
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: `${translations.errors.missingFields}. Failed to update initial debt.`,
+      success: false,
+    };
+  }
+
+  const { lotId, initialWorksDebt } = validatedFields.data;
+
+  try {
+    await updateLot(lotId, { initialWorksDebt });
+  } catch (error) {
+    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    logger.error("Database error during initial debt update", errorInstance, {
+      component: 'updateInitialDebtAction',
+      lotId,
+      initialWorksDebt
+    });
+    actionTimer.end();
+    
+    return {
+      message: `${translations.errors.database}: Failed to update initial debt.`,
+      success: false,
+    };
+  }
+
+  revalidatePath("/admin/initial-debt");
+  revalidatePath("/");
+  actionTimer.end();
+  
+  return { message: `${translations.messages.updated}.`, success: true };
 }
 
 export async function getLotsAction() {

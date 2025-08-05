@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Lot {
-  id            String         @id @default(uuid())
-  lotNumber     String         @unique
-  owner         String
-  contributions Contribution[]
+  id               String         @id @default(uuid())
+  lotNumber        String         @unique
+  owner            String
+  initialWorksDebt Int            @default(0)
+  contributions    Contribution[]
 
   @@map("lots")
 }
@@ -45,5 +46,15 @@ model Expense {
   receiptFileName String?
 
   @@map("expenses")
+}
+
+model QuotaConfig {
+  id          String    @id @default(uuid())
+  quotaType   String
+  amount      Int
+  description String?
+  dueDate     DateTime?
+
+  @@map("quota_configs")
 }
 
