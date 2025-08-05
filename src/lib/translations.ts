@@ -83,6 +83,17 @@ export const translations = {
     current: "Al día",
     overdue: "Atrasado",
     initialDebt: "Deuda Inicial",
+    
+    // Financial summary labels
+    totalPaid: "Total Pagado",
+    totalOwed: "Total Adeudado",
+    contributionsMade: "Aportes realizados",
+    initialDebtBalance: "Saldo pendiente inicial",
+    paid: "Pagado",
+    owes: "Debe",
+    totalLots: "Total Lotes",
+    totalDebt: "Deuda Total",
+    overdueLots: "atrasados",
   },
 
   // Status messages
@@ -139,6 +150,8 @@ export const translations = {
     quotaDescriptionPlaceholder: "Descripción de la cuota",
     quotaDeleteConfirmation: "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
     noQuotasConfigured: "No hay cuotas configuradas",
+    quotaSummary: "Resumen de Cuotas",
+    viewQuotas: "Ver cuotas",
 
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",
