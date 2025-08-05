@@ -10,7 +10,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Lot } from "@/types/lots.types";
-import { Contribution, ContributionType } from "@/types/contributions.types";
+import { Contribution } from "@/types/contributions.types";
 import {
   SimpleLotBalance,
   getStatusColor,
@@ -422,7 +422,7 @@ export default function LotsTable({
                           lotBalances.filter((b) => b.status === "overdue")
                             .length
                         }{" "}
-                        atrasados
+{translations.labels.overdueLots}
                       </span>
                     </TableCell>
                     {isAuthenticated && <TableCell />}

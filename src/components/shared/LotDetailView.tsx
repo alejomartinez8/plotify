@@ -239,7 +239,7 @@ export default function LotDetailView({
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Pagado
+                {translations.labels.totalPaid}
               </CardTitle>
               <div className="text-muted-foreground h-4 w-4">💰</div>
             </CardHeader>
@@ -248,7 +248,7 @@ export default function LotDetailView({
                 {formatCurrency(fundTotals.total)}
               </div>
               <p className="text-muted-foreground text-xs">
-                Aportes realizados
+                {translations.labels.contributionsMade}
               </p>
             </CardContent>
           </Card>
@@ -258,7 +258,7 @@ export default function LotDetailView({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Total Adeudado
+                  {translations.labels.totalOwed}
                 </CardTitle>
                 <div className="text-muted-foreground h-4 w-4">⚖️</div>
               </CardHeader>
@@ -280,7 +280,7 @@ export default function LotDetailView({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Deuda Inicial
+                  {translations.labels.initialDebt}
                 </CardTitle>
                 <div className="text-muted-foreground h-4 w-4">📋</div>
               </CardHeader>
@@ -289,7 +289,7 @@ export default function LotDetailView({
                   {formatCurrency(debtDetail.initialWorksDebt)}
                 </div>
                 <p className="text-muted-foreground text-xs">
-                  Saldo pendiente inicial
+                  {translations.labels.initialDebtBalance}
                 </p>
               </CardContent>
             </Card>
@@ -313,13 +313,13 @@ export default function LotDetailView({
                     <div className="text-xl font-bold text-emerald-600">
                       {formatCurrency(fundTotals.maintenance)}
                     </div>
-                    <p className="text-muted-foreground text-sm">Pagado</p>
+                    <p className="text-muted-foreground text-sm">{translations.labels.paid}</p>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-600">
                       {formatCurrency(debtDetail.maintenanceDebt)}
                     </div>
-                    <p className="text-muted-foreground text-sm">Debe</p>
+                    <p className="text-muted-foreground text-sm">{translations.labels.owes}</p>
                   </div>
                 </div>
               </CardContent>
@@ -339,13 +339,13 @@ export default function LotDetailView({
                     <div className="text-xl font-bold text-emerald-600">
                       {formatCurrency(fundTotals.works)}
                     </div>
-                    <p className="text-muted-foreground text-sm">Pagado</p>
+                    <p className="text-muted-foreground text-sm">{translations.labels.paid}</p>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-600">
                       {formatCurrency(debtDetail.worksDebt)}
                     </div>
-                    <p className="text-muted-foreground text-sm">Debe</p>
+                    <p className="text-muted-foreground text-sm">{translations.labels.owes}</p>
                   </div>
                 </div>
               </CardContent>
