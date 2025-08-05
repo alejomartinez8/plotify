@@ -3,6 +3,7 @@ import { getLotWithContributions, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { isAuthenticated } from "@/lib/auth";
 import { Contribution, ContributionType } from "@/types/contributions.types";
+import { calculateLotDebtDetail } from "@/lib/services/simple-quota-service";
 import LotDetailView from "@/components/shared/LotDetailView";
 
 interface LotPageProps {
@@ -13,11 +14,12 @@ export default async function LotPage({ params }: LotPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
   
-  // Fetch lot data with contributions and all lots for the selector
-  const [lotData, allLots, isAdmin] = await Promise.all([
+  // Fetch lot data with contributions, debt details, and all lots for the selector
+  const [lotData, allLots, isAdmin, debtDetail] = await Promise.all([
     getLotWithContributions(id),
     getLots(),
     isAuthenticated(),
+    calculateLotDebtDetail(id),
   ]);
   
   if (!lotData) {
@@ -40,6 +42,7 @@ export default async function LotPage({ params }: LotPageProps) {
       contributions={lot.contributions}
       allLots={allLots}
       isAuthenticated={isAdmin}
+      debtDetail={debtDetail}
     />
   );
 }

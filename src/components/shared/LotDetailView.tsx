@@ -13,6 +13,7 @@ import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
+import { LotDebtDetail, getStatusColor, getStatusText } from "@/lib/services/simple-quota-service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
@@ -42,6 +43,7 @@ interface LotDetailViewProps {
   contributions: Contribution[];
   allLots: Lot[];
   isAuthenticated?: boolean;
+  debtDetail?: LotDebtDetail | null;
 }
 
 type SortField = "date" | "description" | "type" | "amount" | "receiptNumber";
@@ -52,6 +54,7 @@ export default function LotDetailView({
   contributions,
   allLots,
   isAuthenticated = false,
+  debtDetail,
 }: LotDetailViewProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
@@ -137,29 +140,6 @@ export default function LotDetailView({
     };
   }, [contributions]);
 
-  // Payment statistics
-  const paymentStats = useMemo(() => {
-    const totalPayments = contributions.length;
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-
-    const paymentsThisYear = contributions.filter(
-      (c) => new Date(c.date).getFullYear() === currentYear
-    ).length;
-
-    const paymentsThisMonth = contributions.filter((c) => {
-      const date = new Date(c.date);
-      return (
-        date.getFullYear() === currentYear && date.getMonth() === currentMonth
-      );
-    }).length;
-
-    return {
-      total: totalPayments,
-      thisYear: paymentsThisYear,
-      thisMonth: paymentsThisMonth,
-    };
-  }, [contributions]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -253,13 +233,13 @@ export default function LotDetailView({
       </div>
 
       <div className="space-y-8">
-        {/* Summary Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* Financial Summary Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Total Contributions */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {translations.labels.total} {translations.labels.income}
+                Total Pagado
               </CardTitle>
               <div className="text-muted-foreground h-4 w-4">💰</div>
             </CardHeader>
@@ -268,89 +248,110 @@ export default function LotDetailView({
                 {formatCurrency(fundTotals.total)}
               </div>
               <p className="text-muted-foreground text-xs">
-                {paymentStats.total} {translations.labels.payments}
+                Aportes realizados
               </p>
             </CardContent>
           </Card>
 
-          {/* Maintenance Fund */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations.labels.maintenance}
-              </CardTitle>
-              <TypeBadge type="maintenance" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(fundTotals.maintenance)}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Outstanding Balance */}
+          {debtDetail && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Adeudado
+                </CardTitle>
+                <div className="text-muted-foreground h-4 w-4">⚖️</div>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${debtDetail.outstandingBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  {formatCurrency(debtDetail.outstandingBalance)}
+                </div>
+                <div className="mt-1">
+                  <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(debtDetail.status)}`}>
+                    {getStatusText(debtDetail.status)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Works Fund */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations.labels.works}
-              </CardTitle>
-              <TypeBadge type="works" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(fundTotals.works)}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Others Fund */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations.labels.others}
-              </CardTitle>
-              <TypeBadge type="others" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(fundTotals.others)}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Initial Debt */}
+          {debtDetail && debtDetail.initialWorksDebt > 0 && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Deuda Inicial
+                </CardTitle>
+                <div className="text-muted-foreground h-4 w-4">📋</div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-gray-700">
+                  {formatCurrency(debtDetail.initialWorksDebt)}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Saldo pendiente inicial
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
-        {/* Payment Statistics */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{translations.titles.paymentSummary}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <div className="text-2xl font-bold">{paymentStats.total}</div>
-                <p className="text-muted-foreground text-sm">
-                  {translations.titles.totalPayments}
-                </p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">
-                  {paymentStats.thisYear}
+        {/* Breakdown by Type */}
+        {debtDetail && (
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Maintenance Card */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <div className="flex items-center gap-2">
+                  <TypeBadge type="maintenance" />
+                  <CardTitle className="text-base">{translations.labels.maintenance}</CardTitle>
                 </div>
-                <p className="text-muted-foreground text-sm">
-                  {translations.titles.thisYear}
-                </p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">
-                  {paymentStats.thisMonth}
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xl font-bold text-emerald-600">
+                      {formatCurrency(fundTotals.maintenance)}
+                    </div>
+                    <p className="text-muted-foreground text-sm">Pagado</p>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-red-600">
+                      {formatCurrency(debtDetail.maintenanceDebt)}
+                    </div>
+                    <p className="text-muted-foreground text-sm">Debe</p>
+                  </div>
                 </div>
-                <p className="text-muted-foreground text-sm">
-                  {translations.titles.thisMonth}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+
+            {/* Works Card */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <div className="flex items-center gap-2">
+                  <TypeBadge type="works" />
+                  <CardTitle className="text-base">{translations.labels.works}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xl font-bold text-emerald-600">
+                      {formatCurrency(fundTotals.works)}
+                    </div>
+                    <p className="text-muted-foreground text-sm">Pagado</p>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-red-600">
+                      {formatCurrency(debtDetail.worksDebt)}
+                    </div>
+                    <p className="text-muted-foreground text-sm">Debe</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Payments Table */}
         <Card className="shadow-sm">
