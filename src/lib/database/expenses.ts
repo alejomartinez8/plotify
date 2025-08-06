@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Expense } from "@/types/expenses.types";
-import { ContributionType } from "@/types/contributions.types";
+import { Expense, ExpenseType } from "@/types/expenses.types";
 import { formatDateForStorage } from "@/lib/utils";
 
 export async function getExpenses(): Promise<Expense[]> {
@@ -12,7 +11,7 @@ export async function getExpenses(): Promise<Expense[]> {
     });
     return expenses.map(expense => ({
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     }));
   } catch (error) {
@@ -29,7 +28,7 @@ export async function getExpenseById(id: number): Promise<Expense | null> {
     if (!expense) return null;
     return {
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     };
   } catch (error) {
@@ -55,7 +54,7 @@ export async function createExpense(data: {
     });
     return {
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     };
   } catch (error) {
@@ -85,7 +84,7 @@ export async function updateExpense(
     });
     return {
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     };
   } catch (error) {
@@ -116,7 +115,7 @@ export async function getExpensesByType(type: string): Promise<Expense[]> {
     });
     return expenses.map(expense => ({
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     }));
   } catch (error) {
@@ -137,7 +136,7 @@ export async function getExpensesByCategory(
     });
     return expenses.map(expense => ({
       ...expense,
-      type: expense.type as ContributionType,
+      type: "general" as ExpenseType,
       date: formatDateForStorage(expense.date)
     }));
   } catch (error) {
