@@ -160,7 +160,7 @@ export const translations = {
     quotaDescriptionPlaceholder: "Descripción de la cuota",
     quotaDeleteConfirmation: "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
     noQuotasConfigured: "No hay cuotas configuradas",
-    quotaSummary: "Resumen de Cuotas",
+    quotaSummary: "Estado de Cuotas",
     viewQuotas: "Ver cuotas",
 
     // Grid headers
