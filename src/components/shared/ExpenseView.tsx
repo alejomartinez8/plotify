@@ -153,7 +153,7 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
         <ConfirmationModal
           isOpen={!!deletingExpense}
           title={translations.confirmations.deleteTitle}
-          message={`¿Estás seguro de que quieres eliminar el gasto "${deletingExpense?.description}"? Esta acción no se puede deshacer.`}
+          message={translations.confirmations.deleteExpense}
           onConfirm={handleDeleteConfirm}
           onClose={() => setDeletingExpense(null)}
           variant="danger"
