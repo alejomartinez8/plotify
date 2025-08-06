@@ -77,14 +77,14 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
               </div>
             </Link>
             <Link href="/expenses" className="block">
-              <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 hover:border-red-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                <div className="text-sm text-red-700 mb-2 font-medium">
+              <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 cursor-pointer hover:shadow-md">
+                <div className="text-sm text-gray-700 mb-2 font-medium">
                   {translations.labels.expenses}
                 </div>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-gray-900">
                   {formatCurrency(fundsData.consolidated.expenses)}
                 </div>
-                <div className="text-xs text-red-600 mt-1 opacity-70">
+                <div className="text-xs text-gray-700 mt-1 opacity-70">
                   {translations.labels.clickForDetails}
                 </div>
               </div>
