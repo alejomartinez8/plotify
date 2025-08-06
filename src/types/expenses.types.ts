@@ -1,8 +1,8 @@
-import { ContributionType } from "./contributions.types";
+export type ExpenseType = "general";
 
 export interface Expense {
   id: number;
-  type: ContributionType;
+  type: ExpenseType;
   amount: number;
   date: string;
   description: string;
