@@ -7,7 +7,6 @@ import { translations } from "@/lib/translations";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import TypeBadge from "@/components/shared/TypeBadge";
 import {
   Table,
   TableBody,
@@ -17,22 +16,18 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 
-export type ExpenseType = "all" | "maintenance" | "works" | "others";
-
 interface ExpenseTableProps {
   expenses: Expense[];
-  expenseFilter: ExpenseType;
   isAuthenticated?: boolean;
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
 }
 
-type SortField = 'date' | 'description' | 'type' | 'amount' | 'receiptNumber';
+type SortField = 'date' | 'description' | 'amount' | 'receiptNumber';
 type SortDirection = 'asc' | 'desc';
 
 export default function ExpenseTable({
   expenses,
-  expenseFilter,
   isAuthenticated = false,
   onEdit,
   onDelete,
@@ -40,16 +35,10 @@ export default function ExpenseTable({
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
-  // Filter expenses based on expense filter
+  // Use all expenses (no filtering by type)
   const filteredExpenses = useMemo(() => {
-    let filtered = expenses;
-    
-    if (expenseFilter !== "all") {
-      filtered = filtered.filter((expense) => expense.type === expenseFilter);
-    }
-    
-    return filtered;
-  }, [expenses, expenseFilter]);
+    return expenses;
+  }, [expenses]);
 
   // Sort expenses
   const sortedExpenses = useMemo(() => {
@@ -65,10 +54,6 @@ export default function ExpenseTable({
         case 'description':
           aValue = a.description;
           bValue = b.description;
-          break;
-        case 'type':
-          aValue = a.type;
-          bValue = b.type;
           break;
         case 'amount':
           aValue = a.amount;
@@ -100,24 +85,9 @@ export default function ExpenseTable({
     });
   }, [filteredExpenses, sortField, sortDirection]);
 
-  // Calculate totals for the table footer
-  const tableTotals = useMemo(() => {
-    const maintenanceTotal = sortedExpenses
-      .filter(expense => expense.type === 'maintenance')
-      .reduce((sum, expense) => sum + expense.amount, 0);
-    const worksTotal = sortedExpenses
-      .filter(expense => expense.type === 'works')
-      .reduce((sum, expense) => sum + expense.amount, 0);
-    const othersTotal = sortedExpenses
-      .filter(expense => expense.type === 'others')
-      .reduce((sum, expense) => sum + expense.amount, 0);
-    
-    return {
-      maintenanceTotal,
-      worksTotal,
-      othersTotal,
-      total: maintenanceTotal + worksTotal + othersTotal,
-    };
+  // Calculate total for the table footer
+  const tableTotal = useMemo(() => {
+    return sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   }, [sortedExpenses]);
 
   const handleSort = (field: SortField) => {
@@ -154,15 +124,6 @@ export default function ExpenseTable({
                     <div className="flex items-center gap-1">
                       {translations.labels.date}
                       {getSortIcon('date')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('type')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {translations.labels.type}
-                      {getSortIcon('type')}
                     </div>
                   </TableHead>
                   <TableHead
@@ -224,9 +185,6 @@ export default function ExpenseTable({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4">
-                      <TypeBadge type={expense.type} />
-                    </TableCell>
-                    <TableCell className="px-6 py-4">
                       <div className="font-medium">
                         {expense.description}
                       </div>
@@ -278,7 +236,7 @@ export default function ExpenseTable({
                 ))}
                 {sortedExpenses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={isAuthenticated ? 6 : 5} className="px-6 py-12 text-center">
+                    <TableCell colSpan={isAuthenticated ? 5 : 4} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
                           <span className="text-2xl text-muted-foreground">💳</span>
@@ -286,11 +244,6 @@ export default function ExpenseTable({
                         <p className="text-muted-foreground font-medium">
                           {translations.messages.noExpenses}
                         </p>
-                        {expenseFilter !== "all" && (
-                          <p className="text-muted-foreground text-sm">
-                            Intenta cambiar el filtro de tipo de gasto
-                          </p>
-                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -299,16 +252,16 @@ export default function ExpenseTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={isAuthenticated ? 6 : 5} className="border-t-2 border-muted p-0" />
+                      <TableCell colSpan={isAuthenticated ? 5 : 4} className="border-t-2 border-muted p-0" />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
-                      <TableCell className="px-6 py-4 font-semibold" colSpan={3}>
+                      <TableCell className="px-6 py-4 font-semibold" colSpan={2}>
                         {translations.labels.total || 'TOTAL GENERAL'}
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
                         <div className="font-bold text-destructive">
-                          {formatCurrency(tableTotals.total)}
+                          {formatCurrency(tableTotal)}
                         </div>
                       </TableCell>
                       <TableCell colSpan={isAuthenticated ? 2 : 1} />

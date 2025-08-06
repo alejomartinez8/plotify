@@ -18,12 +18,11 @@ interface ExpenseViewProps {
   isAuthenticated?: boolean;
 }
 
-type ExpenseType = "all" | "maintenance" | "works" | "others";
+type ExpenseType = "all";
 
 export default function ExpenseView({ title, expenses, isAuthenticated = false }: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
-  const [expenseFilter, setExpenseFilter] = useState<ExpenseType>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
 
   const searchParams = useSearchParams();
@@ -31,14 +30,7 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
 
   // Initialize filters from URL parameters
   useEffect(() => {
-    const typeParam = searchParams.get("type") as ExpenseType;
     const yearParam = searchParams.get("year");
-
-    if (typeParam && (typeParam === "maintenance" || typeParam === "works" || typeParam === "others")) {
-      setExpenseFilter(typeParam);
-    } else {
-      setExpenseFilter("all");
-    }
 
     if (yearParam) {
       setYearFilter(yearParam);
@@ -46,20 +38,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
       setYearFilter("all");
     }
   }, [searchParams]);
-
-  const handleExpenseFilterChange = (expenseType: ExpenseType) => {
-    setExpenseFilter(expenseType);
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (expenseType !== "all") {
-      params.set("type", expenseType);
-    } else {
-      params.delete("type");
-    }
-
-    // Update URL without causing a page refresh
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
 
   const handleYearFilterChange = (year: string) => {
     setYearFilter(year);
@@ -95,11 +73,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
   const filteredExpenses = useMemo(() => {
     let filtered = expenses;
     
-    // Filter by expense type
-    if (expenseFilter !== "all") {
-      filtered = filtered.filter((expense) => expense.type === expenseFilter);
-    }
-    
     // Filter by year
     if (yearFilter !== "all") {
       filtered = filtered.filter(expense => {
@@ -110,7 +83,7 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
     
     // Sort by date (most recent first)
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [expenses, expenseFilter, yearFilter]);
+  }, [expenses, yearFilter]);
 
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
@@ -151,16 +124,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
             </div>
           ) : null
         }
-        typeFilter={{
-          value: expenseFilter,
-          onChange: (value) => handleExpenseFilterChange(value as ExpenseType),
-          options: [
-            { value: "all", label: translations.filters.allExpenses },
-            { value: "maintenance", label: translations.labels.maintenance },
-            { value: "works", label: translations.labels.works },
-            { value: "others", label: translations.labels.others },
-          ],
-        }}
         yearFilter={{
           value: yearFilter,
           onChange: handleYearFilterChange,
@@ -171,7 +134,6 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
       {/* Expenses Table */}
       <ExpenseTable
         expenses={filteredExpenses}
-        expenseFilter={expenseFilter}
         isAuthenticated={isAuthenticated}
         onEdit={setEditingExpense}
         onDelete={setDeletingExpense}

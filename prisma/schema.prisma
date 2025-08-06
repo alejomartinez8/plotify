@@ -37,7 +37,7 @@ model Contribution {
 
 model Expense {
   id              Int     @id @default(autoincrement())
-  type            String
+  type            String  @default("general")
   amount          Int
   date            String
   description     String

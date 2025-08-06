@@ -19,13 +19,6 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/Select";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { cn, formatDateForStorage } from "@/lib/utils";
 
@@ -79,7 +72,7 @@ export default function ExpenseModal({
       startTransition(() => {
         const updatedExpense: Expense = {
           id: expense?.id || 0,
-          type: formData.get("type") as "maintenance" | "works",
+          type: "general",
           amount: parseFloat(formData.get("amount") as string),
           date: formData.get("date") as string,
           description: formData.get("description") as string,
@@ -124,32 +117,7 @@ export default function ExpenseModal({
           )}
 
           {expense && <input type="hidden" name="id" value={expense.id} />}
-          <div className="space-y-2">
-            <Label htmlFor="type">{translations.labels.type}</Label>
-            <Select
-              name="type"
-              defaultValue={expense?.type || "maintenance"}
-              required
-              disabled={isSubmitting}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="maintenance">
-                  {translations.labels.maintenance}
-                </SelectItem>
-                <SelectItem value="works">
-                  {translations.labels.works}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {state.errors?.type && (
-              <div className="text-destructive text-sm">
-                {state.errors.type}
-              </div>
-            )}
-          </div>
+          <input type="hidden" name="type" value="general" />
 
           <div className="space-y-2">
             <Label htmlFor="amount">{translations.labels.amount}</Label>
