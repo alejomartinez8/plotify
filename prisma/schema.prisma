@@ -12,49 +12,54 @@ model Lot {
   lotNumber        String         @unique
   owner            String
   initialWorksDebt Int            @default(0)
+  isExempt         Boolean        @default(false)
+  exemptionReason  String?
   contributions    Contribution[]
 
   @@map("lots")
 }
 
 model Contribution {
-  id            Int      @id @default(autoincrement())
-  lotId         String
-  type          String
-  amount        Int
-  date          DateTime @default(now())
-  description   String
-  receiptNumber String?
-  receiptFileId String?
-  receiptFileUrl String?
+  id              Int      @id @default(autoincrement())
+  lotId           String
+  type            String
+  amount          Int
+  description     String
+  date            DateTime @default(now())
+  receiptNumber   String?
+  receiptFileId   String?
   receiptFileName String?
-  lot           Lot      @relation(fields: [lotId], references: [id])
+  receiptFileUrl  String?
+  lot             Lot      @relation(fields: [lotId], references: [id])
 
   @@map("contributions")
 }
 
 model Expense {
-  id            Int    @id @default(autoincrement())
-  type          String
-  amount        Int
-  date          String
-  description   String
-  category      String
-  receiptNumber String?
-  receiptFileId String?
-  receiptFileUrl String?
+  id              Int     @id @default(autoincrement())
+  type            String
+  amount          Int
+  date            String
+  description     String
+  category        String
+  receiptNumber   String?
+  receiptFileId   String?
   receiptFileName String?
+  receiptFileUrl  String?
 
   @@map("expenses")
 }
 
 model QuotaConfig {
   id          String    @id @default(uuid())
+  year        Int
+  month       Int?
   quotaType   String
   amount      Int
   description String?
   dueDate     DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
 
   @@map("quota_configs")
 }
-

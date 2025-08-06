@@ -11,6 +11,8 @@ const LotSchema = z.object({
   lotNumber: z.string().min(1, translations.errors.required),
   owner: z.string().min(1, translations.errors.ownerRequired),
   initialWorksDebt: z.number().min(0, translations.errors.amountPositive).optional(),
+  isExempt: z.boolean().optional(),
+  exemptionReason: z.string().nullable().optional(),
 });
 
 const CreateLot = LotSchema;
@@ -22,6 +24,7 @@ const UpdateInitialDebt = z.object({
   lotId: z.string().min(1, translations.errors.required),
   initialWorksDebt: z.number().min(0, translations.errors.amountPositive),
 });
+
 
 export type State = {
   errors?: {
@@ -45,6 +48,8 @@ export async function createLotAction(
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+    isExempt: formData.get("isExempt") === "on",
+    exemptionReason: (formData.get("exemptionReason") as string)?.trim() || null,
   };
 
   const validatedFields = CreateLot.safeParse(rawData);
@@ -63,10 +68,10 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, initialWorksDebt } = validatedFields.data;
+  const { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } = validatedFields.data;
 
   try {
-    await createLot({ lotNumber, owner, initialWorksDebt });
+    await createLot({ lotNumber, owner, initialWorksDebt, isExempt, exemptionReason });
   } catch (error) {
     const errorInstance = error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot creation", errorInstance, {
@@ -98,6 +103,8 @@ export async function updateLotAction(
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+    isExempt: formData.get("isExempt") === "on",
+    exemptionReason: (formData.get("exemptionReason") as string)?.trim() || null,
   };
 
   const validatedFields = UpdateLot.safeParse(rawData);
@@ -116,10 +123,10 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, initialWorksDebt } = validatedFields.data;
+  const { id, lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } = validatedFields.data;
 
   try {
-    await updateLot(id, { lotNumber, owner, initialWorksDebt });
+    await updateLot(id, { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason });
   } catch (error) {
     const errorInstance = error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot update", errorInstance, {
@@ -217,6 +224,7 @@ export async function updateInitialDebtAction(
   
   return { message: `${translations.messages.updated}.`, success: true };
 }
+
 
 export async function getLotsAction() {
   const actionTimer = logger.timer('Get Lots Action');

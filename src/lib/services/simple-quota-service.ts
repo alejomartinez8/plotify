@@ -31,7 +31,9 @@ export async function calculateSimpleLotBalances(): Promise<SimpleLotBalance[]> 
       return false;
     });
 
-    const lotBalances: SimpleLotBalance[] = lots.map(lot => {
+    const lotBalances: SimpleLotBalance[] = lots
+      .filter(lot => !lot.isExempt) // Exclude exempt lots from debt calculations
+      .map(lot => {
       const lotContributions = contributions.filter(c => c.lotId === lot.id);
       const totalContributions = lotContributions.reduce((sum, c) => sum + c.amount, 0);
       
@@ -99,6 +101,7 @@ export function getStatusIcon(status: "current" | "overdue"): string {
   }
 }
 
+
 export interface LotDebtDetail {
   lotId: string;
   initialWorksDebt: number;
@@ -121,6 +124,9 @@ export async function calculateLotDebtDetail(lotId: string): Promise<LotDebtDeta
 
     const lot = lots.find(l => l.id === lotId);
     if (!lot) return null;
+    
+    // Return null for exempt lots (they don't have debt calculations)
+    if (lot.isExempt) return null;
 
     const currentDate = new Date();
     

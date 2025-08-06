@@ -92,8 +92,15 @@ export const translations = {
     paid: "Pagado",
     owes: "Debe",
     totalLots: "Total Lotes",
-    totalDebt: "Deuda Total",
+    totalDebt: "Cartera",
     overdueLots: "atrasados",
+    exempt: "Exento",
+    exemption: "Exención",
+    exemptionReason: "Razón de exención",
+    exemptLot: "Exentar lote",
+    activateLot: "Activar lote",
+    notApplicable: "N/A",
+    noData: "Sin datos",
   },
 
   // Status messages

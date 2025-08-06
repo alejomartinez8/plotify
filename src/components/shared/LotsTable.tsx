@@ -8,6 +8,7 @@ import {
   Edit,
   Trash2,
   ExternalLink,
+  Info,
 } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
@@ -275,7 +276,22 @@ export default function LotsTable({
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div>
-                        <div className="font-semibold text-primary">{lot.lotNumber}</div>
+                        <div className="font-semibold text-primary flex items-center gap-2">
+                          {lot.lotNumber}
+                          {lot.isExempt && (
+                            <div 
+                              className="group relative"
+                              title={lot.exemptionReason || translations.labels.exempt}
+                            >
+                              <Info className="h-4 w-4 text-amber-600" />
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                                {lot.exemptionReason || translations.labels.exempt}
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         <div className="text-muted-foreground text-sm">
                           {lot.owner}
                         </div>
@@ -291,12 +307,16 @@ export default function LotsTable({
                   <TableCell className="px-6 py-4 text-right">
                     <span
                       className={`font-bold ${
-                        lot.balance?.outstandingBalance && lot.balance.outstandingBalance > 0
+                        lot.isExempt
+                          ? "text-gray-500"
+                          : lot.balance?.outstandingBalance && lot.balance.outstandingBalance > 0
                           ? "text-red-600"
                           : "text-green-600"
                       }`}
                     >
-                      {lot.balance
+                      {lot.isExempt
+                        ? "-"
+                        : lot.balance
                         ? formatCurrency(lot.balance.outstandingBalance)
                         : formatCurrency(0)}
                     </span>
@@ -317,7 +337,7 @@ export default function LotsTable({
                       </span>
                     ) : (
                       <span className="inline-flex rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-800">
-                        Sin datos
+                        {lot.isExempt ? translations.labels.notApplicable : translations.labels.noData}
                       </span>
                     )}
                   </TableCell>

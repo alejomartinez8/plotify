@@ -31,6 +31,8 @@ export async function createLot(data: {
   lotNumber: string;
   owner: string;
   initialWorksDebt?: number;
+  isExempt?: boolean;
+  exemptionReason?: string | null;
 }): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.create({
@@ -38,6 +40,8 @@ export async function createLot(data: {
         lotNumber: data.lotNumber,
         owner: data.owner,
         initialWorksDebt: data.initialWorksDebt || 0,
+        isExempt: data.isExempt || false,
+        exemptionReason: data.exemptionReason || null,
       },
     });
     return lot;
@@ -49,7 +53,13 @@ export async function createLot(data: {
 
 export async function updateLot(
   id: string,
-  data: { lotNumber?: string; owner?: string; initialWorksDebt?: number }
+  data: { 
+    lotNumber?: string; 
+    owner?: string; 
+    initialWorksDebt?: number;
+    isExempt?: boolean;
+    exemptionReason?: string | null;
+  }
 ): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.update({
@@ -58,6 +68,8 @@ export async function updateLot(
         ...(data.lotNumber && { lotNumber: data.lotNumber }),
         ...(data.owner && { owner: data.owner }),
         ...(data.initialWorksDebt !== undefined && { initialWorksDebt: data.initialWorksDebt }),
+        ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
+        ...(data.exemptionReason !== undefined && { exemptionReason: data.exemptionReason }),
       },
     });
     return lot;

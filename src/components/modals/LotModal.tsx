@@ -45,6 +45,8 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
         lotNumber: formData.get("lotNumber") as string,
         owner: formData.get("owner") as string,
         initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+        isExempt: formData.get("isExempt") === "on",
+        exemptionReason: formData.get("exemptionReason") as string || null,
       };
       onSuccess(updatedLot, !!lot);
       formAction(formData);
@@ -131,6 +133,42 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
                 {state.errors.initialWorksDebt}
               </div>
             )}
+          </div>
+
+          {/* Exemption Fields */}
+          <div className="border-t pt-4 space-y-4">
+            <h4 className="text-sm font-semibold text-gray-700">
+              {translations.labels.exemption}
+            </h4>
+            
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                name="isExempt"
+                id="isExempt"
+                defaultChecked={lot?.isExempt || false}
+                disabled={isPending}
+                className="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+              />
+              <Label htmlFor="isExempt" className="text-sm font-medium">
+                {translations.labels.exemptLot}
+              </Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="exemptionReason">{translations.labels.exemptionReason}</Label>
+              <Input
+                type="text"
+                name="exemptionReason"
+                id="exemptionReason"
+                defaultValue={lot?.exemptionReason || ""}
+                disabled={isPending}
+                placeholder="Ej: Etapa 2, Negociación pendiente, etc."
+              />
+              <p className="text-xs text-gray-600">
+                Razón por la cual este lote no debe computar en cálculos de deuda (opcional)
+              </p>
+            </div>
           </div>
         </form>
         <DialogFooter>

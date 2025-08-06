@@ -3,4 +3,6 @@ export interface Lot {
   lotNumber: string;
   owner: string;
   initialWorksDebt: number;
+  isExempt: boolean;
+  exemptionReason: string | null;
 }
