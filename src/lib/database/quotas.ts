@@ -36,6 +36,7 @@ export async function createQuotaConfig(data: {
         amount: data.amount,
         description: data.description || null,
         dueDate: data.dueDate || null,
+        year: new Date().getFullYear(),
       },
     });
     return quota;

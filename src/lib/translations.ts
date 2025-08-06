@@ -101,6 +101,9 @@ export const translations = {
     activateLot: "Activar lote",
     notApplicable: "N/A",
     noData: "Sin datos",
+    contributions: "Aportes",
+    outstandingBalance: "Saldo Adeudado",
+    sortBy: "Ordenar por",
   },
 
   // Status messages
