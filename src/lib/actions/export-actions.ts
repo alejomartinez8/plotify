@@ -119,7 +119,7 @@ export async function exportExpensesAction(): Promise<{
     const csvData = expenses.map((expense) => [
       expense.id.toString(),
       formatDate(expense.date),
-      expense.type === "maintenance" ? "Mantenimiento" : "Obras",
+      "Gasto General",
       expense.category,
       expense.description,
       expense.receiptNumber || "",
