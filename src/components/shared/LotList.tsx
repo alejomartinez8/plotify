@@ -98,21 +98,23 @@ export default function LotList({ lots, isAuthenticated = false }: LotListProps)
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
       {/* Header */}
       <FilterSection
         title={translations.navigation.lots}
         actionButton={
           isAuthenticated ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <ExportButton 
                 onExport={exportLotsAction}
                 variant="outline"
                 size="default"
+                className="w-full sm:w-auto text-sm"
               >
-                {translations.actions.export} {translations.navigation.lots} CSV
+                <span className="sm:hidden">{translations.actions.export} CSV</span>
+                <span className="hidden sm:inline">{translations.actions.export} {translations.navigation.lots} CSV</span>
               </ExportButton>
-              <Button onClick={handleAdd} disabled={isPending}>
+              <Button onClick={handleAdd} disabled={isPending} className="w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
                 {translations.titles.newLot}
               </Button>
@@ -127,80 +129,134 @@ export default function LotList({ lots, isAuthenticated = false }: LotListProps)
         </div>
       )}
 
-      {/* Lots Card */}
+      {/* Lots Display - Mobile First */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/30">
-                <tr>
-                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    {translations.labels.lot}
-                  </th>
-                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
-                    {translations.labels.owner}
-                  </th>
-                  {isAuthenticated && (
-                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium tracking-wider uppercase">
-                      {translations.labels.actions}
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {optimisticLots.map((lot) => (
-                  <tr key={lot.id} className="hover:bg-muted/30">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="bg-primary/10 mr-3 flex h-8 w-8 items-center justify-center rounded-full">
-                          <User className="text-primary h-4 w-4" />
-                        </div>
-                        <span className="text-sm font-medium">
-                          {lot.lotNumber}
-                        </span>
+          {/* Mobile Card Layout */}
+          <div className="sm:hidden">
+            <div className="divide-y divide-border">
+              {optimisticLots.map((lot) => (
+                <div key={lot.id} className="p-4 hover:bg-muted/30">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center flex-1 min-w-0">
+                      <div className="bg-primary/10 mr-3 flex h-10 w-10 items-center justify-center rounded-full flex-shrink-0">
+                        <User className="text-primary h-5 w-5" />
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm">{lot.owner}</span>
-                    </td>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {translations.labels.lot}: {lot.lotNumber}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {lot.owner}
+                        </p>
+                      </div>
+                    </div>
                     {isAuthenticated && (
-                      <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(lot)}
-                            title="Edit lot"
-                            disabled={isPending}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(lot)}
-                            title="Delete lot"
-                            disabled={isPending}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
+                      <div className="flex gap-1 ml-2 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(lot)}
+                          title="Edit lot"
+                          disabled={isPending}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(lot)}
+                          title="Delete lot"
+                          disabled={isPending}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden sm:block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted/30">
+                  <tr>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
+                      {translations.labels.lot}
+                    </th>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase">
+                      {translations.labels.owner}
+                    </th>
+                    {isAuthenticated && (
+                      <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium tracking-wider uppercase">
+                        {translations.labels.actions}
+                      </th>
                     )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {optimisticLots.length === 0 && (
-              <div className="py-12 text-center">
-                <div className="text-muted-foreground mb-4 text-6xl">🏠</div>
-                <p className="text-muted-foreground">
-                  {translations.messages.noLots}
-                </p>
-              </div>
-            )}
+                </thead>
+                <tbody className="divide-y">
+                  {optimisticLots.map((lot) => (
+                    <tr key={lot.id} className="hover:bg-muted/30">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="bg-primary/10 mr-3 flex h-8 w-8 items-center justify-center rounded-full">
+                            <User className="text-primary h-4 w-4" />
+                          </div>
+                          <span className="text-sm font-medium">
+                            {lot.lotNumber}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm">{lot.owner}</span>
+                      </td>
+                      {isAuthenticated && (
+                        <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(lot)}
+                              title="Edit lot"
+                              disabled={isPending}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(lot)}
+                              title="Delete lot"
+                              disabled={isPending}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* Empty State */}
+          {optimisticLots.length === 0 && (
+            <div className="py-12 text-center">
+              <div className="text-muted-foreground mb-4 text-6xl">🏠</div>
+              <p className="text-muted-foreground">
+                {translations.messages.noLots}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
