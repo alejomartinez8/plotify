@@ -226,17 +226,10 @@ export default function LotCards({
                 >
                   <CardContent className="p-0 w-full">
                     {/* Mobile Layout */}
-                    <div className="md:hidden w-full">
+                    <div className="md:hidden w-full relative">
                       <div className="flex w-full min-h-[60px]">
-                        {/* Icon Section */}
-                        <div className="flex-shrink-0 bg-white flex items-center justify-center px-2 py-3">
-                          <div className="border border-border/50 flex h-7 w-7 items-center justify-center rounded-full">
-                            <User className="text-primary h-3.5 w-3.5" />
-                          </div>
-                        </div>
-
                         {/* Main Content Section */}
-                        <div className="flex-1 min-w-0 px-2 py-2 flex flex-col justify-center overflow-hidden">
+                        <div className="flex-1 min-w-0 px-4 py-2 flex flex-col justify-center overflow-hidden">
                           <div className="flex items-center gap-1 mb-1 min-w-0">
                             <span className="font-bold text-primary text-sm flex-shrink-0">{lot.lotNumber}</span>
                             {lot.isExempt && (
@@ -249,7 +242,6 @@ export default function LotCards({
                                 {getStatusText(lot.balance.status)}
                               </span>
                             )}
-                            <ExternalLink className="h-3 w-3 text-muted-foreground opacity-60 ml-auto flex-shrink-0" />
                           </div>
                           <div className="text-muted-foreground text-xs truncate">
                             {lot.owner}
@@ -262,7 +254,7 @@ export default function LotCards({
                         </div>
 
                         {/* Values Section */}
-                        <div className="flex-shrink-0 bg-white px-2 py-2 min-w-[85px] text-right">
+                        <div className="flex-shrink-0 bg-white px-4 py-2 min-w-[85px] text-right">
                           <div className="font-bold text-emerald-600 text-sm">
                             {formatCurrency(lot.totals.total)}
                           </div>
@@ -287,6 +279,7 @@ export default function LotCards({
                           </div>
                         </div>
                       </div>
+
 
                       {/* Action Buttons Mobile */}
                       {isAuthenticated && (
