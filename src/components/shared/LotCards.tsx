@@ -5,10 +5,10 @@ import { Plus, Edit, Trash2, Info } from "lucide-react";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import {
-  SimpleLotBalance,
   getStatusColor,
   getStatusText,
-} from "@/lib/services/simple-quota-service";
+} from "@/lib/utils";
+import { SimpleLotBalance } from "@/types/quotas.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";

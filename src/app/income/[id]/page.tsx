@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { getLotWithContributions, getLots } from "@/lib/database/lots";
+import { getQuotaConfigs } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
 import { isAuthenticated } from "@/lib/auth";
 import { Contribution, ContributionType } from "@/types/contributions.types";
-import { calculateLotDebtDetail } from "@/lib/services/simple-quota-service";
+import { calculateLotDebtDetail } from "@/lib/utils";
 import LotDetailView from "@/components/shared/LotDetailView";
 
 interface LotPageProps {
@@ -15,12 +16,14 @@ export default async function LotPage({ params }: LotPageProps) {
   const { id } = resolvedParams;
   
   // Fetch lot data with contributions, debt details, and all lots for the selector
-  const [lotData, allLots, isAdmin, debtDetail] = await Promise.all([
+  const [lotData, allLots, quotaConfigs, isAdmin] = await Promise.all([
     getLotWithContributions(id),
     getLots(),
+    getQuotaConfigs(),
     isAuthenticated(),
-    calculateLotDebtDetail(id),
   ]);
+
+  const debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
   
   if (!lotData) {
     notFound();

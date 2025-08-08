@@ -13,7 +13,8 @@ import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
-import { LotDebtDetail, getStatusColor, getStatusText } from "@/lib/services/simple-quota-service";
+import { getStatusColor, getStatusText } from "@/lib/utils";
+import { LotDebtDetail } from "@/types/quotas.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {

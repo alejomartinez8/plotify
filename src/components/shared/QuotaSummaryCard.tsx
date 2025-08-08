@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SimpleLotBalance } from "@/lib/services/simple-quota-service";
+import { SimpleLotBalance } from "@/types/quotas.types";
 import { translations } from "@/lib/translations";
 
 interface QuotaSummaryCardProps {

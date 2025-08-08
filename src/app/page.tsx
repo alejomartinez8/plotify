@@ -1,6 +1,7 @@
 import { getAllFundsBalances, getContributions } from "@/lib/database/contributions";
 import { getLots } from "@/lib/database/lots";
-import { calculateSimpleLotBalances } from "@/lib/services/simple-quota-service";
+import { getQuotaConfigs } from "@/lib/database/quotas";
+import { calculateSimpleLotBalances } from "@/lib/utils";
 import { isAuthenticated } from "@/lib/auth";
 import FundsOverview from "@/components/shared/FundsOverview";
 import LotCards from "@/components/shared/LotCards";
@@ -10,13 +11,15 @@ import { translations } from "@/lib/translations";
 
 export default async function Home() {
   try {
-    const [fundsData, lots, contributions, lotBalances, isAdmin] = await Promise.all([
+    const [fundsData, lots, contributions, quotaConfigs, isAdmin] = await Promise.all([
       getAllFundsBalances(),
       getLots(),
       getContributions(),
-      calculateSimpleLotBalances(),
+      getQuotaConfigs(),
       isAuthenticated(),
     ]);
+
+    const lotBalances = calculateSimpleLotBalances(lots, contributions, quotaConfigs);
 
     return (
       <div className="w-full mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
