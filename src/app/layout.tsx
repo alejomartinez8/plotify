@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { inter } from "@/app/ui/fonts";
 import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
@@ -28,7 +29,10 @@ export default async function RootLayout({
       >
         <Header />
         <Navigation isAuthenticated={isAdmin} />
-        <main className="min-h-screen bg-gray-50">{children}</main>
+        <main className="min-h-screen bg-gray-50">
+          {children}
+          <Analytics />
+        </main>
       </body>
     </html>
   );
