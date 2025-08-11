@@ -179,7 +179,7 @@ export default function LotCards({
                   setSortDirection(direction);
                 }}
               >
-                <SelectTrigger className="w-full text-xs sm:text-sm">
+                <SelectTrigger className="w-full sm:w-64 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
