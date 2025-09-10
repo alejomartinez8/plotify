@@ -12,9 +12,7 @@ import { logger } from "@/lib/logger";
 
 // Zod schema for validation
 const ExpenseSchema = z.object({
-  type: z.enum(["maintenance", "works", "others"], {
-    message: translations.errors.typeRequired,
-  }),
+  type: z.string().optional(),
   amount: z.coerce.number().positive(translations.errors.amountPositive),
   date: z.string().min(1, translations.errors.dateRequired),
   description: z.string().optional(),
@@ -82,7 +80,7 @@ export async function createExpenseAction(
 
   try {
     const result = await createExpense({
-      type,
+      type: type || "general",
       amount,
       date,
       description: description || "",
@@ -162,7 +160,7 @@ export async function updateExpenseAction(
 
   try {
     const result = await updateExpense(id, {
-      type,
+      type: type || "general",
       amount,
       date,
       description: description || "",
