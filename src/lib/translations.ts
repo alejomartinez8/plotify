@@ -103,6 +103,7 @@ export const translations = {
     noData: "Sin datos",
     contributions: "Aportes",
     outstandingBalance: "Saldo Adeudado",
+    totalOutstandingDebt: "Total Deuda",
     sortBy: "Ordenar por",
   },
 
