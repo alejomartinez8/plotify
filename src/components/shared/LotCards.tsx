@@ -30,6 +30,9 @@ interface LotWithSummary extends Lot {
   contributions: Contribution[];
   balance: SimpleLotBalance | null;
   totals: {
+    maintenance: number;
+    works: number;
+    others: number;
     total: number;
   };
 }
@@ -66,16 +69,29 @@ export default function LotCards({
       );
       const balance = lotBalances.find((b) => b.lotId === lot.id) || null;
 
-      const totalContributions = lotContributions.reduce(
-        (sum, c) => sum + c.amount,
-        0
-      );
+      // Calculate totals by type
+      const maintenanceTotal = lotContributions
+        .filter((c) => c.type === "maintenance")
+        .reduce((sum, c) => sum + c.amount, 0);
+
+      const worksTotal = lotContributions
+        .filter((c) => c.type === "works")
+        .reduce((sum, c) => sum + c.amount, 0);
+
+      const othersTotal = lotContributions
+        .filter((c) => c.type === "others")
+        .reduce((sum, c) => sum + c.amount, 0);
+
+      const totalContributions = maintenanceTotal + worksTotal + othersTotal;
 
       return {
         ...lot,
         contributions: lotContributions,
         balance,
         totals: {
+          maintenance: maintenanceTotal,
+          works: worksTotal,
+          others: othersTotal,
           total: totalContributions,
         },
       };
@@ -285,40 +301,97 @@ export default function LotCards({
                           <div className="text-muted-foreground truncate text-xs sm:text-sm">
                             {lot.owner}
                           </div>
-                          {(lot.initialWorksDebt || 0) > 0 && (
-                            <div className="mt-0.5 text-xs font-medium text-amber-700">
-                              {translations.labels.initialDebt}:{" "}
-                              {formatCurrency(lot.initialWorksDebt || 0)}
-                            </div>
-                          )}
                         </div>
 
                         {/* Values Section */}
-                        <div className="min-w-[85px] sm:min-w-[130px] flex-shrink-0 px-4 sm:px-6 py-2 sm:py-3 text-right">
-                          <div className="text-sm sm:text-base font-bold text-emerald-600">
-                            {formatCurrency(lot.totals.total)}
+                        <div className="min-w-[140px] sm:min-w-[180px] flex-shrink-0 px-3 sm:px-5 py-2 sm:py-3 text-right">
+                          {/* Breakdown by type */}
+                          <div className="space-y-0.5 mb-1.5">
+                            {/* Maintenance */}
+                            {lot.totals.maintenance > 0 && (
+                              <div className="flex items-center justify-end gap-1">
+                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                  {translations.labels.maintenance}:
+                                </span>
+                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                  {formatCurrency(lot.totals.maintenance)}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Works */}
+                            {lot.totals.works > 0 && (
+                              <div className="flex items-center justify-end gap-1">
+                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                  {translations.labels.works}:
+                                </span>
+                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                  {formatCurrency(lot.totals.works)}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Others (only show if > 0) */}
+                            {lot.totals.others > 0 && (
+                              <div className="flex items-center justify-end gap-1">
+                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                  {translations.labels.others}:
+                                </span>
+                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                  {formatCurrency(lot.totals.others)}
+                                </span>
+                              </div>
+                            )}
                           </div>
-                          <div className="text-muted-foreground text-xs font-medium">
-                            {translations.labels.contributions}
-                          </div>
-                          <div
-                            className={`mt-1 text-xs sm:text-sm font-medium sm:font-semibold ${
-                              lot.isExempt
-                                ? "text-gray-500"
-                                : lot.balance?.outstandingBalance &&
-                                    lot.balance.outstandingBalance > 0
-                                  ? "text-red-600"
-                                  : "text-green-600"
-                            }`}
-                          >
-                            {lot.isExempt
-                              ? "-"
-                              : lot.balance
-                                ? formatCurrency(lot.balance.outstandingBalance)
-                                : formatCurrency(0)}
-                          </div>
-                          <div className="text-muted-foreground text-xs font-medium">
-                            {translations.labels.outstandingBalance}
+
+                          {/* Total with divider */}
+                          {lot.totals.total > 0 && (
+                            <>
+                              <div className="border-t border-muted-foreground/20 my-1"></div>
+                              <div className="flex items-center justify-end gap-1 mb-1">
+                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                  {translations.labels.totalContributions}:
+                                </span>
+                                <span className="text-xs sm:text-sm font-bold text-emerald-600">
+                                  {formatCurrency(lot.totals.total)}
+                                </span>
+                              </div>
+                            </>
+                          )}
+
+                          {/* Initial Debt (only if > 0) */}
+                          {(lot.initialWorksDebt || 0) > 0 && (
+                            <div className="flex items-center justify-end gap-1 mb-1">
+                              <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                {translations.labels.initialDebt}:
+                              </span>
+                              <span className="text-[11px] sm:text-sm font-semibold text-amber-600">
+                                {formatCurrency(lot.initialWorksDebt || 0)}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Outstanding balance */}
+                          <div className="flex items-center justify-end gap-1 mt-1">
+                            <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                              {translations.labels.totalOutstandingDebt}:
+                            </span>
+                            <span
+                              className={`text-xs sm:text-sm font-medium sm:font-semibold ${
+                                lot.isExempt
+                                  ? "text-gray-500"
+                                  : lot.balance?.outstandingBalance &&
+                                      lot.balance.outstandingBalance > 0
+                                    ? "text-red-600"
+                                    : "text-green-600"
+                              }`}
+                            >
+                              {lot.isExempt
+                                ? "-"
+                                : lot.balance
+                                  ? formatCurrency(lot.balance.outstandingBalance)
+                                  : formatCurrency(0)}
+                            </span>
                           </div>
                         </div>
                       </div>
