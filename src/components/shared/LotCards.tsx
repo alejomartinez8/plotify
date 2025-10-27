@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Edit, Trash2, Info } from "lucide-react";
+import { Plus, Edit, Trash2, Info, Eye } from "lucide-react";
+import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import {
@@ -262,8 +263,7 @@ export default function LotCards({
               {sortedLots.map((lot) => (
                 <Card
                   key={lot.id}
-                  className="hover:bg-muted/30 relative w-full cursor-pointer overflow-hidden border transition-all duration-200 hover:shadow-md"
-                  onClick={() => router.push(`/income/${lot.id}`)}
+                  className="hover:bg-muted/30 relative w-full overflow-hidden border transition-all duration-200 hover:shadow-md"
                 >
                   <CardContent className="w-full p-0">
                     {/* Unified Responsive Layout */}
@@ -396,9 +396,20 @@ export default function LotCards({
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      {isAuthenticated && (
-                        <div className="bg-muted/20 border-muted/30 flex items-center justify-end border-t px-2 sm:px-4 py-1 sm:py-1.5">
+                      <div className="bg-muted/20 border-muted/30 flex items-center justify-between border-t px-2 sm:px-4 py-1 sm:py-1.5">
+                        <Link href={`/income/${lot.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-muted h-7 sm:h-8 text-xs sm:text-sm gap-1 sm:gap-1.5 px-2 sm:px-3"
+                            title={translations.actions.viewDetail}
+                          >
+                            <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            <span>{translations.actions.viewDetail}</span>
+                          </Button>
+                        </Link>
+
+                        {isAuthenticated && (
                           <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                               variant="ghost"
@@ -428,8 +439,8 @@ export default function LotCards({
                               <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             </Button>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

@@ -17,14 +17,14 @@ export default async function Header() {
               {translations.app.subtitle}
             </p>
           </div>
-          <div className="flex items-center space-x-4">
-            {isAdmin && (
+          {isAdmin && (
+            <div className="flex items-center space-x-4">
               <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                 Admin
               </span>
-            )}
-            <AuthButton isAuthenticated={isAdmin} />
-          </div>
+              <AuthButton isAuthenticated={isAdmin} />
+            </div>
+          )}
         </div>
       </div>
     </div>

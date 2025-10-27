@@ -434,8 +434,7 @@ export default function LotDetailView({
                         })()}
                       </div>
                     </TableHead>
-                    {(isAuthenticated ||
-                      contributions.some((c) => c.receiptFileUrl)) && (
+                    {isAuthenticated && (
                       <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                         {translations.labels.actions}
                       </TableHead>
@@ -487,36 +486,32 @@ export default function LotDetailView({
                           <span>{contribution.receiptNumber || "—"}</span>
                         </div>
                       </TableCell>
-                      {(isAuthenticated || contribution.receiptFileUrl) && (
+                      {isAuthenticated && (
                         <TableCell className="px-6 py-4">
                           <div className="flex items-center justify-center gap-2">
-                            {isAuthenticated && (
-                              <>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    setEditingContribution(contribution)
-                                  }
-                                  className="hover:bg-muted h-8 w-8 p-0"
-                                  title={`${translations.actions.edit} ${translations.labels.income.toLowerCase()}`}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    setDeletingContribution(contribution)
-                                  }
-                                  className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                                  title={`${translations.actions.delete} ${translations.labels.income.toLowerCase()}`}
-                                  disabled={isPending}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </>
-                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setEditingContribution(contribution)
+                              }
+                              className="hover:bg-muted h-8 w-8 p-0"
+                              title={`${translations.actions.edit} ${translations.labels.income.toLowerCase()}`}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setDeletingContribution(contribution)
+                              }
+                              className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                              title={`${translations.actions.delete} ${translations.labels.income.toLowerCase()}`}
+                              disabled={isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       )}
@@ -525,12 +520,7 @@ export default function LotDetailView({
                   {sortedContributions.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={
-                          isAuthenticated ||
-                          contributions.some((c) => c.receiptFileUrl)
-                            ? 6
-                            : 5
-                        }
+                        colSpan={isAuthenticated ? 6 : 5}
                         className="px-6 py-12 text-center"
                       >
                         <div className="flex flex-col items-center gap-3">
@@ -548,19 +538,12 @@ export default function LotDetailView({
                   )}
                   {sortedContributions.length > 0 && (
                     <>
-                      {/* Separator row */}
                       <TableRow>
                         <TableCell
-                          colSpan={
-                            isAuthenticated ||
-                            contributions.some((c) => c.receiptFileUrl)
-                              ? 6
-                              : 5
-                          }
+                          colSpan={isAuthenticated ? 6 : 5}
                           className="border-muted border-t-2 p-0"
                         />
                       </TableRow>
-                      {/* Totals row */}
                       <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
                         <TableCell
                           className="px-6 py-4 font-semibold"
@@ -573,14 +556,7 @@ export default function LotDetailView({
                             {formatCurrency(fundTotals.total)}
                           </div>
                         </TableCell>
-                        <TableCell
-                          colSpan={
-                            isAuthenticated ||
-                            contributions.some((c) => c.receiptFileUrl)
-                              ? 2
-                              : 1
-                          }
-                        />
+                        <TableCell colSpan={isAuthenticated ? 2 : 1} />
                       </TableRow>
                     </>
                   )}
