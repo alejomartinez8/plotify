@@ -32,6 +32,7 @@ export const translations = {
     import: "Importar",
     uploadFile: "Subir archivo",
     viewReceipt: "Ver Comprobante",
+    viewDetail: "Ver detalle",
   },
 
   // Common labels and fields
