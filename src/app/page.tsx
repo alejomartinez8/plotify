@@ -1,4 +1,7 @@
-import { getAllFundsBalances, getContributions } from "@/lib/database/contributions";
+import {
+  getAllFundsBalances,
+  getContributions,
+} from "@/lib/database/contributions";
 import { getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { calculateSimpleLotBalances } from "@/lib/utils";
@@ -11,27 +14,32 @@ import { translations } from "@/lib/translations";
 
 export default async function Home() {
   try {
-    const [fundsData, lots, contributions, quotaConfigs, isAdmin] = await Promise.all([
-      getAllFundsBalances(),
-      getLots(),
-      getContributions(),
-      getQuotaConfigs(),
-      isAuthenticated(),
-    ]);
+    const [fundsData, lots, contributions, quotaConfigs, isAdmin] =
+      await Promise.all([
+        getAllFundsBalances(),
+        getLots(),
+        getContributions(),
+        getQuotaConfigs(),
+        isAuthenticated(),
+      ]);
 
-    const lotBalances = calculateSimpleLotBalances(lots, contributions, quotaConfigs);
+    const lotBalances = calculateSimpleLotBalances(
+      lots,
+      contributions,
+      quotaConfigs
+    );
 
     return (
-      <div className="w-full mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
         <div className="space-y-8">
           {/* Funds Overview */}
           <FundsOverview fundsData={fundsData} />
-          
+
           {/* Quota Summary Card */}
           <QuotaSummaryCard lotBalances={lotBalances} />
-          
+
           {/* Lots Cards */}
-          <LotCards 
+          <LotCards
             lots={lots}
             contributions={contributions}
             lotBalances={lotBalances}
@@ -41,7 +49,6 @@ export default async function Home() {
       </div>
     );
   } catch (error) {
-    console.error("Error loading data:", error);
     return (
       <ErrorLayout
         title={translations.app.title}
