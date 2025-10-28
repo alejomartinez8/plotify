@@ -7,7 +7,7 @@ import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
 import { getSession, isAuthenticated } from "@/lib/auth";
-import { SessionProvider } from "@/components/providers/SessionProvider";
+import { SessionProvider } from "next-auth/react";
 
 export const dynamic = "force-dynamic";
 
