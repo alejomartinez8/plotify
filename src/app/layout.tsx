@@ -6,7 +6,7 @@ import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
-import { getSession, isAuthenticated } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
 
 export const dynamic = "force-dynamic";
@@ -21,8 +21,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  const isAdmin = await isAuthenticated();
+  const session = await auth();
+  const isAdmin = !!session?.user?.email;
 
   return (
     <html lang="es">

@@ -16,6 +16,15 @@ export const translations = {
     admin: "Admin",
   },
 
+  // Authentication
+  auth: {
+    adminLogin: "Admin Login",
+    signInDescription: "Sign in with your authorized Google account",
+    signInWithGoogle: "Sign in with Google",
+    logout: "Logout",
+    signingOut: "Signing out...",
+  },
+
   // Common actions and buttons
   actions: {
     new: "Nuevo",

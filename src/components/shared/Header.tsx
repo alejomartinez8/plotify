@@ -1,10 +1,10 @@
 import { translations } from "@/lib/translations";
-import { getSession } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { AuthButton } from "./AuthButton";
 import Image from "next/image";
 
 export default async function Header() {
-  const session = await getSession();
+  const session = await auth();
   const isAdmin = !!session?.user;
 
   return (
