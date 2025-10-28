@@ -20,7 +20,6 @@ declare module "@auth/core/jwt" {
   interface JWT {
     accessToken?: string;
     refreshToken?: string;
-    accessTokenExpires?: number;
   }
 }
 
@@ -62,32 +61,16 @@ export const authConfig: NextAuthConfig = {
       console.log(`Authorized login: ${user.email}`);
       return true;
     },
-    async jwt({ token, account, user }) {
-      if (account && user) {
-        return {
-          ...token,
-          accessToken: account.access_token,
-          refreshToken: account.refresh_token,
-          accessTokenExpires: account.expires_at
-            ? account.expires_at * 1000
-            : undefined,
-        };
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
       }
-
-      if (
-        token.accessTokenExpires &&
-        typeof token.accessTokenExpires === "number" &&
-        Date.now() < token.accessTokenExpires
-      ) {
-        return token;
-      }
-
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
-
       return session;
     },
   },
@@ -99,36 +82,13 @@ export const authConfig: NextAuthConfig = {
 export const { auth, signIn, signOut, handlers } = NextAuth(authConfig);
 
 /**
- * Get the current NextAuth session
- */
-export async function getSession() {
-  try {
-    return await auth();
-  } catch (error) {
-    logger.error(
-      "Error getting session",
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        component: "auth",
-      }
-    );
-    return null;
-  }
-}
-
-/**
- * Check if user is authenticated via NextAuth
+ * Check if user is authenticated (session exists with valid email)
+ * Email whitelist validation is already done by NextAuth signIn callback
  */
 export async function isAuthenticated(): Promise<boolean> {
   try {
-    const session = await getSession();
-
-    if (!session || !session.user?.email) {
-      return false;
-    }
-
-    // Verify email is in admin whitelist
-    return ADMIN_EMAILS.includes(session.user.email);
+    const session = await auth();
+    return !!session?.user?.email;
   } catch (error) {
     logger.error(
       "Error checking authentication",
@@ -157,7 +117,7 @@ export async function requireAuth(): Promise<boolean> {
  */
 export async function getGoogleTokens() {
   try {
-    const session = await getSession();
+    const session = await auth();
 
     if (!session?.accessToken) {
       return null;

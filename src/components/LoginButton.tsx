@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import { LogIn } from "lucide-react";
+import { translations } from "@/lib/translations";
 
 export function LoginButton() {
   const handleGoogleSignIn = () => {
@@ -19,15 +20,17 @@ export function LoginButton() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <CardTitle className="text-2xl">
+          {translations.auth.adminLogin}
+        </CardTitle>
         <CardDescription>
-          Sign in with your authorized Google account
+          {translations.auth.signInDescription}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Button onClick={handleGoogleSignIn} className="w-full gap-2">
           <LogIn className="h-5 w-5" />
-          Sign in with Google
+          {translations.auth.signInWithGoogle}
         </Button>
       </CardContent>
     </Card>

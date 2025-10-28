@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { LogOut } from "lucide-react";
+import { translations } from "@/lib/translations";
 
 export function AuthButton() {
   const [isPending, setIsPending] = useState(false);
@@ -28,12 +29,12 @@ export function AuthButton() {
       {isPending ? (
         <>
           <div className="border-muted-foreground mr-2 h-3 w-3 animate-spin rounded-full border-2 border-t-transparent" />
-          Signing out...
+          {translations.auth.signingOut}
         </>
       ) : (
         <>
           <LogOut className="mr-2 h-4 w-4" />
-          Logout
+          {translations.auth.logout}
         </>
       )}
     </Button>
