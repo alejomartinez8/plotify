@@ -21,6 +21,7 @@ This project serves as both a practical application and an exploration laborator
 ## 🚀 Key Features
 
 ### 🏦 Cash Management System
+
 - **Multi-Fund Architecture**: Separate tracking for maintenance, works, and activities funds
 - **Real-time Balances**: Live view of available funds by type and total cash position
 - **Payment Allocation**: Intelligent distribution of payments across fund types
@@ -29,6 +30,7 @@ This project serves as both a practical application and an exploration laborator
 - **Cash Flow Reports**: Historical and projected financial analysis
 
 ### 💰 Financial Operations
+
 - **Income Classification**: Maintenance (monthly), Works (projects), Activities (events)
 - **Initial Balance Setup**: Configure starting balances for each fund type
 - **Payment Status Dashboard**: Visual indicators for paid/pending lots

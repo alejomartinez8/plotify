@@ -31,13 +31,13 @@ export default function SummaryCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {type ? (
           <TypeBadge type={type} />
         ) : (
-          <div className="h-4 w-4 text-muted-foreground">{getTypeIcon(title)}</div>
+          <div className="text-muted-foreground h-4 w-4">
+            {getTypeIcon(title)}
+          </div>
         )}
       </CardHeader>
       <CardContent>

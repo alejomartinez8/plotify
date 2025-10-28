@@ -9,10 +9,10 @@ export async function getContributions(): Promise<Contribution[]> {
         id: "desc",
       },
     });
-    return contributions.map(contribution => ({
+    return contributions.map((contribution) => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     }));
   } catch (error) {
     console.error("Error fetching contributions:", error);
@@ -31,7 +31,7 @@ export async function getContributionById(
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     };
   } catch (error) {
     console.error("Error fetching contribution by id:", error);
@@ -54,22 +54,22 @@ export async function createContribution(data: {
     // Parse date as local date to avoid timezone issues
     let date: Date;
     if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      const [year, month, day] = data.date.split('-').map(Number);
+      const [year, month, day] = data.date.split("-").map(Number);
       date = new Date(year, month - 1, day);
     } else {
       date = new Date(data.date);
     }
-    
+
     const contribution = await prisma.contribution.create({
       data: {
         ...data,
-        date
+        date,
       },
     });
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     };
   } catch (error) {
     console.error("Error creating contribution:", error);
@@ -96,7 +96,7 @@ export async function updateContribution(
     if (data.date) {
       // Parse date as local date to avoid timezone issues
       if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        const [year, month, day] = data.date.split('-').map(Number);
+        const [year, month, day] = data.date.split("-").map(Number);
         updateData.date = new Date(year, month - 1, day);
       } else {
         updateData.date = new Date(data.date);
@@ -109,7 +109,7 @@ export async function updateContribution(
     return {
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     };
   } catch (error) {
     console.error("Error updating contribution:", error);
@@ -139,10 +139,10 @@ export async function getContributionsByLot(
         id: "desc",
       },
     });
-    return contributions.map(contribution => ({
+    return contributions.map((contribution) => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     }));
   } catch (error) {
     console.error("Error fetching contributions by lot:", error);
@@ -160,10 +160,10 @@ export async function getContributionsByType(
         id: "desc",
       },
     });
-    return contributions.map(contribution => ({
+    return contributions.map((contribution) => ({
       ...contribution,
       type: contribution.type as ContributionType,
-      date: formatDateForStorage(contribution.date)
+      date: formatDateForStorage(contribution.date),
     }));
   } catch (error) {
     console.error("Error fetching contributions by type:", error);
@@ -186,7 +186,9 @@ export async function getIncomeByType(type: ContributionType): Promise<number> {
   }
 }
 
-export async function getExpensesByType(type: ContributionType): Promise<number> {
+export async function getExpensesByType(
+  type: ContributionType
+): Promise<number> {
   try {
     const result = await prisma.expense.aggregate({
       where: { type },
@@ -201,17 +203,19 @@ export async function getExpensesByType(type: ContributionType): Promise<number>
   }
 }
 
-export async function getFundBalance(type: ContributionType): Promise<{ income: number; expenses: number; balance: number }> {
+export async function getFundBalance(
+  type: ContributionType
+): Promise<{ income: number; expenses: number; balance: number }> {
   try {
     const [income, expenses] = await Promise.all([
       getIncomeByType(type),
-      getExpensesByType(type)
+      getExpensesByType(type),
     ]);
-    
+
     return {
       income,
       expenses,
-      balance: income - expenses
+      balance: income - expenses,
     };
   } catch (error) {
     console.error(`Error calculating fund balance for type ${type}:`, error);
@@ -229,20 +233,20 @@ export async function getAllFundsBalances(): Promise<{
     const [maintenance, works, others] = await Promise.all([
       getFundBalance("maintenance"),
       getFundBalance("works"),
-      getFundBalance("others")
+      getFundBalance("others"),
     ]);
 
     const consolidated = {
       income: maintenance.income + works.income + others.income,
       expenses: maintenance.expenses + works.expenses + others.expenses,
-      balance: maintenance.balance + works.balance + others.balance
+      balance: maintenance.balance + works.balance + others.balance,
     };
 
     return {
       maintenance,
       works,
       others,
-      consolidated
+      consolidated,
     };
   } catch (error) {
     console.error("Error calculating all funds balances:", error);
@@ -250,7 +254,7 @@ export async function getAllFundsBalances(): Promise<{
       maintenance: { income: 0, expenses: 0, balance: 0 },
       works: { income: 0, expenses: 0, balance: 0 },
       others: { income: 0, expenses: 0, balance: 0 },
-      consolidated: { income: 0, expenses: 0, balance: 0 }
+      consolidated: { income: 0, expenses: 0, balance: 0 },
     };
   }
 }

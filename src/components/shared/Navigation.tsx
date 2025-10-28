@@ -42,7 +42,9 @@ const adminNavigationItems = [
   },
 ];
 
-export default function Navigation({ isAuthenticated = false }: NavigationProps) {
+export default function Navigation({
+  isAuthenticated = false,
+}: NavigationProps) {
   const pathname = usePathname();
 
   return (
@@ -56,7 +58,7 @@ export default function Navigation({ isAuthenticated = false }: NavigationProps)
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-x-2 sm:space-y-0 sm:px-1 sm:py-4 sm:text-sm ${
+                className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
                   isActive
                     ? "border-primary text-primary"
                     : "text-muted-foreground hover:text-foreground border-transparent"
@@ -64,28 +66,29 @@ export default function Navigation({ isAuthenticated = false }: NavigationProps)
               >
                 <Icon className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{label}</span>
-                <span className="sm:hidden text-xs">{label}</span>
+                <span className="text-xs sm:hidden">{label}</span>
               </Link>
             );
           })}
-          {isAuthenticated && adminNavigationItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-x-2 sm:space-y-0 sm:px-1 sm:py-4 sm:text-sm ${
-                  isActive
-                    ? "border-primary text-primary"
-                    : "text-muted-foreground hover:text-foreground border-transparent"
-                }`}
-              >
-                <Icon className="h-5 w-5 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{label}</span>
-                <span className="sm:hidden text-xs">{label}</span>
-              </Link>
-            );
-          })}
+          {isAuthenticated &&
+            adminNavigationItems.map(({ href, label, icon: Icon }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
+                    isActive
+                      ? "border-primary text-primary"
+                      : "text-muted-foreground hover:text-foreground border-transparent"
+                  }`}
+                >
+                  <Icon className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{label}</span>
+                  <span className="text-xs sm:hidden">{label}</span>
+                </Link>
+              );
+            })}
         </nav>
       </div>
     </div>

@@ -32,8 +32,14 @@ interface IncomeTableProps {
   onLotClick?: (lotId: string) => void;
 }
 
-type SortField = 'lotNumber' | 'owner' | 'maintenanceTotal' | 'worksTotal' | 'othersTotal' | 'total';
-type SortDirection = 'asc' | 'desc';
+type SortField =
+  | "lotNumber"
+  | "owner"
+  | "maintenanceTotal"
+  | "worksTotal"
+  | "othersTotal"
+  | "total";
+type SortDirection = "asc" | "desc";
 
 export default function IncomeTable({
   lots,
@@ -41,9 +47,9 @@ export default function IncomeTable({
   incomeFilter,
   onLotClick,
 }: IncomeTableProps) {
-  const [sortField, setSortField] = useState<SortField>('lotNumber');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  
+  const [sortField, setSortField] = useState<SortField>("lotNumber");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
   // Filter contributions based on income filter
   const filteredContributions = useMemo(() => {
     if (incomeFilter === "all") {
@@ -55,15 +61,17 @@ export default function IncomeTable({
   // Calculate lot summary data for the table
   const lotSummaryData = useMemo(() => {
     const data: LotSummaryData[] = lots.map((lot) => {
-      const lotContributions = filteredContributions.filter((c) => c.lotId === lot.id);
+      const lotContributions = filteredContributions.filter(
+        (c) => c.lotId === lot.id
+      );
       const maintenanceTotal = lotContributions
-        .filter((c) => c.type === 'maintenance')
+        .filter((c) => c.type === "maintenance")
         .reduce((sum, c) => sum + c.amount, 0);
       const worksTotal = lotContributions
-        .filter((c) => c.type === 'works')
+        .filter((c) => c.type === "works")
         .reduce((sum, c) => sum + c.amount, 0);
       const othersTotal = lotContributions
-        .filter((c) => c.type === 'others')
+        .filter((c) => c.type === "others")
         .reduce((sum, c) => sum + c.amount, 0);
 
       return {
@@ -81,27 +89,27 @@ export default function IncomeTable({
       let bValue: string | number;
 
       switch (sortField) {
-        case 'lotNumber':
+        case "lotNumber":
           aValue = a.lot.lotNumber;
           bValue = b.lot.lotNumber;
           break;
-        case 'owner':
+        case "owner":
           aValue = a.lot.owner;
           bValue = b.lot.owner;
           break;
-        case 'maintenanceTotal':
+        case "maintenanceTotal":
           aValue = a.maintenanceTotal;
           bValue = b.maintenanceTotal;
           break;
-        case 'worksTotal':
+        case "worksTotal":
           aValue = a.worksTotal;
           bValue = b.worksTotal;
           break;
-        case 'othersTotal':
+        case "othersTotal":
           aValue = a.othersTotal;
           bValue = b.othersTotal;
           break;
-        case 'total':
+        case "total":
           aValue = a.total;
           bValue = b.total;
           break;
@@ -110,13 +118,15 @@ export default function IncomeTable({
           bValue = b.lot.lotNumber;
       }
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue, undefined, { numeric: true });
-        return sortDirection === 'asc' ? comparison : -comparison;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue, undefined, {
+          numeric: true,
+        });
+        return sortDirection === "asc" ? comparison : -comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
 
       return 0;
@@ -125,10 +135,19 @@ export default function IncomeTable({
 
   // Calculate totals for the table footer
   const tableTotals = useMemo(() => {
-    const maintenanceTotal = lotSummaryData.reduce((sum, data) => sum + data.maintenanceTotal, 0);
-    const worksTotal = lotSummaryData.reduce((sum, data) => sum + data.worksTotal, 0);
-    const othersTotal = lotSummaryData.reduce((sum, data) => sum + data.othersTotal, 0);
-    
+    const maintenanceTotal = lotSummaryData.reduce(
+      (sum, data) => sum + data.maintenanceTotal,
+      0
+    );
+    const worksTotal = lotSummaryData.reduce(
+      (sum, data) => sum + data.worksTotal,
+      0
+    );
+    const othersTotal = lotSummaryData.reduce(
+      (sum, data) => sum + data.othersTotal,
+      0
+    );
+
     return {
       maintenanceTotal,
       worksTotal,
@@ -139,16 +158,16 @@ export default function IncomeTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
+    return sortDirection === "asc" ? (
       <ChevronUp className="ml-1 h-4 w-4" />
     ) : (
       <ChevronDown className="ml-1 h-4 w-4" />
@@ -171,48 +190,48 @@ export default function IncomeTable({
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('lotNumber')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("lotNumber")}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.lot} / {translations.labels.owner}
-                      {getSortIcon('lotNumber')}
+                      {getSortIcon("lotNumber")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('maintenanceTotal')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("maintenanceTotal")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       {translations.labels.maintenance}
-                      {getSortIcon('maintenanceTotal')}
+                      {getSortIcon("maintenanceTotal")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('worksTotal')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("worksTotal")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       {translations.labels.works}
-                      {getSortIcon('worksTotal')}
+                      {getSortIcon("worksTotal")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('othersTotal')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("othersTotal")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       {translations.labels.others}
-                      {getSortIcon('othersTotal')}
+                      {getSortIcon("othersTotal")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-right font-bold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('total')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-bold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("total")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       {translations.labels.total}
-                      {getSortIcon('total')}
+                      {getSortIcon("total")}
                     </div>
                   </TableHead>
                 </TableRow>
@@ -221,9 +240,9 @@ export default function IncomeTable({
                 {lotSummaryData.map((data, index) => (
                   <TableRow
                     key={data.lot.id}
-                    className={`group transition-all duration-200 border-b border-border/50 hover:bg-muted/50 ${
-                      onLotClick ? 'cursor-pointer hover:shadow-sm' : ''
-                    } ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}
+                    className={`group border-border/50 hover:bg-muted/50 border-b transition-all duration-200 ${
+                      onLotClick ? "cursor-pointer hover:shadow-sm" : ""
+                    } ${index % 2 === 0 ? "bg-background" : "bg-muted/20"}`}
                     onClick={() => handleRowClick(data.lot.id)}
                   >
                     <TableCell className="px-6 py-4">
@@ -232,23 +251,37 @@ export default function IncomeTable({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
-                      <div className={`font-medium ${data.maintenanceTotal > 0 ? 'text-slate-700' : 'text-muted-foreground'}`}>
-                        {data.maintenanceTotal > 0 ? formatCurrency(data.maintenanceTotal) : '—'}
+                      <div
+                        className={`font-medium ${data.maintenanceTotal > 0 ? "text-slate-700" : "text-muted-foreground"}`}
+                      >
+                        {data.maintenanceTotal > 0
+                          ? formatCurrency(data.maintenanceTotal)
+                          : "—"}
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
-                      <div className={`font-medium ${data.worksTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
-                        {data.worksTotal > 0 ? formatCurrency(data.worksTotal) : '—'}
+                      <div
+                        className={`font-medium ${data.worksTotal > 0 ? "text-slate-600" : "text-muted-foreground"}`}
+                      >
+                        {data.worksTotal > 0
+                          ? formatCurrency(data.worksTotal)
+                          : "—"}
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
-                      <div className={`font-medium ${data.othersTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
-                        {data.othersTotal > 0 ? formatCurrency(data.othersTotal) : '—'}
+                      <div
+                        className={`font-medium ${data.othersTotal > 0 ? "text-slate-600" : "text-muted-foreground"}`}
+                      >
+                        {data.othersTotal > 0
+                          ? formatCurrency(data.othersTotal)
+                          : "—"}
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
-                      <div className={`font-semibold ${data.total > 0 ? 'text-slate-800' : 'text-muted-foreground'}`}>
-                        {data.total > 0 ? formatCurrency(data.total) : '—'}
+                      <div
+                        className={`font-semibold ${data.total > 0 ? "text-slate-800" : "text-muted-foreground"}`}
+                      >
+                        {data.total > 0 ? formatCurrency(data.total) : "—"}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -257,11 +290,14 @@ export default function IncomeTable({
                   <TableRow>
                     <TableCell colSpan={5} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
-                          <span className="text-2xl text-muted-foreground">📋</span>
+                        <div className="bg-muted/30 flex h-16 w-16 items-center justify-center rounded-full">
+                          <span className="text-muted-foreground text-2xl">
+                            📋
+                          </span>
                         </div>
                         <p className="text-muted-foreground font-medium">
-                          {translations.messages.noLots || 'No hay lotes disponibles'}
+                          {translations.messages.noLots ||
+                            "No hay lotes disponibles"}
                         </p>
                       </div>
                     </TableCell>
@@ -271,31 +307,50 @@ export default function IncomeTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={5} className="border-t-2 border-muted p-0" />
+                      <TableCell
+                        colSpan={5}
+                        className="border-muted border-t-2 p-0"
+                      />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
                       <TableCell className="px-6 py-4 font-semibold">
-                        {translations.labels.total || 'TOTAL GENERAL'}
+                        {translations.labels.total || "TOTAL GENERAL"}
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
-                        <div className={`font-semibold ${tableTotals.maintenanceTotal > 0 ? 'text-slate-700' : 'text-muted-foreground'}`}>
-                          {tableTotals.maintenanceTotal > 0 ? formatCurrency(tableTotals.maintenanceTotal) : '—'}
+                        <div
+                          className={`font-semibold ${tableTotals.maintenanceTotal > 0 ? "text-slate-700" : "text-muted-foreground"}`}
+                        >
+                          {tableTotals.maintenanceTotal > 0
+                            ? formatCurrency(tableTotals.maintenanceTotal)
+                            : "—"}
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
-                        <div className={`font-semibold ${tableTotals.worksTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
-                          {tableTotals.worksTotal > 0 ? formatCurrency(tableTotals.worksTotal) : '—'}
+                        <div
+                          className={`font-semibold ${tableTotals.worksTotal > 0 ? "text-slate-600" : "text-muted-foreground"}`}
+                        >
+                          {tableTotals.worksTotal > 0
+                            ? formatCurrency(tableTotals.worksTotal)
+                            : "—"}
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
-                        <div className={`font-semibold ${tableTotals.othersTotal > 0 ? 'text-slate-600' : 'text-muted-foreground'}`}>
-                          {tableTotals.othersTotal > 0 ? formatCurrency(tableTotals.othersTotal) : '—'}
+                        <div
+                          className={`font-semibold ${tableTotals.othersTotal > 0 ? "text-slate-600" : "text-muted-foreground"}`}
+                        >
+                          {tableTotals.othersTotal > 0
+                            ? formatCurrency(tableTotals.othersTotal)
+                            : "—"}
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
-                        <div className={`font-bold ${tableTotals.total > 0 ? 'text-slate-800' : 'text-muted-foreground'}`}>
-                          {tableTotals.total > 0 ? formatCurrency(tableTotals.total) : '—'}
+                        <div
+                          className={`font-bold ${tableTotals.total > 0 ? "text-slate-800" : "text-muted-foreground"}`}
+                        >
+                          {tableTotals.total > 0
+                            ? formatCurrency(tableTotals.total)
+                            : "—"}
                         </div>
                       </TableCell>
                     </TableRow>

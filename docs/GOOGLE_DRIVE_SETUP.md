@@ -33,7 +33,7 @@ This document explains how to configure OAuth credentials for Google Drive integ
 3. Select **Web application** as type
 4. Configure:
    - **Name**: Plotify OAuth Client
-   - **Authorized redirect URIs**: 
+   - **Authorized redirect URIs**:
      - For development: `http://localhost:3000/api/auth/google/callback`
      - For production: `https://your-domain.vercel.app/api/auth/google/callback`
 5. Click **Create**
@@ -63,6 +63,7 @@ GOOGLE_DRIVE_FOLDER_ID=main_folder_id_here
 ## 7. Configure Main Folder in Google Drive
 
 ### Option A: Personal Folder
+
 1. Go to [Google Drive](https://drive.google.com)
 2. Create a folder named "Plotify - Receipts" (or your preferred name)
 3. Right-click the folder > **Get link** > **Copy link**
@@ -72,6 +73,7 @@ GOOGLE_DRIVE_FOLDER_ID=main_folder_id_here
 5. Add the ID as `GOOGLE_DRIVE_FOLDER_ID` in your `.env.local`
 
 ### Option B: Shared Folder
+
 1. Someone else creates the folder and shares it with you
 2. Make sure you have **Editor** permissions on the shared folder
 3. Go to the shared folder in your Google Drive
@@ -79,6 +81,7 @@ GOOGLE_DRIVE_FOLDER_ID=main_folder_id_here
 5. Add the ID as `GOOGLE_DRIVE_FOLDER_ID` in your `.env.local`
 
 **⚠️ Important for shared folders:**
+
 - You need **Editor** permissions to create files and subfolders
 - The folder owner will see all uploaded files
 - If you lose access to the shared folder, the application will fail to upload files
@@ -100,15 +103,17 @@ Plotify - Receipts/
 ## File Naming Format
 
 Files are automatically named following this format:
+
 - **Income**: `YYYY-MM-DD_lot-XX_type_receipt-num_###.ext`
 - **Expenses**: `YYYY-MM-DD_expense-category_receipt-num_###.ext`
 
 **Examples:**
+
 - `2025-07-30_lot-01_fee_receipt-001_001.pdf`
 - `2025-07-30_expense-maintenance_002.jpg`
 - `2025-07-30_expense-maintenance_003.pdf`
 
-*The sequential counter (###) ensures that multiple files of the same type and day are automatically differentiated.*
+_The sequential counter (###) ensures that multiple files of the same type and day are automatically differentiated._
 
 ## Production Configuration (Vercel)
 
@@ -126,12 +131,15 @@ Files are automatically named following this format:
 ## Troubleshooting
 
 ### Error: "Access denied"
+
 - Verify that your email is in the test users list in OAuth consent screen
 - Make sure Google Drive API is enabled
 
 ### Error: "redirect_uri_mismatch"
+
 - Verify that the redirect URI in Google Cloud Console matches exactly with your URL
 
 ### Error: "invalid_grant"
+
 - The refresh token may have expired or been revoked
 - Repeat the authorization process to get a new refresh token

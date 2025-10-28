@@ -40,7 +40,7 @@ export function AuthButton({ isAuthenticated }: AuthButtonProps) {
       >
         {isPending ? (
           <>
-            <div className="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+            <div className="border-muted-foreground mr-2 h-3 w-3 animate-spin rounded-full border-2 border-t-transparent" />
             Signing out...
           </>
         ) : (

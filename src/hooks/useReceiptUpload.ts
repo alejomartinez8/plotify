@@ -34,14 +34,17 @@ export function useReceiptUpload() {
     // Upload file only if a new file is selected
     if (selectedFile) {
       setIsUploading(true);
-      
+
       try {
         const uploadFormData = new FormData();
         uploadFormData.append("file", selectedFile);
         uploadFormData.append("type", type);
         uploadFormData.append("date", formData.get("date") as string);
         uploadFormData.append("amount", formData.get("amount") as string);
-        uploadFormData.append("receiptNumber", formData.get("receiptNumber") as string || "");
+        uploadFormData.append(
+          "receiptNumber",
+          (formData.get("receiptNumber") as string) || ""
+        );
 
         // Add additional data specific to each modal
         Object.entries(additionalData).forEach(([key, value]) => {
@@ -55,7 +58,11 @@ export function useReceiptUpload() {
 
         if (!uploadResponse.ok) {
           const errorDetails = await uploadResponse.json();
-          throw new Error(errorDetails.details || errorDetails.error || "Failed to upload file");
+          throw new Error(
+            errorDetails.details ||
+              errorDetails.error ||
+              "Failed to upload file"
+          );
         }
 
         const uploadResult = await uploadResponse.json();

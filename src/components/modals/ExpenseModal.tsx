@@ -52,7 +52,7 @@ export default function ExpenseModal({
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
-    
+
     try {
       // Handle receipt upload for new files OR preserve existing receipt data
       if (selectedFile || (expense && expense.receiptFileId)) {
@@ -83,7 +83,8 @@ export default function ExpenseModal({
         formAction(formData);
       });
     } catch (error) {
-      const errorInstance = error instanceof Error ? error : new Error(String(error));
+      const errorInstance =
+        error instanceof Error ? error : new Error(String(error));
       // Show error to user
       alert(`Error: ${errorInstance.message}`);
     } finally {
@@ -93,7 +94,7 @@ export default function ExpenseModal({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {expense
@@ -144,7 +145,9 @@ export default function ExpenseModal({
               type="date"
               name="date"
               id="date"
-              defaultValue={expense?.date ? formatDateForStorage(expense.date) : ""}
+              defaultValue={
+                expense?.date ? formatDateForStorage(expense.date) : ""
+              }
               required
               disabled={isSubmitting}
             />

@@ -8,7 +8,9 @@ import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import FilterSection from "@/components/shared/FilterSection";
-import IncomeReceiptTable, { IncomeType } from "@/components/shared/IncomeReceiptTable";
+import IncomeReceiptTable, {
+  IncomeType,
+} from "@/components/shared/IncomeReceiptTable";
 import SummarySection from "@/components/shared/SummarySection";
 import NewContributionButton from "@/components/shared/NewContributionButton";
 import { ExportButton } from "@/components/shared/ExportButton";
@@ -19,7 +21,6 @@ interface IncomeViewProps {
   lots: Lot[];
   isAuthenticated?: boolean;
 }
-
 
 export default function IncomeView({
   contributions,
@@ -120,11 +121,10 @@ export default function IncomeView({
     }
   };
 
-
   // Extract unique years from contributions for filter options
   const availableYears = React.useMemo(() => {
     const years = new Set<string>();
-    contributions.forEach(contribution => {
+    contributions.forEach((contribution) => {
       const date = new Date(contribution.date);
       if (!isNaN(date.getTime())) {
         years.add(date.getFullYear().toString());
@@ -133,29 +133,36 @@ export default function IncomeView({
     return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
   }, [contributions]);
 
-  const yearFilterOptions = React.useMemo(() => [
-    { value: "all", label: translations.filters.allYears },
-    ...availableYears.map(year => ({ value: year, label: year }))
-  ], [availableYears]);
+  const yearFilterOptions = React.useMemo(
+    () => [
+      { value: "all", label: translations.filters.allYears },
+      ...availableYears.map((year) => ({ value: year, label: year })),
+    ],
+    [availableYears]
+  );
 
   // Filter contributions by year
   const filteredContributions = React.useMemo(() => {
     if (yearFilter === "all") {
       return contributions;
     }
-    return contributions.filter(contribution => {
+    return contributions.filter((contribution) => {
       const date = new Date(contribution.date);
-      return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
+      return (
+        !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter
+      );
     });
   }, [contributions, yearFilter]);
 
   // Calculate summary based on current filters
   const incomeSummary = React.useMemo(() => {
     let contributionsToSummarize = filteredContributions;
-    
+
     // If type filter is applied, only use filtered contributions for summary
     if (incomeFilter !== "all") {
-      contributionsToSummarize = contributionsToSummarize.filter((c) => c.type === incomeFilter);
+      contributionsToSummarize = contributionsToSummarize.filter(
+        (c) => c.type === incomeFilter
+      );
     }
 
     const maintenanceContributions = contributionsToSummarize.filter(
@@ -189,14 +196,14 @@ export default function IncomeView({
         actionButton={
           isAuthenticated ? (
             <div className="flex items-center gap-2">
-              <ExportButton 
+              <ExportButton
                 onExport={exportIncomesAction}
                 variant="outline"
                 size="default"
               >
                 {translations.actions.export} {translations.labels.income} CSV
               </ExportButton>
-              <NewContributionButton 
+              <NewContributionButton
                 isAuthenticated={isAuthenticated}
                 lots={lots}
               />

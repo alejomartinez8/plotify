@@ -75,7 +75,7 @@ export function LoginForm() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isPending}
               >
@@ -87,9 +87,9 @@ export function LoginForm() {
               </Button>
             </div>
           </div>
-          
+
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-3">
+            <div className="text-destructive bg-destructive/10 border-destructive/20 rounded-md border p-3 text-sm">
               {error}
             </div>
           )}
@@ -97,7 +97,7 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                 Signing in...
               </>
             ) : (

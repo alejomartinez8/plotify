@@ -6,10 +6,12 @@ interface QuotaSummaryCardProps {
   lotBalances: SimpleLotBalance[];
 }
 
-export default function QuotaSummaryCard({ lotBalances }: QuotaSummaryCardProps) {
+export default function QuotaSummaryCard({
+  lotBalances,
+}: QuotaSummaryCardProps) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="overflow-hidden rounded-lg bg-white shadow">
+      <div className="border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">
             {translations.titles.quotaSummary}
@@ -28,30 +30,43 @@ export default function QuotaSummaryCard({ lotBalances }: QuotaSummaryCardProps)
             <div className="text-2xl font-bold text-gray-900">
               {lotBalances.length}
             </div>
-            <div className="text-sm text-gray-600">{translations.labels.totalLots}</div>
+            <div className="text-sm text-gray-600">
+              {translations.labels.totalLots}
+            </div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-red-600">
-              {new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
+              {new Intl.NumberFormat("es-CO", {
+                style: "currency",
+                currency: "COP",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
-              }).format(lotBalances.reduce((sum, lot) => sum + lot.outstandingBalance, 0))}
+              }).format(
+                lotBalances.reduce(
+                  (sum, lot) => sum + lot.outstandingBalance,
+                  0
+                )
+              )}
             </div>
-            <div className="text-sm text-gray-600">{translations.labels.totalDebt}</div>
+            <div className="text-sm text-gray-600">
+              {translations.labels.totalDebt}
+            </div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-red-600">
-              {lotBalances.filter(lot => lot.status === 'overdue').length}
+              {lotBalances.filter((lot) => lot.status === "overdue").length}
             </div>
-            <div className="text-sm text-gray-600">{translations.labels.overdue}</div>
+            <div className="text-sm text-gray-600">
+              {translations.labels.overdue}
+            </div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {lotBalances.filter(lot => lot.status === 'current').length}
+              {lotBalances.filter((lot) => lot.status === "current").length}
             </div>
-            <div className="text-sm text-gray-600">{translations.labels.current}</div>
+            <div className="text-sm text-gray-600">
+              {translations.labels.current}
+            </div>
           </div>
         </div>
       </div>

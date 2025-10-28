@@ -23,8 +23,8 @@ interface QuotaTableProps {
   isAuthenticated: boolean;
 }
 
-type SortField = 'quotaType' | 'amount' | 'description' | 'dueDate';
-type SortDirection = 'asc' | 'desc';
+type SortField = "quotaType" | "amount" | "description" | "dueDate";
+type SortDirection = "asc" | "desc";
 
 export default function QuotaTable({
   quotaConfigs,
@@ -32,8 +32,8 @@ export default function QuotaTable({
   onDelete,
   isAuthenticated,
 }: QuotaTableProps) {
-  const [sortField, setSortField] = useState<SortField>('dueDate');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [sortField, setSortField] = useState<SortField>("dueDate");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const getQuotaTypeText = (type: string) => {
     switch (type) {
@@ -45,8 +45,6 @@ export default function QuotaTable({
         return type;
     }
   };
-
-
 
   const getQuotaTypeColor = (type: string) => {
     switch (type) {
@@ -66,19 +64,19 @@ export default function QuotaTable({
       let bValue: string | number;
 
       switch (sortField) {
-        case 'quotaType':
+        case "quotaType":
           aValue = a.quotaType;
           bValue = b.quotaType;
           break;
-        case 'amount':
+        case "amount":
           aValue = a.amount;
           bValue = b.amount;
           break;
-        case 'description':
+        case "description":
           aValue = a.description || "";
           bValue = b.description || "";
           break;
-        case 'dueDate':
+        case "dueDate":
           aValue = a.dueDate ? new Date(a.dueDate).getTime() : 0;
           bValue = b.dueDate ? new Date(b.dueDate).getTime() : 0;
           break;
@@ -87,13 +85,15 @@ export default function QuotaTable({
           bValue = b.dueDate ? new Date(b.dueDate).getTime() : 0;
       }
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue, undefined, { numeric: true });
-        return sortDirection === 'asc' ? comparison : -comparison;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue, undefined, {
+          numeric: true,
+        });
+        return sortDirection === "asc" ? comparison : -comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
 
       return 0;
@@ -102,16 +102,16 @@ export default function QuotaTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
+    return sortDirection === "asc" ? (
       <ChevronUp className="ml-1 h-4 w-4" />
     ) : (
       <ChevronDown className="ml-1 h-4 w-4" />
@@ -129,43 +129,43 @@ export default function QuotaTable({
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50">
                 <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('dueDate')}
+                  className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                  onClick={() => handleSort("dueDate")}
                 >
                   <div className="flex items-center gap-1">
                     {translations.labels.dueDate}
-                    {getSortIcon('dueDate')}
+                    {getSortIcon("dueDate")}
                   </div>
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('quotaType')}
+                  className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                  onClick={() => handleSort("quotaType")}
                 >
                   <div className="flex items-center gap-1">
                     {translations.labels.type}
-                    {getSortIcon('quotaType')}
+                    {getSortIcon("quotaType")}
                   </div>
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('amount')}
+                  className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                  onClick={() => handleSort("amount")}
                 >
                   <div className="flex items-center justify-end gap-1">
                     {translations.labels.amount}
-                    {getSortIcon('amount')}
+                    {getSortIcon("amount")}
                   </div>
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                  onClick={() => handleSort('description')}
+                  className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                  onClick={() => handleSort("description")}
                 >
                   <div className="flex items-center gap-1">
                     {translations.labels.description}
-                    {getSortIcon('description')}
+                    {getSortIcon("description")}
                   </div>
                 </TableHead>
                 {isAuthenticated && (
-                  <TableHead className="px-6 py-4 text-center font-semibold tracking-wide border-b-2 border-border">
+                  <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                     {translations.labels.actions}
                   </TableHead>
                 )}
@@ -175,17 +175,21 @@ export default function QuotaTable({
               {sortedQuotas.map((quota, index) => (
                 <TableRow
                   key={quota.id}
-                  className={`group transition-all duration-200 border-b border-border/50 hover:bg-muted/50 ${
-                    index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                  className={`group border-border/50 hover:bg-muted/50 border-b transition-all duration-200 ${
+                    index % 2 === 0 ? "bg-background" : "bg-muted/20"
                   }`}
                 >
                   <TableCell className="px-6 py-4">
                     <div className="font-medium text-gray-900">
-                      {quota.dueDate ? formatDateForDisplay(quota.dueDate) : "-"}
+                      {quota.dueDate
+                        ? formatDateForDisplay(quota.dueDate)
+                        : "-"}
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getQuotaTypeColor(quota.quotaType)}`}>
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getQuotaTypeColor(quota.quotaType)}`}
+                    >
                       {getQuotaTypeText(quota.quotaType)}
                     </span>
                   </TableCell>
@@ -195,7 +199,10 @@ export default function QuotaTable({
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <div className="text-gray-600 max-w-xs truncate" title={quota.description || ""}>
+                    <div
+                      className="max-w-xs truncate text-gray-600"
+                      title={quota.description || ""}
+                    >
                       {quota.description || "-"}
                     </div>
                   </TableCell>
@@ -206,7 +213,7 @@ export default function QuotaTable({
                           variant="ghost"
                           size="sm"
                           onClick={() => onEdit(quota)}
-                          className="h-8 w-8 p-0 hover:bg-muted"
+                          className="hover:bg-muted h-8 w-8 p-0"
                           title={`${translations.actions.edit} cuota`}
                         >
                           <Edit className="h-4 w-4" />
@@ -215,7 +222,7 @@ export default function QuotaTable({
                           variant="ghost"
                           size="sm"
                           onClick={() => onDelete(quota)}
-                          className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                          className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
                           title={`${translations.actions.delete} cuota`}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -227,10 +234,15 @@ export default function QuotaTable({
               ))}
               {sortedQuotas.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={isAuthenticated ? 5 : 4} className="px-6 py-12 text-center">
+                  <TableCell
+                    colSpan={isAuthenticated ? 5 : 4}
+                    className="px-6 py-12 text-center"
+                  >
                     <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
-                        <span className="text-2xl text-muted-foreground">⚙️</span>
+                      <div className="bg-muted/30 flex h-16 w-16 items-center justify-center rounded-full">
+                        <span className="text-muted-foreground text-2xl">
+                          ⚙️
+                        </span>
                       </div>
                       <p className="text-muted-foreground font-medium">
                         {translations.titles.noQuotasConfigured}

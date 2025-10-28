@@ -46,8 +46,8 @@ export async function createContributionAction(
   prevState: ContributionState,
   formData: FormData
 ): Promise<ContributionState> {
-  const actionTimer = logger.timer('Create Contribution Action');
-  
+  const actionTimer = logger.timer("Create Contribution Action");
+
   const rawData = {
     lotId: formData.get("lotId"),
     type: formData.get("type"),
@@ -63,11 +63,15 @@ export async function createContributionAction(
   const validatedFields = CreateContribution.safeParse(rawData);
 
   if (!validatedFields.success) {
-    logger.error("Contribution validation failed", new Error("Validation error"), {
-      component: 'createContributionAction',
-      errors: validatedFields.error.flatten().fieldErrors
-    });
-    
+    logger.error(
+      "Contribution validation failed",
+      new Error("Validation error"),
+      {
+        component: "createContributionAction",
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
+    );
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -76,7 +80,17 @@ export async function createContributionAction(
     };
   }
 
-  const { lotId, type, amount, date, description, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
+  const {
+    lotId,
+    type,
+    amount,
+    date,
+    description,
+    receiptNumber,
+    receiptFileId,
+    receiptFileUrl,
+    receiptFileName,
+  } = validatedFields.data;
 
   try {
     const result = await createContribution({
@@ -92,9 +106,13 @@ export async function createContributionAction(
     });
 
     if (!result) {
-      logger.error("Database operation failed", new Error("Create contribution returned null"), {
-        component: 'createContributionAction'
-      });
+      logger.error(
+        "Database operation failed",
+        new Error("Create contribution returned null"),
+        {
+          component: "createContributionAction",
+        }
+      );
       actionTimer.end();
       return {
         message: "Database Error: Failed to create contribution.",
@@ -102,9 +120,10 @@ export async function createContributionAction(
       };
     }
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during contribution creation", errorInstance, {
-      component: 'createContributionAction'
+      component: "createContributionAction",
     });
     actionTimer.end();
     return {
@@ -116,7 +135,7 @@ export async function createContributionAction(
   revalidatePath("/income");
   revalidatePath("/");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.created}.`, success: true };
 }
 
@@ -145,7 +164,18 @@ export async function updateContributionAction(
     };
   }
 
-  const { id, lotId, type, amount, date, description, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
+  const {
+    id,
+    lotId,
+    type,
+    amount,
+    date,
+    description,
+    receiptNumber,
+    receiptFileId,
+    receiptFileUrl,
+    receiptFileName,
+  } = validatedFields.data;
 
   try {
     const result = await updateContribution(id, {

@@ -10,7 +10,10 @@ import { logger } from "@/lib/logger";
 const LotSchema = z.object({
   lotNumber: z.string().min(1, translations.errors.required),
   owner: z.string().min(1, translations.errors.ownerRequired),
-  initialWorksDebt: z.number().min(0, translations.errors.amountPositive).optional(),
+  initialWorksDebt: z
+    .number()
+    .min(0, translations.errors.amountPositive)
+    .optional(),
   isExempt: z.boolean().optional(),
   exemptionReason: z.string().nullable().optional(),
 });
@@ -24,7 +27,6 @@ const UpdateInitialDebt = z.object({
   lotId: z.string().min(1, translations.errors.required),
   initialWorksDebt: z.number().min(0, translations.errors.amountPositive),
 });
-
 
 export type State = {
   errors?: {
@@ -41,25 +43,26 @@ export async function createLotAction(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const actionTimer = logger.timer('Create Lot Action');
-  
+  const actionTimer = logger.timer("Create Lot Action");
+
   // Extract and validate data
   const rawData = {
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
-    exemptionReason: (formData.get("exemptionReason") as string)?.trim() || null,
+    exemptionReason:
+      (formData.get("exemptionReason") as string)?.trim() || null,
   };
 
   const validatedFields = CreateLot.safeParse(rawData);
 
   if (!validatedFields.success) {
     logger.error("Lot validation failed", new Error("Validation error"), {
-      component: 'createLotAction',
-      errors: validatedFields.error.flatten().fieldErrors
+      component: "createLotAction",
+      errors: validatedFields.error.flatten().fieldErrors,
     });
-    
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -68,18 +71,26 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } = validatedFields.data;
+  const { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } =
+    validatedFields.data;
 
   try {
-    await createLot({ lotNumber, owner, initialWorksDebt, isExempt, exemptionReason });
+    await createLot({
+      lotNumber,
+      owner,
+      initialWorksDebt,
+      isExempt,
+      exemptionReason,
+    });
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot creation", errorInstance, {
-      component: 'createLotAction',
-      lotNumber
+      component: "createLotAction",
+      lotNumber,
     });
     actionTimer.end();
-    
+
     return {
       message: `${translations.errors.database}: Failed to create lot.`,
       success: false,
@@ -88,7 +99,7 @@ export async function createLotAction(
 
   revalidatePath("/lots");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.created}.`, success: true };
 }
 
@@ -96,25 +107,30 @@ export async function updateLotAction(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const actionTimer = logger.timer('Update Lot Action');
-  
+  const actionTimer = logger.timer("Update Lot Action");
+
   const rawData = {
     id: formData.get("id"),
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
-    exemptionReason: (formData.get("exemptionReason") as string)?.trim() || null,
+    exemptionReason:
+      (formData.get("exemptionReason") as string)?.trim() || null,
   };
 
   const validatedFields = UpdateLot.safeParse(rawData);
 
   if (!validatedFields.success) {
-    logger.error("Lot update validation failed", new Error("Validation error"), {
-      component: 'updateLotAction',
-      errors: validatedFields.error.flatten().fieldErrors
-    });
-    
+    logger.error(
+      "Lot update validation failed",
+      new Error("Validation error"),
+      {
+        component: "updateLotAction",
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
+    );
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -123,19 +139,27 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } = validatedFields.data;
+  const { id, lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } =
+    validatedFields.data;
 
   try {
-    await updateLot(id, { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason });
+    await updateLot(id, {
+      lotNumber,
+      owner,
+      initialWorksDebt,
+      isExempt,
+      exemptionReason,
+    });
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot update", errorInstance, {
-      component: 'updateLotAction',
+      component: "updateLotAction",
       lotId: id,
-      lotNumber
+      lotNumber,
     });
     actionTimer.end();
-    
+
     return {
       message: `${translations.errors.database}: Failed to update lot.`,
       success: false,
@@ -144,27 +168,28 @@ export async function updateLotAction(
 
   revalidatePath("/lots");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.updated}.`, success: true };
 }
 
 export async function deleteLotAction(id: string) {
-  const actionTimer = logger.timer('Delete Lot Action');
-  
+  const actionTimer = logger.timer("Delete Lot Action");
+
   try {
     await deleteLot(id);
     revalidatePath("/lots");
     actionTimer.end();
-    
+
     return { message: `${translations.messages.deleted}.`, success: true };
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during lot deletion", errorInstance, {
-      component: 'deleteLotAction',
-      lotId: id
+      component: "deleteLotAction",
+      lotId: id,
     });
     actionTimer.end();
-    
+
     return {
       message: `${translations.errors.database}: Failed to delete lot.`,
       success: false,
@@ -176,8 +201,8 @@ export async function updateInitialDebtAction(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const actionTimer = logger.timer('Update Initial Debt Action');
-  
+  const actionTimer = logger.timer("Update Initial Debt Action");
+
   const rawData = {
     lotId: formData.get("lotId"),
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
@@ -186,11 +211,15 @@ export async function updateInitialDebtAction(
   const validatedFields = UpdateInitialDebt.safeParse(rawData);
 
   if (!validatedFields.success) {
-    logger.error("Initial debt update validation failed", new Error("Validation error"), {
-      component: 'updateInitialDebtAction',
-      errors: validatedFields.error.flatten().fieldErrors
-    });
-    
+    logger.error(
+      "Initial debt update validation failed",
+      new Error("Validation error"),
+      {
+        component: "updateInitialDebtAction",
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
+    );
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -204,14 +233,15 @@ export async function updateInitialDebtAction(
   try {
     await updateLot(lotId, { initialWorksDebt });
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during initial debt update", errorInstance, {
-      component: 'updateInitialDebtAction',
+      component: "updateInitialDebtAction",
       lotId,
-      initialWorksDebt
+      initialWorksDebt,
     });
     actionTimer.end();
-    
+
     return {
       message: `${translations.errors.database}: Failed to update initial debt.`,
       success: false,
@@ -221,25 +251,25 @@ export async function updateInitialDebtAction(
   revalidatePath("/admin/initial-debt");
   revalidatePath("/");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.updated}.`, success: true };
 }
 
-
 export async function getLotsAction() {
-  const actionTimer = logger.timer('Get Lots Action');
-  
+  const actionTimer = logger.timer("Get Lots Action");
+
   try {
     const lots = await getLots();
     actionTimer.end();
     return lots;
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error fetching lots", errorInstance, {
-      component: 'getLotsAction'
+      component: "getLotsAction",
     });
     actionTimer.end();
-    
+
     return [];
   }
 }

@@ -45,57 +45,69 @@ export function FileUpload({
   const [isDragOver, setIsDragOver] = useState(false);
   const [localError, setLocalError] = useState<string>("");
 
-  const validateFile = useCallback((file: File): string | null => {
-    if (file.size > maxSize) {
-      return `File too large. Maximum size: ${Math.round(maxSize / 1024 / 1024)}MB`;
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (file.size > maxSize) {
+        return `File too large. Maximum size: ${Math.round(maxSize / 1024 / 1024)}MB`;
+      }
 
-    const acceptedMimes = accept.split(",").map(mime => mime.trim());
-    if (!acceptedMimes.includes(file.type)) {
-      return "Invalid file type. Please select PDF, JPG, PNG, or WebP files.";
-    }
+      const acceptedMimes = accept.split(",").map((mime) => mime.trim());
+      if (!acceptedMimes.includes(file.type)) {
+        return "Invalid file type. Please select PDF, JPG, PNG, or WebP files.";
+      }
 
-    return null;
-  }, [accept, maxSize]);
+      return null;
+    },
+    [accept, maxSize]
+  );
 
-  const handleFileSelect = useCallback((file: File | null) => {
-    setLocalError("");
-    
-    if (!file) {
-      onFileSelect(null);
-      return;
-    }
+  const handleFileSelect = useCallback(
+    (file: File | null) => {
+      setLocalError("");
 
-    const validationError = validateFile(file);
-    if (validationError) {
-      setLocalError(validationError);
-      return;
-    }
+      if (!file) {
+        onFileSelect(null);
+        return;
+      }
 
-    onFileSelect(file);
-  }, [onFileSelect, validateFile]);
+      const validationError = validateFile(file);
+      if (validationError) {
+        setLocalError(validationError);
+        return;
+      }
+
+      onFileSelect(file);
+    },
+    [onFileSelect, validateFile]
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     handleFileSelect(file);
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    if (disabled) return;
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
 
-    const file = e.dataTransfer.files[0];
-    handleFileSelect(file);
-  }, [disabled, handleFileSelect]);
+      if (disabled) return;
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setIsDragOver(true);
-    }
-  }, [disabled]);
+      const file = e.dataTransfer.files[0];
+      handleFileSelect(file);
+    },
+    [disabled, handleFileSelect]
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      if (!disabled) {
+        setIsDragOver(true);
+      }
+    },
+    [disabled]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -112,7 +124,7 @@ export function FileUpload({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-    
+
     // If there's a preview file and a remove callback, call it
     if (previewFileName && onRemovePreview) {
       onRemovePreview();
@@ -121,9 +133,13 @@ export function FileUpload({
 
   const getFileIcon = (file: File) => {
     if (file.type.startsWith("image/")) {
-      return <Image className="h-8 w-8 text-blue-500" aria-label="Image file" />;
+      return (
+        <Image className="h-8 w-8 text-blue-500" aria-label="Image file" />
+      );
     }
-    return <FileText className="h-8 w-8 text-red-500" aria-label="Document file" />;
+    return (
+      <FileText className="h-8 w-8 text-red-500" aria-label="Document file" />
+    );
   };
 
   const formatFileSize = (bytes: number) => {
@@ -138,17 +154,15 @@ export function FileUpload({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <Label htmlFor="receipt-upload">
-        {translations.labels.receiptFile}
-      </Label>
-      
+      <Label htmlFor="receipt-upload">{translations.labels.receiptFile}</Label>
+
       <div
         className={cn(
-          "relative border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer",
+          "relative cursor-pointer rounded-lg border-2 border-dashed p-6 transition-colors",
           isDragOver && !disabled
             ? "border-primary bg-primary/5"
             : "border-gray-300 hover:border-gray-400",
-          disabled && "opacity-50 cursor-not-allowed",
+          disabled && "cursor-not-allowed opacity-50",
           displayError && "border-destructive bg-destructive/5"
         )}
         onDrop={handleDrop}
@@ -169,7 +183,11 @@ export function FileUpload({
         {value || previewFileName ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {value ? getFileIcon(value) : <FileText className="h-8 w-8 text-gray-500" />}
+              {value ? (
+                getFileIcon(value)
+              ) : (
+                <FileText className="h-8 w-8 text-gray-500" />
+              )}
               <div>
                 <p className="text-sm font-medium text-gray-900">
                   {previewFileName || value?.name}
@@ -198,14 +216,14 @@ export function FileUpload({
           </div>
         ) : (
           <div className="text-center">
-            <Upload className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+            <Upload className="mx-auto mb-4 h-10 w-10 text-gray-400" />
             <div className="text-sm">
-              <span className="font-medium text-primary">
+              <span className="text-primary font-medium">
                 {translations.actions.uploadFile}
               </span>
               <span className="text-gray-500"> or drag and drop</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="mt-1 text-xs text-gray-500">
               PDF, JPG, PNG up to {Math.round(maxSize / 1024 / 1024)}MB
             </p>
           </div>
@@ -213,7 +231,7 @@ export function FileUpload({
       </div>
 
       {displayError && (
-        <div className="flex items-center space-x-2 text-sm text-destructive">
+        <div className="text-destructive flex items-center space-x-2 text-sm">
           <AlertCircle className="h-4 w-4" />
           <span>{displayError}</span>
         </div>
@@ -222,12 +240,12 @@ export function FileUpload({
       {showPreview && value && value.type.startsWith("image/") && (
         <div className="mt-4">
           <Label className="text-sm font-medium text-gray-700">Preview:</Label>
-          <div className="mt-2 border rounded-lg p-2 bg-gray-50">
+          <div className="mt-2 rounded-lg border bg-gray-50 p-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={URL.createObjectURL(value)}
               alt="Receipt preview"
-              className="max-w-full h-auto max-h-48 rounded object-contain mx-auto"
+              className="mx-auto h-auto max-h-48 max-w-full rounded object-contain"
               onLoad={(e) => {
                 // Clean up object URL after loading
                 const img = e.target as HTMLImageElement;

@@ -14,7 +14,7 @@ interface LotPageProps {
 export default async function LotPage({ params }: LotPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
-  
+
   // Fetch lot data with contributions, debt details, and all lots for the selector
   const [lotData, allLots, quotaConfigs, isAdmin] = await Promise.all([
     getLotWithContributions(id),
@@ -24,7 +24,7 @@ export default async function LotPage({ params }: LotPageProps) {
   ]);
 
   const debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
-  
+
   if (!lotData) {
     notFound();
   }
@@ -32,15 +32,15 @@ export default async function LotPage({ params }: LotPageProps) {
   // Transform the data to match our TypeScript interfaces
   const lot = {
     ...lotData,
-    contributions: lotData.contributions.map(contrib => ({
+    contributions: lotData.contributions.map((contrib) => ({
       ...contrib,
       type: contrib.type as ContributionType,
-      date: contrib.date.toISOString().split('T')[0], // Convert Date to YYYY-MM-DD string
-    })) as Contribution[]
+      date: contrib.date.toISOString().split("T")[0], // Convert Date to YYYY-MM-DD string
+    })) as Contribution[],
   };
 
   return (
-    <LotDetailView 
+    <LotDetailView
       lot={lot}
       contributions={lot.contributions}
       allLots={allLots}
@@ -54,9 +54,9 @@ export default async function LotPage({ params }: LotPageProps) {
 export async function generateMetadata({ params }: LotPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
-  
+
   const lot = await getLotWithContributions(id);
-  
+
   if (!lot) {
     return {
       title: "Lote no encontrado",

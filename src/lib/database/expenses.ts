@@ -9,10 +9,10 @@ export async function getExpenses(): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses.map(expense => ({
+    return expenses.map((expense) => ({
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     }));
   } catch (error) {
     console.error("Error fetching expenses:", error);
@@ -29,7 +29,7 @@ export async function getExpenseById(id: number): Promise<Expense | null> {
     return {
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     };
   } catch (error) {
     console.error("Error fetching expense by id:", error);
@@ -55,7 +55,7 @@ export async function createExpense(data: {
     return {
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     };
   } catch (error) {
     console.error("Error creating expense:", error);
@@ -85,7 +85,7 @@ export async function updateExpense(
     return {
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     };
   } catch (error) {
     console.error("Error updating expense:", error);
@@ -113,10 +113,10 @@ export async function getExpensesByType(type: string): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses.map(expense => ({
+    return expenses.map((expense) => ({
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     }));
   } catch (error) {
     console.error("Error fetching expenses by type:", error);
@@ -134,10 +134,10 @@ export async function getExpensesByCategory(
         id: "desc",
       },
     });
-    return expenses.map(expense => ({
+    return expenses.map((expense) => ({
       ...expense,
       type: "general" as ExpenseType,
-      date: formatDateForStorage(expense.date)
+      date: formatDateForStorage(expense.date),
     }));
   } catch (error) {
     console.error("Error fetching expenses by category:", error);

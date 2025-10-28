@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { logger } from "@/lib/logger";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "fallback-secret-key-change-in-production";
 const TOKEN_EXPIRY = "7d";
 
 export interface JWTPayload {
@@ -19,9 +20,13 @@ export function verifyToken(token: string): JWTPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload;
   } catch (error) {
-    logger.error("Token verification failed", error instanceof Error ? error : new Error(String(error)), {
-      component: 'auth'
-    });
+    logger.error(
+      "Token verification failed",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: "auth",
+      }
+    );
     return null;
   }
 }
@@ -30,7 +35,7 @@ export async function isAuthenticated(): Promise<boolean> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("admin-token")?.value;
-    
+
     if (!token) {
       return false;
     }
@@ -38,9 +43,13 @@ export async function isAuthenticated(): Promise<boolean> {
     const payload = verifyToken(token);
     return payload !== null && payload.role === "admin";
   } catch (error) {
-    logger.error("Error checking authentication", error instanceof Error ? error : new Error(String(error)), {
-      component: 'auth'
-    });
+    logger.error(
+      "Error checking authentication",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: "auth",
+      }
+    );
     return false;
   }
 }

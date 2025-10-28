@@ -19,7 +19,10 @@ interface QuotaViewProps {
 
 type QuotaType = "all" | "maintenance" | "works";
 
-export default function QuotaView({ quotaConfigs, isAuthenticated = false }: QuotaViewProps) {
+export default function QuotaView({
+  quotaConfigs,
+  isAuthenticated = false,
+}: QuotaViewProps) {
   const [editingQuota, setEditingQuota] = useState<QuotaConfig | null>(null);
   const [deletingQuota, setDeletingQuota] = useState<QuotaConfig | null>(null);
   const [quotaFilter, setQuotaFilter] = useState<QuotaType>("all");
@@ -49,7 +52,7 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
 
   const handleQuotaFilterChange = (quotaType: QuotaType) => {
     setQuotaFilter(quotaType);
-    
+
     const url = new URL(window.location.href);
     if (quotaType === "all") {
       url.searchParams.delete("type");
@@ -61,7 +64,7 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
 
   const handleYearFilterChange = (year: string) => {
     setYearFilter(year);
-    
+
     const url = new URL(window.location.href);
     if (year === "all") {
       url.searchParams.delete("year");
@@ -77,12 +80,12 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
 
     // Filter by type
     if (quotaFilter !== "all") {
-      filtered = filtered.filter(quota => quota.quotaType === quotaFilter);
+      filtered = filtered.filter((quota) => quota.quotaType === quotaFilter);
     }
 
     // Filter by year based on dueDate
     if (yearFilter !== "all") {
-      filtered = filtered.filter(quota => {
+      filtered = filtered.filter((quota) => {
         if (!quota.dueDate) return false;
         const dueYear = new Date(quota.dueDate).getFullYear().toString();
         return dueYear === yearFilter;
@@ -94,11 +97,13 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
 
   // Get available years from deadlines for filter
   const availableYears = useMemo(() => {
-    const years = Array.from(new Set(
-      quotaConfigs
-        .filter(quota => quota.dueDate)
-        .map(quota => new Date(quota.dueDate!).getFullYear().toString())
-    ));
+    const years = Array.from(
+      new Set(
+        quotaConfigs
+          .filter((quota) => quota.dueDate)
+          .map((quota) => new Date(quota.dueDate!).getFullYear().toString())
+      )
+    );
     return years.sort((a, b) => parseInt(b) - parseInt(a));
   }, [quotaConfigs]);
 
@@ -134,7 +139,10 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
           onChange: (value) => handleQuotaFilterChange(value as QuotaType),
           options: [
             { value: "all", label: translations.filters.all },
-            { value: "maintenance", label: translations.titles.quotaTypesMaintenance },
+            {
+              value: "maintenance",
+              label: translations.titles.quotaTypesMaintenance,
+            },
             { value: "works", label: translations.titles.quotaTypesWorks },
           ],
         }}
@@ -143,7 +151,7 @@ export default function QuotaView({ quotaConfigs, isAuthenticated = false }: Quo
           onChange: handleYearFilterChange,
           options: [
             { value: "all", label: translations.filters.allYears },
-            ...availableYears.map(year => ({ value: year, label: year }))
+            ...availableYears.map((year) => ({ value: year, label: year })),
           ],
         }}
       />

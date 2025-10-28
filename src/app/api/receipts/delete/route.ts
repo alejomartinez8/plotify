@@ -5,7 +5,11 @@ import { revalidatePath } from "next/cache";
 export async function DELETE(req: NextRequest) {
   try {
     // Check if Google OAuth is configured
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REFRESH_TOKEN) {
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      !process.env.GOOGLE_REFRESH_TOKEN
+    ) {
       return NextResponse.json(
         { error: "Google OAuth not configured" },
         { status: 500 }
@@ -15,7 +19,9 @@ export async function DELETE(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const fileId = searchParams.get("fileId");
     const recordId = searchParams.get("recordId");
-    const recordType = searchParams.get("recordType") as 'contribution' | 'expense';
+    const recordType = searchParams.get("recordType") as
+      | "contribution"
+      | "expense";
 
     // Validate required parameters
     if (!fileId || !recordId || !recordType) {
@@ -25,7 +31,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    if (recordType !== 'contribution' && recordType !== 'expense') {
+    if (recordType !== "contribution" && recordType !== "expense") {
       return NextResponse.json(
         { error: "Invalid recordType. Must be 'contribution' or 'expense'" },
         { status: 400 }
@@ -48,12 +54,11 @@ export async function DELETE(req: NextRequest) {
       success: true,
       message: "Receipt deleted successfully",
     });
-
   } catch (error) {
     console.error("Receipt deletion error:", error);
-    
+
     return NextResponse.json(
-      { 
+      {
         error: "Failed to delete receipt",
         details: error instanceof Error ? error.message : "Unknown error",
       },

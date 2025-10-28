@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Authorization successful! Copy the refresh_token to your .env file.",
+      message:
+        "Authorization successful! Copy the refresh_token to your .env file.",
       tokens: {
         refresh_token: tokens.refresh_token,
         access_token: tokens.access_token,

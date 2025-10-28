@@ -57,9 +57,7 @@ export default function FilterSection({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">{title}</h1>
           {actionButton && (
-            <div className="flex items-center gap-2">
-              {actionButton}
-            </div>
+            <div className="flex items-center gap-2">{actionButton}</div>
           )}
         </div>
 
@@ -67,11 +65,11 @@ export default function FilterSection({
         {hasFilters && (
           <div className="border-t pt-4">
             {/* Filter Controls */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 sm:flex-wrap">
+            <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
               {/* View Filter */}
               {viewFilter && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-muted-foreground text-sm font-medium">
                     {translations.labels.view}:
                   </span>
                   <Select
@@ -139,7 +137,7 @@ export default function FilterSection({
               {/* Lot Filter */}
               {lotFilter && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-muted-foreground text-sm font-medium">
                     {translations.labels.goToLot}
                   </span>
                   <Select

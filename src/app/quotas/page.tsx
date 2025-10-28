@@ -11,12 +11,7 @@ export default async function QuotasPage() {
       isAuthenticated(),
     ]);
 
-    return (
-      <QuotaView 
-        quotaConfigs={quotaConfigs} 
-        isAuthenticated={isAdmin}
-      />
-    );
+    return <QuotaView quotaConfigs={quotaConfigs} isAuthenticated={isAdmin} />;
   } catch (error) {
     console.error("Error loading quotas data:", error);
     return (

@@ -126,13 +126,12 @@ export default function IncomeList({
 
   return (
     <div>
-
       {/* Lot Summary - appears when a lot is selected */}
       {lotSummary && selectedLot && (
         <div className="mb-6">
           <h3 className="mb-4 text-lg font-semibold">
-            📊 {translations.labels.summary} - Lote{" "}
-            {selectedLot.lotNumber} ({selectedLot.owner})
+            📊 {translations.labels.summary} - Lote {selectedLot.lotNumber} (
+            {selectedLot.owner})
           </h3>
           <SummarySection
             items={[
@@ -163,8 +162,7 @@ export default function IncomeList({
             {
               type: "maintenance",
               total: allLotsSummary.maintenance.total,
-              show:
-                incomeFilter === "all" || incomeFilter === "maintenance",
+              show: incomeFilter === "all" || incomeFilter === "maintenance",
             },
             {
               type: "works",
@@ -218,17 +216,14 @@ export default function IncomeList({
             })}
             {filteredContributions.length === 0 && (
               <div className="py-12 text-center">
-                <div className="text-muted-foreground mb-4 text-6xl">
-                  📊
-                </div>
+                <div className="text-muted-foreground mb-4 text-6xl">📊</div>
                 <p className="text-muted-foreground mb-2 text-lg">
                   {selectedLotId
                     ? translations.messages.noContributionsForLot
                     : translations.messages.noContributions}
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  {incomeFilter !== "all" &&
-                    translations.messages.changeFilter}
+                  {incomeFilter !== "all" && translations.messages.changeFilter}
                 </p>
               </div>
             )}
