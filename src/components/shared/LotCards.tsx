@@ -5,13 +5,9 @@ import { Plus, Edit, Trash2, Info, Eye } from "lucide-react";
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
-import {
-  getStatusColor,
-  getStatusText,
-} from "@/lib/utils";
+import { getStatusColor, formatCurrency } from "@/lib/utils";
 import { SimpleLotBalance } from "@/types/quotas.types";
 import { translations } from "@/lib/translations";
-import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
@@ -196,7 +192,7 @@ export default function LotCards({
                   setSortDirection(direction);
                 }}
               >
-                <SelectTrigger className="w-full sm:w-64 text-xs sm:text-sm">
+                <SelectTrigger className="w-full text-xs sm:w-64 sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -268,30 +264,33 @@ export default function LotCards({
                   <CardContent className="w-full p-0">
                     {/* Unified Responsive Layout */}
                     <div className="relative w-full">
-                      <div className="flex min-h-[60px] sm:min-h-[70px] w-full">
+                      <div className="flex min-h-[60px] w-full sm:min-h-[70px]">
                         {/* Main Content Section */}
-                        <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden px-4 sm:px-6 py-2 sm:py-3">
+                        <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden px-4 py-2 sm:px-6 sm:py-3">
                           <div className="mb-1 flex min-w-0 items-center gap-1 sm:gap-2">
-                            <span className="text-primary flex-shrink-0 text-sm sm:text-base font-bold">
+                            <span className="text-primary flex-shrink-0 text-sm font-bold sm:text-base">
                               {lot.lotNumber}
                             </span>
                             {lot.isExempt && (
                               <div className="group relative">
-                                <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0 text-amber-600" />
-                                <div className="hidden sm:block pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                                  {lot.exemptionReason || translations.labels.exempt}
+                                <Info className="h-3 w-3 flex-shrink-0 text-amber-600 sm:h-3.5 sm:w-3.5" />
+                                <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
+                                  {lot.exemptionReason ||
+                                    translations.labels.exempt}
                                   <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
                                 </div>
                               </div>
                             )}
                             {lot.balance ? (
                               <span
-                                className={`inline-flex rounded-full px-1.5 sm:px-2 py-0.5 text-xs font-medium sm:font-semibold ${getStatusColor(lot.balance.status)}`}
+                                className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:font-semibold ${getStatusColor(lot.balance.status)}`}
                               >
-                                {getStatusText(lot.balance.status)}
+                                {lot.balance.status === "current"
+                                  ? translations.labels.current
+                                  : translations.labels.overdue}
                               </span>
                             ) : (
-                              <span className="inline-flex rounded-full bg-gray-100 px-1.5 sm:px-2 py-0.5 text-xs font-medium sm:font-semibold text-gray-800">
+                              <span className="inline-flex rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 sm:px-2 sm:font-semibold">
                                 {lot.isExempt
                                   ? translations.labels.notApplicable
                                   : translations.labels.noData}
@@ -304,16 +303,16 @@ export default function LotCards({
                         </div>
 
                         {/* Values Section */}
-                        <div className="min-w-[140px] sm:min-w-[180px] flex-shrink-0 px-3 sm:px-5 py-2 sm:py-3 text-right">
+                        <div className="min-w-[140px] flex-shrink-0 px-3 py-2 text-right sm:min-w-[180px] sm:px-5 sm:py-3">
                           {/* Breakdown by type */}
-                          <div className="space-y-0.5 mb-1.5">
+                          <div className="mb-1.5 space-y-0.5">
                             {/* Maintenance */}
                             {lot.totals.maintenance > 0 && (
                               <div className="flex items-center justify-end gap-1">
-                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                                   {translations.labels.maintenance}:
                                 </span>
-                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                <span className="text-[11px] text-emerald-600 sm:text-sm">
                                   {formatCurrency(lot.totals.maintenance)}
                                 </span>
                               </div>
@@ -322,10 +321,10 @@ export default function LotCards({
                             {/* Works */}
                             {lot.totals.works > 0 && (
                               <div className="flex items-center justify-end gap-1">
-                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                                   {translations.labels.works}:
                                 </span>
-                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                <span className="text-[11px] text-emerald-600 sm:text-sm">
                                   {formatCurrency(lot.totals.works)}
                                 </span>
                               </div>
@@ -334,10 +333,10 @@ export default function LotCards({
                             {/* Others (only show if > 0) */}
                             {lot.totals.others > 0 && (
                               <div className="flex items-center justify-end gap-1">
-                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                                <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                                   {translations.labels.others}:
                                 </span>
-                                <span className="text-[11px] sm:text-sm text-emerald-600">
+                                <span className="text-[11px] text-emerald-600 sm:text-sm">
                                   {formatCurrency(lot.totals.others)}
                                 </span>
                               </div>
@@ -347,12 +346,12 @@ export default function LotCards({
                           {/* Total with divider */}
                           {lot.totals.total > 0 && (
                             <>
-                              <div className="border-t border-muted-foreground/20 my-1"></div>
-                              <div className="flex items-center justify-end gap-1 mb-1">
-                                <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                              <div className="border-muted-foreground/20 my-1 border-t"></div>
+                              <div className="mb-1 flex items-center justify-end gap-1">
+                                <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                                   {translations.labels.totalContributions}:
                                 </span>
-                                <span className="text-xs sm:text-sm font-bold text-emerald-600">
+                                <span className="text-xs font-bold text-emerald-600 sm:text-sm">
                                   {formatCurrency(lot.totals.total)}
                                 </span>
                               </div>
@@ -361,23 +360,23 @@ export default function LotCards({
 
                           {/* Initial Debt (only if > 0) */}
                           {(lot.initialWorksDebt || 0) > 0 && (
-                            <div className="flex items-center justify-end gap-1 mb-1">
-                              <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                            <div className="mb-1 flex items-center justify-end gap-1">
+                              <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                                 {translations.labels.initialDebt}:
                               </span>
-                              <span className="text-[11px] sm:text-sm font-semibold text-amber-600">
+                              <span className="text-[11px] font-semibold text-amber-600 sm:text-sm">
                                 {formatCurrency(lot.initialWorksDebt || 0)}
                               </span>
                             </div>
                           )}
 
                           {/* Outstanding balance */}
-                          <div className="flex items-center justify-end gap-1 mt-1">
-                            <span className="text-muted-foreground text-[10px] sm:text-xs truncate">
+                          <div className="mt-1 flex items-center justify-end gap-1">
+                            <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
                               {translations.labels.totalOutstandingDebt}:
                             </span>
                             <span
-                              className={`text-xs sm:text-sm font-medium sm:font-semibold ${
+                              className={`text-xs font-medium sm:text-sm sm:font-semibold ${
                                 lot.isExempt
                                   ? "text-gray-500"
                                   : lot.balance?.outstandingBalance &&
@@ -389,19 +388,21 @@ export default function LotCards({
                               {lot.isExempt
                                 ? "-"
                                 : lot.balance
-                                  ? formatCurrency(lot.balance.outstandingBalance)
+                                  ? formatCurrency(
+                                      lot.balance.outstandingBalance
+                                    )
                                   : formatCurrency(0)}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-muted/20 border-muted/30 flex items-center justify-between border-t px-2 sm:px-4 py-1 sm:py-1.5">
+                      <div className="bg-muted/20 border-muted/30 flex items-center justify-between border-t px-2 py-1 sm:px-4 sm:py-1.5">
                         <Link href={`/income/${lot.id}`}>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="hover:bg-muted h-7 sm:h-8 text-xs sm:text-sm gap-1 sm:gap-1.5 px-2 sm:px-3"
+                            className="hover:bg-muted h-7 gap-1 px-2 text-xs sm:h-8 sm:gap-1.5 sm:px-3 sm:text-sm"
                             title={translations.actions.viewDetail}
                           >
                             <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -419,7 +420,7 @@ export default function LotCards({
                                 e.stopPropagation();
                                 setEditingLot(lot);
                               }}
-                              className="hover:bg-muted h-6 w-6 sm:h-7 sm:w-7 p-0"
+                              className="hover:bg-muted h-6 w-6 p-0 sm:h-7 sm:w-7"
                               title={`${translations.actions.edit} ${translations.labels.lot.toLowerCase()}`}
                             >
                               <Edit className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -432,7 +433,7 @@ export default function LotCards({
                                 e.stopPropagation();
                                 setDeletingLot(lot);
                               }}
-                              className="hover:bg-destructive/10 hover:text-destructive h-6 w-6 sm:h-7 sm:w-7 p-0"
+                              className="hover:bg-destructive/10 hover:text-destructive h-6 w-6 p-0 sm:h-7 sm:w-7"
                               title={`${translations.actions.delete} ${translations.labels.lot.toLowerCase()}`}
                               disabled={isPending}
                             >
