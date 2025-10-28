@@ -6,7 +6,8 @@ import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
-import { isAuthenticated } from "@/lib/auth";
+import { getSession, isAuthenticated } from "@/lib/auth";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
   const isAdmin = await isAuthenticated();
 
   return (
@@ -28,13 +30,15 @@ export default async function RootLayout({
         className={`${inter.className} antialiased`}
         suppressHydrationWarning
       >
-        <Header />
-        <Navigation isAuthenticated={isAdmin} />
-        <main className="min-h-screen bg-gray-50">
-          {children}
-          <Analytics />
-          <SpeedInsights />
-        </main>
+        <SessionProvider session={session}>
+          <Header />
+          <Navigation isAuthenticated={isAdmin} />
+          <main className="min-h-screen bg-gray-50">
+            {children}
+            <Analytics />
+            <SpeedInsights />
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

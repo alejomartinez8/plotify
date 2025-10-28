@@ -1,9 +1,11 @@
 import { translations } from "@/lib/translations";
-import { isAuthenticated } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { AuthButton } from "./AuthButton";
+import Image from "next/image";
 
 export default async function Header() {
-  const isAdmin = await isAuthenticated();
+  const session = await getSession();
+  const isAdmin = !!session?.user;
 
   return (
     <div className="bg-card border-b shadow-sm">
@@ -17,12 +19,26 @@ export default async function Header() {
               {translations.app.subtitle}
             </p>
           </div>
-          {isAdmin && (
-            <div className="flex items-center space-x-4">
-              <span className="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">
-                Admin
-              </span>
-              <AuthButton isAuthenticated={isAdmin} />
+          {isAdmin && session?.user && (
+            <div className="flex items-center gap-3">
+              {session.user.image && (
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name || "User"}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              )}
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">
+                  {session.user.name}
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  {session.user.email}
+                </span>
+              </div>
+              <AuthButton />
             </div>
           )}
         </div>

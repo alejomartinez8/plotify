@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { Readable } from "stream";
+import { getGoogleTokens } from "@/lib/auth";
 
 interface DriveFile {
   id: string;
@@ -14,7 +15,7 @@ class GoogleOAuthService {
 
   constructor() {
     try {
-      const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/google/callback`;
+      const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/callback/google`;
 
       this.oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
@@ -22,18 +23,33 @@ class GoogleOAuthService {
         redirectUri
       );
 
-      // Set refresh token for automatic access token renewal
-      if (process.env.GOOGLE_REFRESH_TOKEN) {
-        this.oauth2Client.setCredentials({
-          refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-        });
-      }
-
       this.drive = google.drive({ version: "v3", auth: this.oauth2Client });
       console.log("Google OAuth service initialized successfully");
     } catch (error) {
       console.error("Error initializing Google OAuth service:", error);
       throw error;
+    }
+  }
+
+  /**
+   * Load credentials from NextAuth session
+   */
+  private async loadCredentials(): Promise<void> {
+    try {
+      const tokens = await getGoogleTokens();
+
+      if (tokens?.access_token) {
+        this.oauth2Client.setCredentials({
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token,
+        });
+        console.log("Using Google tokens from NextAuth session");
+      } else {
+        console.warn("No Google Drive credentials available in session");
+      }
+    } catch (error) {
+      console.error("Error loading Google credentials:", error);
+      throw new Error("Google Drive authentication required. Please sign in again.");
     }
   }
 
@@ -411,6 +427,9 @@ class GoogleOAuthService {
     receiptNumber?: string;
   }): Promise<DriveFile> {
     try {
+      // Load credentials from NextAuth session
+      await this.loadCredentials();
+
       console.log("Starting OAuth receipt upload:", {
         originalName: data.originalName,
         mimeType: data.mimeType,
@@ -463,6 +482,9 @@ class GoogleOAuthService {
    */
   async deleteFile(fileId: string): Promise<void> {
     try {
+      // Load credentials from NextAuth session
+      await this.loadCredentials();
+
       await this.drive.files.delete({
         fileId,
       });
