@@ -14,25 +14,25 @@ interface ImportResult {
 }
 
 function parseCSV(csvContent: string): string[][] {
-  const lines = csvContent.trim().split('\n');
-  return lines.map(line => {
+  const lines = csvContent.trim().split("\n");
+  return lines.map((line) => {
     const values: string[] = [];
-    let current = '';
+    let current = "";
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
+      } else if (char === "," && !inQuotes) {
         values.push(current.trim());
-        current = '';
+        current = "";
       } else {
         current += char;
       }
     }
-    
+
     values.push(current.trim());
     return values;
   });
@@ -41,7 +41,7 @@ function parseCSV(csvContent: string): string[][] {
 function parseDate(dateString: string): Date {
   // Try different date formats
   const formats = [
-    // Spanish format DD/MM/YYYY
+    // DD/MM/YYYY format (Spanish locale)
     /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
     // ISO format YYYY-MM-DD
     /^(\d{4})-(\d{1,2})-(\d{1,2})$/,
@@ -61,14 +61,16 @@ function parseDate(dateString: string): Date {
       }
     }
   }
-  
+
   // Fallback to Date constructor
   return new Date(dateString);
 }
 
-export async function importLotsAction(csvContent: string): Promise<ImportResult> {
-  const actionTimer = logger.timer('Import Lots Action');
-  
+export async function importLotsAction(
+  csvContent: string
+): Promise<ImportResult> {
+  const actionTimer = logger.timer("Import Lots Action");
+
   try {
     await requireAuth();
 
@@ -76,18 +78,20 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
     if (rows.length < 2) {
       return {
         success: false,
-        message: translations.errors.import.csvFormat
+        message: translations.errors.import.csvFormat,
       };
     }
 
     const headers = rows[0];
     const expectedHeaders = ["ID", "Número de Lote", "Propietario"];
-    
+
     // Validate headers
-    if (!expectedHeaders.every(header => headers.includes(header))) {
+    if (!expectedHeaders.every((header) => headers.includes(header))) {
       return {
         success: false,
-        message: translations.errors.import.headerMismatch + expectedHeaders.join(", ")
+        message:
+          translations.errors.import.headerMismatch +
+          expectedHeaders.join(", "),
       };
     }
 
@@ -98,34 +102,36 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const rowNum = i + 2; // +2 because we start from row 1 and skip header
-      
+
       try {
-        const lotNumber = row[1]?.replace(/"/g, '') || '';
-        const owner = row[2]?.replace(/"/g, '') || '';
+        const lotNumber = row[1]?.replace(/"/g, "") || "";
+        const owner = row[2]?.replace(/"/g, "") || "";
 
         if (!lotNumber || !owner) {
-          errors.push(`Fila ${rowNum}: Número de lote y propietario son requeridos`);
+          errors.push(
+            `Fila ${rowNum}: Número de lote y propietario son requeridos`
+          );
           continue;
         }
 
         // Check if lot already exists
         const existingLot = await prisma.lot.findFirst({
-          where: { lotNumber }
+          where: { lotNumber },
         });
 
         if (existingLot) {
           // Update existing lot
           await prisma.lot.update({
             where: { id: existingLot.id },
-            data: { owner }
+            data: { owner },
           });
         } else {
           // Create new lot
           await prisma.lot.create({
             data: {
               lotNumber,
-              owner
-            }
+              owner,
+            },
           });
         }
 
@@ -143,26 +149,28 @@ export async function importLotsAction(csvContent: string): Promise<ImportResult
       success: true,
       message: `Se importaron ${imported} lotes exitosamente`,
       imported,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
     };
-
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Error importing lots", errorInstance, {
-      component: 'importLotsAction'
+      component: "importLotsAction",
     });
     actionTimer.end();
-    
+
     return {
       success: false,
-      message: translations.errors.import.lots
+      message: translations.errors.import.lots,
     };
   }
 }
 
-export async function importIncomesAction(csvContent: string): Promise<ImportResult> {
-  const actionTimer = logger.timer('Import Incomes Action');
-  
+export async function importIncomesAction(
+  csvContent: string
+): Promise<ImportResult> {
+  const actionTimer = logger.timer("Import Incomes Action");
+
   try {
     await requireAuth();
 
@@ -170,18 +178,29 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
     if (rows.length < 2) {
       return {
         success: false,
-        message: translations.errors.import.csvFormat
+        message: translations.errors.import.csvFormat,
       };
     }
 
     const headers = rows[0];
-    const expectedHeaders = ["ID", "Fecha", "Número de Lote", "Propietario", "Tipo", "Descripción", "Número de Recibo", "Monto"];
-    
+    const expectedHeaders = [
+      "ID",
+      "Fecha",
+      "Número de Lote",
+      "Propietario",
+      "Tipo",
+      "Descripción",
+      "Número de Recibo",
+      "Monto",
+    ];
+
     // Validate headers
-    if (!expectedHeaders.every(header => headers.includes(header))) {
+    if (!expectedHeaders.every((header) => headers.includes(header))) {
       return {
         success: false,
-        message: translations.errors.import.headerMismatch + expectedHeaders.join(", ")
+        message:
+          translations.errors.import.headerMismatch +
+          expectedHeaders.join(", "),
       };
     }
 
@@ -192,32 +211,37 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const rowNum = i + 2;
-      
+
       try {
-        const date = parseDate(row[1]?.replace(/"/g, '') || '').toISOString();
-        const lotNumber = row[2]?.replace(/"/g, '') || '';
-        const owner = row[3]?.replace(/"/g, '') || '';
-        const type = row[4]?.replace(/"/g, '') === 'Mantenimiento' ? 'maintenance' : 'works';
-        const description = row[5]?.replace(/"/g, '') || '';
-        const receiptNumber = row[6]?.replace(/"/g, '') || null;
-        const amount = parseInt(row[7]?.replace(/"/g, '') || '0');
+        const date = parseDate(row[1]?.replace(/"/g, "") || "").toISOString();
+        const lotNumber = row[2]?.replace(/"/g, "") || "";
+        const owner = row[3]?.replace(/"/g, "") || "";
+        const type =
+          row[4]?.replace(/"/g, "") === "Mantenimiento"
+            ? "maintenance"
+            : "works";
+        const description = row[5]?.replace(/"/g, "") || "";
+        const receiptNumber = row[6]?.replace(/"/g, "") || null;
+        const amount = parseInt(row[7]?.replace(/"/g, "") || "0");
 
         if (!lotNumber || !owner || !amount || isNaN(amount)) {
-          errors.push(`Fila ${rowNum}: ${translations.errors.import.missingData}`);
+          errors.push(
+            `Fila ${rowNum}: ${translations.errors.import.missingData}`
+          );
           continue;
         }
 
         // Find or create lot
         let lot = await prisma.lot.findFirst({
-          where: { lotNumber }
+          where: { lotNumber },
         });
 
         if (!lot) {
           lot = await prisma.lot.create({
             data: {
               lotNumber,
-              owner
-            }
+              owner,
+            },
           });
         }
 
@@ -229,8 +253,8 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
             amount,
             date,
             description,
-            receiptNumber
-          }
+            receiptNumber,
+          },
         });
 
         imported++;
@@ -248,26 +272,28 @@ export async function importIncomesAction(csvContent: string): Promise<ImportRes
       success: true,
       message: `Se importaron ${imported} ingresos exitosamente`,
       imported,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
     };
-
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Error importing incomes", errorInstance, {
-      component: 'importIncomesAction'
+      component: "importIncomesAction",
     });
     actionTimer.end();
-    
+
     return {
       success: false,
-      message: translations.errors.import.incomes
+      message: translations.errors.import.incomes,
     };
   }
 }
 
-export async function importExpensesAction(csvContent: string): Promise<ImportResult> {
-  const actionTimer = logger.timer('Import Expenses Action');
-  
+export async function importExpensesAction(
+  csvContent: string
+): Promise<ImportResult> {
+  const actionTimer = logger.timer("Import Expenses Action");
+
   try {
     await requireAuth();
 
@@ -275,18 +301,28 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
     if (rows.length < 2) {
       return {
         success: false,
-        message: translations.errors.import.csvFormat
+        message: translations.errors.import.csvFormat,
       };
     }
 
     const headers = rows[0];
-    const expectedHeaders = ["ID", "Fecha", "Tipo", "Categoría", "Descripción", "Número de Recibo", "Monto"];
-    
+    const expectedHeaders = [
+      "ID",
+      "Fecha",
+      "Tipo",
+      "Categoría",
+      "Descripción",
+      "Número de Recibo",
+      "Monto",
+    ];
+
     // Validate headers
-    if (!expectedHeaders.every(header => headers.includes(header))) {
+    if (!expectedHeaders.every((header) => headers.includes(header))) {
       return {
         success: false,
-        message: translations.errors.import.headerMismatch + expectedHeaders.join(", ")
+        message:
+          translations.errors.import.headerMismatch +
+          expectedHeaders.join(", "),
       };
     }
 
@@ -297,17 +333,22 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
       const rowNum = i + 2;
-      
+
       try {
-        const date = parseDate(row[1]?.replace(/"/g, '') || '').toISOString();
-        const type = row[2]?.replace(/"/g, '') === 'Mantenimiento' ? 'maintenance' : 'works';
-        const category = row[3]?.replace(/"/g, '') || '';
-        const description = row[4]?.replace(/"/g, '') || '';
-        const receiptNumber = row[5]?.replace(/"/g, '') || null;
-        const amount = parseInt(row[6]?.replace(/"/g, '') || '0');
+        const date = parseDate(row[1]?.replace(/"/g, "") || "").toISOString();
+        const type =
+          row[2]?.replace(/"/g, "") === "Mantenimiento"
+            ? "maintenance"
+            : "works";
+        const category = row[3]?.replace(/"/g, "") || "";
+        const description = row[4]?.replace(/"/g, "") || "";
+        const receiptNumber = row[5]?.replace(/"/g, "") || null;
+        const amount = parseInt(row[6]?.replace(/"/g, "") || "0");
 
         if (!category || !amount || isNaN(amount)) {
-          errors.push(`Fila ${rowNum}: ${translations.errors.import.categoryRequired}`);
+          errors.push(
+            `Fila ${rowNum}: ${translations.errors.import.categoryRequired}`
+          );
           continue;
         }
 
@@ -319,8 +360,8 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
             amount,
             date,
             description,
-            receiptNumber
-          }
+            receiptNumber,
+          },
         });
 
         imported++;
@@ -337,19 +378,19 @@ export async function importExpensesAction(csvContent: string): Promise<ImportRe
       success: true,
       message: `Se importaron ${imported} gastos exitosamente`,
       imported,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
     };
-
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Error importing expenses", errorInstance, {
-      component: 'importExpensesAction'
+      component: "importExpensesAction",
     });
     actionTimer.end();
-    
+
     return {
       success: false,
-      message: translations.errors.import.expenses
+      message: translations.errors.import.expenses,
     };
   }
 }

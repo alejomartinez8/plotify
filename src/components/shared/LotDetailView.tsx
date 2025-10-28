@@ -12,8 +12,7 @@ import {
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
-import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
-import { getStatusColor, getStatusText } from "@/lib/utils";
+import { formatCurrency, formatDateForDisplay, getStatusColor } from "@/lib/utils";
 import { LotDebtDetail } from "@/types/quotas.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -141,7 +140,6 @@ export default function LotDetailView({
     };
   }, [contributions]);
 
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -264,12 +262,18 @@ export default function LotDetailView({
                 <div className="text-muted-foreground h-4 w-4">⚖️</div>
               </CardHeader>
               <CardContent>
-                <div className={`text-2xl font-bold ${debtDetail.outstandingBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                <div
+                  className={`text-2xl font-bold ${debtDetail.outstandingBalance > 0 ? "text-red-600" : "text-green-600"}`}
+                >
                   {formatCurrency(debtDetail.outstandingBalance)}
                 </div>
                 <div className="mt-1">
-                  <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(debtDetail.status)}`}>
-                    {getStatusText(debtDetail.status)}
+                  <span
+                    className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(debtDetail.status)}`}
+                  >
+                    {debtDetail.status === "current"
+                      ? translations.labels.current
+                      : translations.labels.overdue}
                   </span>
                 </div>
               </CardContent>
@@ -305,7 +309,9 @@ export default function LotDetailView({
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <div className="flex items-center gap-2">
                   <TypeBadge type="maintenance" />
-                  <CardTitle className="text-base">{translations.labels.maintenance}</CardTitle>
+                  <CardTitle className="text-base">
+                    {translations.labels.maintenance}
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -314,13 +320,17 @@ export default function LotDetailView({
                     <div className="text-xl font-bold text-emerald-600">
                       {formatCurrency(fundTotals.maintenance)}
                     </div>
-                    <p className="text-muted-foreground text-sm">{translations.labels.paid}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {translations.labels.paid}
+                    </p>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-600">
                       {formatCurrency(debtDetail.maintenanceDebt)}
                     </div>
-                    <p className="text-muted-foreground text-sm">{translations.labels.owes}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {translations.labels.owes}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -331,7 +341,9 @@ export default function LotDetailView({
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <div className="flex items-center gap-2">
                   <TypeBadge type="works" />
-                  <CardTitle className="text-base">{translations.labels.works}</CardTitle>
+                  <CardTitle className="text-base">
+                    {translations.labels.works}
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -340,13 +352,17 @@ export default function LotDetailView({
                     <div className="text-xl font-bold text-emerald-600">
                       {formatCurrency(fundTotals.works)}
                     </div>
-                    <p className="text-muted-foreground text-sm">{translations.labels.paid}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {translations.labels.paid}
+                    </p>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-600">
                       {formatCurrency(debtDetail.worksDebt)}
                     </div>
-                    <p className="text-muted-foreground text-sm">{translations.labels.owes}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {translations.labels.owes}
+                    </p>
                   </div>
                 </div>
               </CardContent>
