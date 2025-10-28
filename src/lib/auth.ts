@@ -1,27 +1,19 @@
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { auth } from "@/lib/auth/config";
 import { logger } from "@/lib/logger";
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "fallback-secret-key-change-in-production";
-const TOKEN_EXPIRY = "7d";
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(",").map((email) =>
+  email.trim()
+) || [];
 
-export interface JWTPayload {
-  role: "admin";
-  iat: number;
-  exp: number;
-}
-
-export function generateToken(): string {
-  return jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
-}
-
-export function verifyToken(token: string): JWTPayload | null {
+/**
+ * Get the current NextAuth session
+ */
+export async function getSession() {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    return await auth();
   } catch (error) {
     logger.error(
-      "Token verification failed",
+      "Error getting session",
       error instanceof Error ? error : new Error(String(error)),
       {
         component: "auth",
@@ -31,17 +23,19 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
+/**
+ * Check if user is authenticated via NextAuth
+ */
 export async function isAuthenticated(): Promise<boolean> {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("admin-token")?.value;
+    const session = await getSession();
 
-    if (!token) {
+    if (!session || !session.user?.email) {
       return false;
     }
 
-    const payload = verifyToken(token);
-    return payload !== null && payload.role === "admin";
+    // Verify email is in admin whitelist
+    return ADMIN_EMAILS.includes(session.user.email);
   } catch (error) {
     logger.error(
       "Error checking authentication",
@@ -54,10 +48,40 @@ export async function isAuthenticated(): Promise<boolean> {
   }
 }
 
+/**
+ * Require authentication, throw error if not authenticated
+ */
 export async function requireAuth(): Promise<boolean> {
   const isAuth = await isAuthenticated();
   if (!isAuth) {
     throw new Error("Authentication required");
   }
   return true;
+}
+
+/**
+ * Get Google Drive tokens from session
+ */
+export async function getGoogleTokens() {
+  try {
+    const session = await getSession();
+
+    if (!session?.accessToken) {
+      return null;
+    }
+
+    return {
+      access_token: session.accessToken,
+      refresh_token: session.refreshToken,
+    };
+  } catch (error) {
+    logger.error(
+      "Error getting Google tokens",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: "auth",
+      }
+    );
+    return null;
+  }
 }

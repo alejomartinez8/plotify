@@ -1,20 +1,19 @@
-import { LoginForm } from "@/components/LoginForm";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
+import { LoginButton } from "@/components/LoginButton";
 
 export default async function LoginPage() {
-  // Check if user is already authenticated
-  const cookieStore = await cookies();
-  const isAuthenticated = cookieStore.get("admin-auth")?.value === "true";
+  const session = await getSession();
 
-  if (isAuthenticated) {
+  // Redirect if already authenticated
+  if (session?.user) {
     redirect("/");
   }
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <LoginButton />
       </div>
     </div>
   );
@@ -22,5 +21,5 @@ export default async function LoginPage() {
 
 export const metadata = {
   title: "Admin Login - Plotify",
-  description: "Login to access admin features",
+  description: "Sign in with Google to access admin features",
 };
