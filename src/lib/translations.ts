@@ -84,7 +84,7 @@ export const translations = {
     current: "Al día",
     overdue: "Atrasado",
     initialDebt: "Deuda Inicial",
-    
+
     // Financial summary labels
     totalPaid: "Total Pagado",
     totalOwed: "Total Adeudado",
@@ -160,7 +160,8 @@ export const translations = {
     quotaTypesWorks: "Obras",
     quotaAmountPlaceholder: "60000",
     quotaDescriptionPlaceholder: "Descripción de la cuota",
-    quotaDeleteConfirmation: "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
+    quotaDeleteConfirmation:
+      "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
     noQuotasConfigured: "No hay cuotas configuradas",
     quotaSummary: "Resumen de Cuotas",
     viewQuotas: "Ver cuotas",

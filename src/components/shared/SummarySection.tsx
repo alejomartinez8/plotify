@@ -18,8 +18,8 @@ export default function SummarySection({
   isExpense = false,
 }: SummarySectionProps) {
   // Only render if there are items to show
-  const visibleItems = items.filter(item => item.show && item.total > 0);
-  
+  const visibleItems = items.filter((item) => item.show && item.total > 0);
+
   if (visibleItems.length === 0) return null;
 
   const getTextColor = (type: ContributionType) => {

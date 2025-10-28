@@ -6,7 +6,6 @@ import { getExpenses } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 
-
 function formatDate(date: string | Date): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   return dateObj.toLocaleDateString("es-CO");
@@ -23,8 +22,8 @@ export async function exportIncomesAction(): Promise<{
   filename?: string;
   error?: string;
 }> {
-  const actionTimer = logger.timer('Export Incomes Action');
-  
+  const actionTimer = logger.timer("Export Incomes Action");
+
   try {
     // Get contributions with lot information
     const contributionsWithLots = await prisma.contribution.findMany({
@@ -80,12 +79,13 @@ export async function exportIncomesAction(): Promise<{
       filename,
     };
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Error exporting incomes", errorInstance, {
-      component: 'exportIncomesAction'
+      component: "exportIncomesAction",
     });
     actionTimer.end();
-    
+
     return {
       success: false,
       error: translations.errors.export.incomes,
@@ -99,8 +99,8 @@ export async function exportExpensesAction(): Promise<{
   filename?: string;
   error?: string;
 }> {
-  const actionTimer = logger.timer('Export Expenses Action');
-  
+  const actionTimer = logger.timer("Export Expenses Action");
+
   try {
     const expenses = await getExpenses();
 
@@ -146,12 +146,13 @@ export async function exportExpensesAction(): Promise<{
       filename,
     };
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Error exporting expenses", errorInstance, {
-      component: 'exportExpensesAction'
+      component: "exportExpensesAction",
     });
     actionTimer.end();
-    
+
     return {
       success: false,
       error: translations.errors.export.expenses,
@@ -176,11 +177,7 @@ export async function exportLotsAction(): Promise<{
     });
 
     // CSV headers
-    const headers = [
-      "ID",
-      "Número de Lote",
-      "Propietario",
-    ];
+    const headers = ["ID", "Número de Lote", "Propietario"];
 
     // Convert data to CSV format
     const csvData = lots.map((lot) => [

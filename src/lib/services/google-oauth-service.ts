@@ -41,7 +41,7 @@ class GoogleOAuthService {
    */
   getAuthUrl(): string {
     const scopes = ["https://www.googleapis.com/auth/drive.file"];
-    
+
     return this.oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: scopes,
@@ -66,42 +66,53 @@ class GoogleOAuthService {
   /**
    * Generates a standardized filename for receipts with sequential counter
    */
-  async generateFileName(data: {
-    date: string;
-    type: "income" | "expense";
-    lotNumber?: string;
-    category?: string;
-    amount: number;
-    receiptNumber?: string;
-    fileExtension: string;
-  }, folderId: string): Promise<string> {
+  async generateFileName(
+    data: {
+      date: string;
+      type: "income" | "expense";
+      lotNumber?: string;
+      category?: string;
+      amount: number;
+      receiptNumber?: string;
+      fileExtension: string;
+    },
+    folderId: string
+  ): Promise<string> {
     const { date, type, lotNumber, category, fileExtension } = data;
-    
+
     // Format date as YYYY-MM-DD
-    const formattedDate = new Date(date).toISOString().split('T')[0];
-    
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+
     // Generate base filename without counter
     let baseFileName: string;
     if (type === "income") {
-      const lot = lotNumber ? `lote-${lotNumber.padStart(2, '0')}` : "lote-XX";
+      const lot = lotNumber ? `lote-${lotNumber.padStart(2, "0")}` : "lote-XX";
       baseFileName = `${formattedDate}_${lot}`;
     } else {
       const cat = category || "general";
       baseFileName = `${formattedDate}_gasto-${cat}`;
     }
-    
+
     // Receipt number is not added to filename - stored only in database
-    
+
     // Find next available counter
-    const counter = await this.getNextFileCounter(baseFileName, fileExtension, folderId);
-    
-    return `${baseFileName}_${counter.toString().padStart(3, '0')}.${fileExtension}`;
+    const counter = await this.getNextFileCounter(
+      baseFileName,
+      fileExtension,
+      folderId
+    );
+
+    return `${baseFileName}_${counter.toString().padStart(3, "0")}.${fileExtension}`;
   }
 
   /**
    * Gets the next available file counter for a base filename
    */
-  private async getNextFileCounter(baseFileName: string, extension: string, folderId: string): Promise<number> {
+  private async getNextFileCounter(
+    baseFileName: string,
+    extension: string,
+    folderId: string
+  ): Promise<number> {
     try {
       // Search for existing files with this base name pattern
       const searchQuery = `name contains '${baseFileName}_' and parents in '${folderId}'`;
@@ -114,9 +125,13 @@ class GoogleOAuthService {
       const counters: number[] = [];
 
       // Extract counters from existing filenames
-      existingFiles.forEach(file => {
+      existingFiles.forEach((file) => {
         if (file.name) {
-          const match = file.name.match(new RegExp(`${baseFileName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}_(\d{3})\.${extension}$`));
+          const match = file.name.match(
+            new RegExp(
+              `${baseFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}_(\d{3})\.${extension}$`
+            )
+          );
           if (match) {
             counters.push(parseInt(match[1], 10));
           }
@@ -149,7 +164,10 @@ class GoogleOAuthService {
   /**
    * Creates year-based folder structure if it doesn't exist
    */
-  private async createFolderStructure(date: string, type: "income" | "expense"): Promise<string> {
+  private async createFolderStructure(
+    date: string,
+    type: "income" | "expense"
+  ): Promise<string> {
     const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
     if (!rootFolderId) {
       throw new Error("GOOGLE_DRIVE_FOLDER_ID not configured");
@@ -159,9 +177,9 @@ class GoogleOAuthService {
       // Extract year from date
       const year = new Date(date).getFullYear().toString();
       const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
-      
+
       console.log(`Creating folder structure: ${year}/${typeFolderName}`);
-      
+
       // Check if year folder exists
       let yearFolderId = await this.findFolder(year, rootFolderId);
       if (!yearFolderId) {
@@ -175,14 +193,22 @@ class GoogleOAuthService {
       // Check if type folder exists within year folder (Ingresos/Gastos)
       let typeFolderId = await this.findFolder(typeFolderName, yearFolderId);
       if (!typeFolderId) {
-        console.log(`Type folder '${typeFolderName}' not found in year '${year}', creating...`);
+        console.log(
+          `Type folder '${typeFolderName}' not found in year '${year}', creating...`
+        );
         typeFolderId = await this.createFolder(typeFolderName, yearFolderId);
-        console.log(`Type folder created: ${year}/${typeFolderName} (ID: ${typeFolderId})`);
+        console.log(
+          `Type folder created: ${year}/${typeFolderName} (ID: ${typeFolderId})`
+        );
       } else {
-        console.log(`Type folder found: ${year}/${typeFolderName} (ID: ${typeFolderId})`);
+        console.log(
+          `Type folder found: ${year}/${typeFolderName} (ID: ${typeFolderId})`
+        );
       }
 
-      console.log(`Folder structure ready: ${year}/${typeFolderName} (Final ID: ${typeFolderId})`);
+      console.log(
+        `Folder structure ready: ${year}/${typeFolderName} (Final ID: ${typeFolderId})`
+      );
       return typeFolderId;
     } catch (error) {
       console.error("Error creating folder structure:", error);
@@ -194,7 +220,10 @@ class GoogleOAuthService {
   /**
    * Finds folder by name within parent folder
    */
-  private async findFolder(name: string, parentId: string): Promise<string | null> {
+  private async findFolder(
+    name: string,
+    parentId: string
+  ): Promise<string | null> {
     try {
       const response = await this.drive.files.list({
         q: `name='${name}' and parents in '${parentId}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
@@ -204,18 +233,26 @@ class GoogleOAuthService {
 
       const folders = response.data.files || [];
       if (folders.length > 1) {
-        console.warn(`Found ${folders.length} duplicate folders with name '${name}' in parent '${parentId}'`);
-        
+        console.warn(
+          `Found ${folders.length} duplicate folders with name '${name}' in parent '${parentId}'`
+        );
+
         // Use the oldest folder (first created) and log the duplicates
         const primaryFolder = folders[0];
         const duplicates = folders.slice(1);
-        
-        console.log(`Using primary folder: ${primaryFolder.name} (ID: ${primaryFolder.id}, Created: ${primaryFolder.createdTime})`);
-        console.log(`Found ${duplicates.length} duplicate folders that should be cleaned up:`, 
-          duplicates.map(f => `${f.name} (ID: ${f.id}, Created: ${f.createdTime})`));
-        
+
+        console.log(
+          `Using primary folder: ${primaryFolder.name} (ID: ${primaryFolder.id}, Created: ${primaryFolder.createdTime})`
+        );
+        console.log(
+          `Found ${duplicates.length} duplicate folders that should be cleaned up:`,
+          duplicates.map(
+            (f) => `${f.name} (ID: ${f.id}, Created: ${f.createdTime})`
+          )
+        );
+
         // TODO: In the future, we could implement automatic cleanup of empty duplicate folders
-        
+
         return primaryFolder.id || null;
       }
 
@@ -234,7 +271,10 @@ class GoogleOAuthService {
       // Double check if folder exists before creating (in case it was created by another process)
       const existingFolder = await this.findFolder(name, parentId);
       if (existingFolder) {
-        console.log(`Folder '${name}' already exists, using existing one:`, existingFolder);
+        console.log(
+          `Folder '${name}' already exists, using existing one:`,
+          existingFolder
+        );
         return existingFolder;
       }
 
@@ -252,25 +292,31 @@ class GoogleOAuthService {
         throw new Error(`Failed to create folder: ${name}`);
       }
 
-      console.log(`Successfully created new folder '${name}':`, response.data.id);
-      
+      console.log(
+        `Successfully created new folder '${name}':`,
+        response.data.id
+      );
+
       // Wait a moment for Google Drive to sync
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Verify the folder was created and return its ID
       const verifyFolder = await this.findFolder(name, parentId);
       if (verifyFolder) {
         return verifyFolder;
       }
-      
+
       return response.data.id;
     } catch (error) {
       console.error(`Error creating folder '${name}':`, error);
-      
+
       // If creation failed, try one more time to find existing folder
       const existingFolder = await this.findFolder(name, parentId);
       if (existingFolder) {
-        console.log(`Found existing folder after failed creation: '${name}':`, existingFolder);
+        console.log(
+          `Found existing folder after failed creation: '${name}':`,
+          existingFolder
+        );
         return existingFolder;
       }
       throw error;
@@ -289,13 +335,17 @@ class GoogleOAuthService {
     const { file, fileName, mimeType, folderId } = params;
 
     try {
-      console.log("Creating file in Google Drive:", { fileName, mimeType, folderId });
-      
+      console.log("Creating file in Google Drive:", {
+        fileName,
+        mimeType,
+        folderId,
+      });
+
       // Convert Buffer to readable stream
       const stream = new Readable();
       stream.push(file);
       stream.push(null); // End the stream
-      
+
       const response = await this.drive.files.create({
         requestBody: {
           name: fileName,
@@ -332,14 +382,16 @@ class GoogleOAuthService {
     } catch (error) {
       console.error("Error uploading file to Google Drive:", error);
       console.error("Error details:", {
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : null,
         // @ts-ignore
         code: error?.code,
         // @ts-ignore
         errors: error?.errors,
       });
-      throw new Error(`Failed to upload file to Google Drive: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to upload file to Google Drive: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -366,22 +418,26 @@ class GoogleOAuthService {
         fileSize: data.file.length,
       });
 
-      const fileExtension = data.originalName.split('.').pop()?.toLowerCase() || 'pdf';
-      
+      const fileExtension =
+        data.originalName.split(".").pop()?.toLowerCase() || "pdf";
+
       // Create/find appropriate folder first
       const folderId = await this.createFolderStructure(data.date, data.type);
       console.log("Using folder ID:", folderId);
 
       // Generate standardized filename with sequential counter
-      const fileName = await this.generateFileName({
-        date: data.date,
-        type: data.type,
-        lotNumber: data.lotNumber,
-        category: data.category,
-        amount: data.amount,
-        receiptNumber: data.receiptNumber,
-        fileExtension,
-      }, folderId);
+      const fileName = await this.generateFileName(
+        {
+          date: data.date,
+          type: data.type,
+          lotNumber: data.lotNumber,
+          category: data.category,
+          amount: data.amount,
+          receiptNumber: data.receiptNumber,
+          fileExtension,
+        },
+        folderId
+      );
 
       console.log("Generated filename:", fileName);
 
@@ -422,23 +478,31 @@ class GoogleOAuthService {
   async deleteReceiptFile(params: {
     fileId: string;
     recordId: number;
-    recordType: 'contribution' | 'expense';
+    recordType: "contribution" | "expense";
   }): Promise<void> {
     const { fileId, recordId, recordType } = params;
-    
+
     try {
-      console.log("Starting receipt deletion process:", { fileId, recordId, recordType });
-      
+      console.log("Starting receipt deletion process:", {
+        fileId,
+        recordId,
+        recordType,
+      });
+
       // First, delete from Google Drive
       await this.deleteFile(fileId);
-      
+
       // Then, update the database record to clear receipt fields
-      if (recordType === 'contribution') {
-        const { updateContribution } = await import("@/lib/database/contributions");
+      if (recordType === "contribution") {
+        const { updateContribution } = await import(
+          "@/lib/database/contributions"
+        );
         // Get current contribution data first
-        const { getContributionById } = await import("@/lib/database/contributions");
+        const { getContributionById } = await import(
+          "@/lib/database/contributions"
+        );
         const contribution = await getContributionById(recordId);
-        
+
         if (contribution) {
           await updateContribution(recordId, {
             lotId: contribution.lotId.toString(),
@@ -452,12 +516,12 @@ class GoogleOAuthService {
             receiptFileName: null,
           });
         }
-      } else if (recordType === 'expense') {
+      } else if (recordType === "expense") {
         const { updateExpense } = await import("@/lib/database/expenses");
-        // Get current expense data first  
+        // Get current expense data first
         const { getExpenseById } = await import("@/lib/database/expenses");
         const expense = await getExpenseById(recordId);
-        
+
         if (expense) {
           await updateExpense(recordId, {
             type: expense.type,
@@ -472,11 +536,13 @@ class GoogleOAuthService {
           });
         }
       }
-      
+
       console.log("Receipt deletion completed successfully");
     } catch (error) {
       console.error("Error in deleteReceiptFile:", error);
-      throw new Error(`Failed to delete receipt: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to delete receipt: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -501,7 +567,6 @@ class GoogleOAuthService {
       throw new Error("Failed to get file metadata");
     }
   }
-
 }
 
 // Singleton instance

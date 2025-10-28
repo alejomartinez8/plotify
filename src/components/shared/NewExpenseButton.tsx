@@ -10,8 +10,8 @@ interface NewExpenseButtonProps {
   isAuthenticated?: boolean;
 }
 
-export default function NewExpenseButton({ 
-  isAuthenticated = false
+export default function NewExpenseButton({
+  isAuthenticated = false,
 }: NewExpenseButtonProps) {
   const [showExpenseModal, setShowExpenseModal] = useState(false);
 
@@ -26,8 +26,8 @@ export default function NewExpenseButton({
 
   return (
     <>
-      <Button 
-        onClick={() => setShowExpenseModal(true)} 
+      <Button
+        onClick={() => setShowExpenseModal(true)}
         variant="default"
         size="default"
       >

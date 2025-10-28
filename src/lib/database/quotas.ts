@@ -11,10 +11,7 @@ export interface QuotaConfig {
 export async function getQuotaConfigs(): Promise<QuotaConfig[]> {
   try {
     const quotas = await prisma.quotaConfig.findMany({
-      orderBy: [
-        { dueDate: "asc" },
-        { quotaType: "asc" }
-      ],
+      orderBy: [{ dueDate: "asc" }, { quotaType: "asc" }],
     });
     return quotas;
   } catch (error) {
@@ -61,7 +58,9 @@ export async function updateQuotaConfig(
       data: {
         ...(data.quotaType && { quotaType: data.quotaType }),
         ...(data.amount !== undefined && { amount: data.amount }),
-        ...(data.description !== undefined && { description: data.description }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
         ...(data.dueDate !== undefined && { dueDate: data.dueDate }),
       },
     });

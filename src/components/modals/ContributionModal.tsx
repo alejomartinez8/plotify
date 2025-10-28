@@ -72,7 +72,9 @@ export default function ContributionModal({
     try {
       // Handle receipt upload for new files OR preserve existing receipt data
       if (selectedFile || (contribution && contribution.receiptFileId)) {
-        const selectedLot = lots.find((lot) => lot.id === formData.get("lotId"));
+        const selectedLot = lots.find(
+          (lot) => lot.id === formData.get("lotId")
+        );
         const additionalData: Record<string, string> = {
           fundType: formData.get("type") as string,
         };
@@ -103,14 +105,12 @@ export default function ContributionModal({
         onSuccess(updatedContribution, !!contribution);
         formAction(formData);
       });
-
     } catch (error) {
-      const errorInstance = error instanceof Error ? error : new Error(String(error));
-      
+      const errorInstance =
+        error instanceof Error ? error : new Error(String(error));
+
       // Show error to user
-      alert(
-        `Error: ${errorInstance.message}`
-      );
+      alert(`Error: ${errorInstance.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -152,7 +152,9 @@ export default function ContributionModal({
             <Label htmlFor="lotId">{translations.labels.lot}</Label>
             <Select
               name="lotId"
-              defaultValue={contribution?.lotId?.toString() || defaultLotId || ""}
+              defaultValue={
+                contribution?.lotId?.toString() || defaultLotId || ""
+              }
               required
               disabled={lotsLoading || isSubmitting}
             >

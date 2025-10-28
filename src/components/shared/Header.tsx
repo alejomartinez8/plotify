@@ -19,7 +19,7 @@ export default async function Header() {
           </div>
           {isAdmin && (
             <div className="flex items-center space-x-4">
-              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+              <span className="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">
                 Admin
               </span>
               <AuthButton isAuthenticated={isAdmin} />

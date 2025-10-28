@@ -20,7 +20,11 @@ interface ExpenseViewProps {
 
 type ExpenseType = "all";
 
-export default function ExpenseView({ title, expenses, isAuthenticated = false }: ExpenseViewProps) {
+export default function ExpenseView({
+  title,
+  expenses,
+  isAuthenticated = false,
+}: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
   const [yearFilter, setYearFilter] = useState<string>("all");
@@ -56,7 +60,7 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
   // Extract unique years from expenses for filter options
   const availableYears = useMemo(() => {
     const years = new Set<string>();
-    expenses.forEach(expense => {
+    expenses.forEach((expense) => {
       const date = new Date(expense.date);
       if (!isNaN(date.getTime())) {
         years.add(date.getFullYear().toString());
@@ -65,26 +69,32 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
     return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
   }, [expenses]);
 
-  const yearFilterOptions = useMemo(() => [
-    { value: "all", label: translations.filters.allYears },
-    ...availableYears.map(year => ({ value: year, label: year }))
-  ], [availableYears]);
+  const yearFilterOptions = useMemo(
+    () => [
+      { value: "all", label: translations.filters.allYears },
+      ...availableYears.map((year) => ({ value: year, label: year })),
+    ],
+    [availableYears]
+  );
 
   const filteredExpenses = useMemo(() => {
     let filtered = expenses;
-    
+
     // Filter by year
     if (yearFilter !== "all") {
-      filtered = filtered.filter(expense => {
+      filtered = filtered.filter((expense) => {
         const date = new Date(expense.date);
-        return !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter;
+        return (
+          !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter
+        );
       });
     }
-    
-    // Sort by date (most recent first)
-    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [expenses, yearFilter]);
 
+    // Sort by date (most recent first)
+    return filtered.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [expenses, yearFilter]);
 
   const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
     setEditingExpense(null);
@@ -113,7 +123,7 @@ export default function ExpenseView({ title, expenses, isAuthenticated = false }
         actionButton={
           isAuthenticated ? (
             <div className="flex items-center gap-2">
-              <ExportButton 
+              <ExportButton
                 onExport={exportExpensesAction}
                 variant="outline"
                 size="default"

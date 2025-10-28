@@ -45,8 +45,8 @@ export async function createExpenseAction(
   prevState: ExpenseState,
   formData: FormData
 ): Promise<ExpenseState> {
-  const actionTimer = logger.timer('Create Expense Action');
-  
+  const actionTimer = logger.timer("Create Expense Action");
+
   // Extract and validate data
   const rawData = {
     type: formData.get("type"),
@@ -64,10 +64,10 @@ export async function createExpenseAction(
 
   if (!validatedFields.success) {
     logger.error("Expense validation failed", new Error("Validation error"), {
-      component: 'createExpenseAction',
-      errors: validatedFields.error.flatten().fieldErrors
+      component: "createExpenseAction",
+      errors: validatedFields.error.flatten().fieldErrors,
     });
-    
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -76,7 +76,17 @@ export async function createExpenseAction(
     };
   }
 
-  const { type, amount, date, description, category, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } = validatedFields.data;
+  const {
+    type,
+    amount,
+    date,
+    description,
+    category,
+    receiptNumber,
+    receiptFileId,
+    receiptFileUrl,
+    receiptFileName,
+  } = validatedFields.data;
 
   try {
     const result = await createExpense({
@@ -92,9 +102,13 @@ export async function createExpenseAction(
     });
 
     if (!result) {
-      logger.error("Database operation failed", new Error("Create expense returned null"), {
-        component: 'createExpenseAction'
-      });
+      logger.error(
+        "Database operation failed",
+        new Error("Create expense returned null"),
+        {
+          component: "createExpenseAction",
+        }
+      );
       actionTimer.end();
       return {
         message: "Database Error: Failed to create expense.",
@@ -102,9 +116,10 @@ export async function createExpenseAction(
       };
     }
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during expense creation", errorInstance, {
-      component: 'createExpenseAction'
+      component: "createExpenseAction",
     });
     actionTimer.end();
     return {
@@ -116,7 +131,7 @@ export async function createExpenseAction(
   revalidatePath("/expenses");
   revalidatePath("/");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.created}.`, success: true };
 }
 
@@ -124,8 +139,8 @@ export async function updateExpenseAction(
   prevState: ExpenseState,
   formData: FormData
 ): Promise<ExpenseState> {
-  const actionTimer = logger.timer('Update Expense Action');
-  
+  const actionTimer = logger.timer("Update Expense Action");
+
   const rawData = {
     id: formData.get("id"),
     type: formData.get("type"),
@@ -142,11 +157,15 @@ export async function updateExpenseAction(
   const validatedFields = UpdateExpense.safeParse(rawData);
 
   if (!validatedFields.success) {
-    logger.error("Expense update validation failed", new Error("Validation error"), {
-      component: 'updateExpenseAction',
-      errors: validatedFields.error.flatten().fieldErrors
-    });
-    
+    logger.error(
+      "Expense update validation failed",
+      new Error("Validation error"),
+      {
+        component: "updateExpenseAction",
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
+    );
+
     actionTimer.end();
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -155,8 +174,18 @@ export async function updateExpenseAction(
     };
   }
 
-  const { id, type, amount, date, description, category, receiptNumber, receiptFileId, receiptFileUrl, receiptFileName } =
-    validatedFields.data;
+  const {
+    id,
+    type,
+    amount,
+    date,
+    description,
+    category,
+    receiptNumber,
+    receiptFileId,
+    receiptFileUrl,
+    receiptFileName,
+  } = validatedFields.data;
 
   try {
     const result = await updateExpense(id, {
@@ -172,10 +201,14 @@ export async function updateExpenseAction(
     });
 
     if (!result) {
-      logger.error("Database operation failed", new Error("Update expense returned null"), {
-        component: 'updateExpenseAction',
-        expenseId: id
-      });
+      logger.error(
+        "Database operation failed",
+        new Error("Update expense returned null"),
+        {
+          component: "updateExpenseAction",
+          expenseId: id,
+        }
+      );
       actionTimer.end();
       return {
         message: "Database Error: Failed to update expense.",
@@ -183,10 +216,11 @@ export async function updateExpenseAction(
       };
     }
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during expense update", errorInstance, {
-      component: 'updateExpenseAction',
-      expenseId: id
+      component: "updateExpenseAction",
+      expenseId: id,
     });
     actionTimer.end();
     return {
@@ -198,21 +232,25 @@ export async function updateExpenseAction(
   revalidatePath("/expenses");
   revalidatePath("/");
   actionTimer.end();
-  
+
   return { message: `${translations.messages.updated}.`, success: true };
 }
 
 export async function deleteExpenseAction(id: number) {
-  const actionTimer = logger.timer('Delete Expense Action');
-  
+  const actionTimer = logger.timer("Delete Expense Action");
+
   try {
     const result = await deleteExpense(id);
 
     if (!result) {
-      logger.error("Database operation failed", new Error("Delete expense returned null"), {
-        component: 'deleteExpenseAction',
-        expenseId: id
-      });
+      logger.error(
+        "Database operation failed",
+        new Error("Delete expense returned null"),
+        {
+          component: "deleteExpenseAction",
+          expenseId: id,
+        }
+      );
       actionTimer.end();
       return {
         message: `${translations.errors.database}: Failed to delete expense.`,
@@ -223,16 +261,17 @@ export async function deleteExpenseAction(id: number) {
     revalidatePath("/expenses");
     revalidatePath("/");
     actionTimer.end();
-    
+
     return { message: `${translations.messages.deleted}.`, success: true };
   } catch (error) {
-    const errorInstance = error instanceof Error ? error : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
     logger.error("Database error during expense deletion", errorInstance, {
-      component: 'deleteExpenseAction',
-      expenseId: id
+      component: "deleteExpenseAction",
+      expenseId: id,
     });
     actionTimer.end();
-    
+
     return {
       message: `${translations.errors.database}: Failed to delete expense.`,
       success: false,

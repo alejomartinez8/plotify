@@ -19,19 +19,29 @@ interface TabsContextType {
 const TabsContext = React.createContext<TabsContextType | undefined>(undefined);
 
 const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ defaultValue, value, onValueChange, className, children, ...props }, ref) => {
-    const [internalValue, setInternalValue] = React.useState(defaultValue || "");
+  (
+    { defaultValue, value, onValueChange, className, children, ...props },
+    ref
+  ) => {
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue || ""
+    );
     const currentValue = value !== undefined ? value : internalValue;
-    
-    const handleValueChange = React.useCallback((newValue: string) => {
-      if (value === undefined) {
-        setInternalValue(newValue);
-      }
-      onValueChange?.(newValue);
-    }, [value, onValueChange]);
+
+    const handleValueChange = React.useCallback(
+      (newValue: string) => {
+        if (value === undefined) {
+          setInternalValue(newValue);
+        }
+        onValueChange?.(newValue);
+      },
+      [value, onValueChange]
+    );
 
     return (
-      <TabsContext.Provider value={{ value: currentValue, onValueChange: handleValueChange }}>
+      <TabsContext.Provider
+        value={{ value: currentValue, onValueChange: handleValueChange }}
+      >
         <div ref={ref} className={className} {...props}>
           {children}
         </div>
@@ -48,7 +58,7 @@ const TabsList = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+      "bg-muted text-muted-foreground inline-flex h-10 items-center justify-center rounded-md p-1",
       className
     )}
     {...props}
@@ -56,7 +66,8 @@ const TabsList = React.forwardRef<
 ));
 TabsList.displayName = "TabsList";
 
-interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface TabsTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
 }
 
@@ -73,7 +84,7 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
           isActive && "bg-background text-foreground shadow-sm",
           className
         )}
@@ -106,7 +117,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
       <div
         ref={ref}
         className={cn(
-          "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
           className
         )}
         {...props}

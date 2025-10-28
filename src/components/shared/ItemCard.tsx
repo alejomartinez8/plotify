@@ -37,21 +37,19 @@ export default function ItemCard({
   editTitle,
   deleteTitle,
 }: ItemCardProps) {
-
   const handlePreviewReceipt = () => {
     if (receiptFileUrl) {
-      window.open(receiptFileUrl, '_blank');
+      window.open(receiptFileUrl, "_blank");
     }
   };
 
-
   return (
-    <div className="group relative bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-xl p-5 transition-all duration-200 hover:shadow-md">
+    <div className="group relative rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md">
       {/* Type Badge and Receipt Icon - Top Right Corner */}
       <div className="absolute top-3 right-3 flex items-center gap-2">
         {receiptFileUrl && (
-          <div 
-            className="p-1.5 bg-green-100 rounded-lg cursor-pointer hover:bg-green-200 transition-colors"
+          <div
+            className="cursor-pointer rounded-lg bg-green-100 p-1.5 transition-colors hover:bg-green-200"
             onClick={handlePreviewReceipt}
             title={translations.actions.viewReceipt}
           >
@@ -74,7 +72,7 @@ export default function ItemCard({
       {/* Main Content */}
       <div className="space-y-2">
         {/* Title */}
-        <h3 className="font-medium text-gray-900 text-sm leading-tight pr-20">
+        <h3 className="pr-20 text-sm leading-tight font-medium text-gray-900">
           {title}
         </h3>
 
@@ -85,16 +83,16 @@ export default function ItemCard({
 
         {/* Description and Receipt Number */}
         {(description || receiptNumber) && (
-          <div className="pt-2 border-t border-gray-100 space-y-1">
+          <div className="space-y-1 border-t border-gray-100 pt-2">
             {description && (
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed text-gray-600">
                 {description}
               </p>
             )}
             {receiptNumber && (
               <div className="flex items-center gap-1.5">
                 <Receipt className="h-3.5 w-3.5 text-gray-400" />
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs font-medium text-gray-500">
                   {translations.labels.receiptNumber}: {receiptNumber}
                 </span>
               </div>
@@ -105,7 +103,7 @@ export default function ItemCard({
 
       {/* Action Buttons - Bottom Right Corner */}
       {(isAuthenticated && (onEdit || onDelete)) || receiptFileUrl ? (
-        <div className="absolute bottom-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute right-3 bottom-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           {receiptFileUrl && (
             <Button
               variant="ghost"
@@ -133,7 +131,7 @@ export default function ItemCard({
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="h-8 w-8 p-0 text-red-500 hover:bg-red-50 hover:text-red-600"
               title={deleteTitle || translations.actions.delete}
             >
               <Trash2 className="h-4 w-4" />

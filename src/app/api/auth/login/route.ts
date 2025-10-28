@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // Check against environment variable
     const adminPassword = process.env.ADMIN_PASSWORD;
-    
+
     if (!adminPassword) {
       console.error("ADMIN_PASSWORD environment variable not set");
       return NextResponse.json(
@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (password !== adminPassword) {
-      return NextResponse.json(
-        { error: "Invalid password" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
     // Generate JWT token

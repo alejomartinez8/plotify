@@ -28,7 +28,7 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
       amount: fundsData.maintenance.income,
     },
     {
-      key: "works" as ContributionType,  
+      key: "works" as ContributionType,
       title: translations.labels.works,
       amount: fundsData.works.income,
     },
@@ -48,13 +48,13 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
   return (
     <div className="space-y-6">
       {/* Single Consolidated Financial Summary Card */}
-      <Card className="bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md">
+      <Card className="border border-gray-200 bg-white transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold text-gray-800">
               {translations.titles.financialSummary}
             </CardTitle>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200">
+            <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
               <span className="text-xs">📊</span>
               {translations.labels.consolidated}
             </span>
@@ -62,35 +62,35 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Main Financial Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Link href="/income" className="block">
-              <div className="text-center p-4 bg-emerald-50 rounded-lg border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                <div className="text-sm text-emerald-700 mb-2 font-medium">
+              <div className="cursor-pointer rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-center transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-100 hover:shadow-md">
+                <div className="mb-2 text-sm font-medium text-emerald-700">
                   {translations.labels.income}
                 </div>
                 <div className="text-2xl font-bold text-emerald-600">
                   {formatCurrency(fundsData.consolidated.income)}
                 </div>
-                <div className="text-xs text-emerald-600 mt-1 opacity-70">
+                <div className="mt-1 text-xs text-emerald-600 opacity-70">
                   {translations.labels.clickForDetails}
                 </div>
               </div>
             </Link>
             <Link href="/expenses" className="block">
-              <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                <div className="text-sm text-gray-700 mb-2 font-medium">
+              <div className="cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-4 text-center transition-all duration-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-md">
+                <div className="mb-2 text-sm font-medium text-gray-700">
                   {translations.labels.expenses}
                 </div>
                 <div className="text-2xl font-bold text-gray-900">
                   {formatCurrency(fundsData.consolidated.expenses)}
                 </div>
-                <div className="text-xs text-gray-700 mt-1 opacity-70">
+                <div className="mt-1 text-xs text-gray-700 opacity-70">
                   {translations.labels.clickForDetails}
                 </div>
               </div>
             </Link>
-            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="text-sm text-gray-700 mb-2 font-medium">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center">
+              <div className="mb-2 text-sm font-medium text-gray-700">
                 {translations.labels.balance}
               </div>
               <div
@@ -105,12 +105,15 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
 
           {/* Income Breakdown by Categories */}
           <div className="border-t pt-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            <h4 className="mb-3 text-sm font-semibold text-gray-700">
               {translations.labels.breakdownOf} {translations.labels.income}:
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               {incomeCategories.map((category) => (
-                <div key={category.key} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={category.key}
+                  className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                >
                   <TypeBadge type={category.key} />
                   <span className="font-semibold text-gray-800">
                     {formatCurrency(category.amount)}

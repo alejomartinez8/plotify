@@ -13,9 +13,9 @@ interface NewContributionButtonProps {
   lots?: Lot[];
 }
 
-export default function NewContributionButton({ 
+export default function NewContributionButton({
   isAuthenticated = false,
-  lots: propLots = []
+  lots: propLots = [],
 }: NewContributionButtonProps) {
   const [showContributionModal, setShowContributionModal] = useState(false);
   const [lots, setLots] = useState<Lot[]>(propLots);

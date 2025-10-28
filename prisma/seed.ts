@@ -38,7 +38,7 @@ async function main() {
   const mockDates = [
     new Date(2025, 0, 15), // January 15, 2025
     new Date(2025, 1, 10), // February 10, 2025
-    new Date(2025, 2, 5),  // March 5, 2025
+    new Date(2025, 2, 5), // March 5, 2025
     new Date(2025, 3, 20), // April 20, 2025
     new Date(2025, 4, 12), // May 12, 2025
   ];
@@ -47,12 +47,12 @@ async function main() {
   for (let i = 0; i < lots.length; i++) {
     const lot = lots[i];
     const numContributions = Math.floor(Math.random() * 3) + 1; // 1-3 contributions per lot
-    
+
     for (let j = 0; j < numContributions; j++) {
       const dateIndex = Math.floor(Math.random() * mockDates.length);
       const amounts = [50000, 60000, 75000, 80000, 100000]; // Various amounts
       const amount = amounts[Math.floor(Math.random() * amounts.length)];
-      
+
       contributions.push({
         lotId: lot.id,
         type: "maintenance",

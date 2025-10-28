@@ -30,8 +30,14 @@ interface IncomeReceiptTableProps {
   onDelete?: (contribution: Contribution) => void;
 }
 
-type SortField = 'date' | 'lotId' | 'description' | 'type' | 'amount' | 'receiptNumber';
-type SortDirection = 'asc' | 'desc';
+type SortField =
+  | "date"
+  | "lotId"
+  | "description"
+  | "type"
+  | "amount"
+  | "receiptNumber";
+type SortDirection = "asc" | "desc";
 
 export default function IncomeReceiptTable({
   contributions,
@@ -41,9 +47,9 @@ export default function IncomeReceiptTable({
   onEdit,
   onDelete,
 }: IncomeReceiptTableProps) {
-  const [sortField, setSortField] = useState<SortField>('date');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
   // Helper function to get lot info
   const getLotInfo = useMemo(() => {
     return (lotId: string | number): Lot | undefined => {
@@ -54,12 +60,14 @@ export default function IncomeReceiptTable({
   // Filter contributions based on filters
   const filteredContributions = useMemo(() => {
     let filtered = contributions;
-    
+
     // Filter by income type
     if (incomeFilter !== "all") {
-      filtered = filtered.filter((contribution) => contribution.type === incomeFilter);
+      filtered = filtered.filter(
+        (contribution) => contribution.type === incomeFilter
+      );
     }
-    
+
     return filtered;
   }, [contributions, incomeFilter]);
 
@@ -70,31 +78,35 @@ export default function IncomeReceiptTable({
       let bValue: string | number | Date;
 
       switch (sortField) {
-        case 'date':
+        case "date":
           aValue = new Date(a.date);
           bValue = new Date(b.date);
           break;
-        case 'lotId':
+        case "lotId":
           const lotA = getLotInfo(a.lotId);
           const lotB = getLotInfo(b.lotId);
-          aValue = lotA ? `${lotA.lotNumber} - ${lotA.owner}` : a.lotId.toString();
-          bValue = lotB ? `${lotB.lotNumber} - ${lotB.owner}` : b.lotId.toString();
+          aValue = lotA
+            ? `${lotA.lotNumber} - ${lotA.owner}`
+            : a.lotId.toString();
+          bValue = lotB
+            ? `${lotB.lotNumber} - ${lotB.owner}`
+            : b.lotId.toString();
           break;
-        case 'description':
+        case "description":
           aValue = a.description;
           bValue = b.description;
           break;
-        case 'type':
+        case "type":
           aValue = a.type;
           bValue = b.type;
           break;
-        case 'amount':
+        case "amount":
           aValue = a.amount;
           bValue = b.amount;
           break;
-        case 'receiptNumber':
-          aValue = a.receiptNumber || '';
-          bValue = b.receiptNumber || '';
+        case "receiptNumber":
+          aValue = a.receiptNumber || "";
+          bValue = b.receiptNumber || "";
           break;
         default:
           aValue = new Date(a.date);
@@ -102,16 +114,20 @@ export default function IncomeReceiptTable({
       }
 
       if (aValue instanceof Date && bValue instanceof Date) {
-        return sortDirection === 'asc' ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime();
+        return sortDirection === "asc"
+          ? aValue.getTime() - bValue.getTime()
+          : bValue.getTime() - aValue.getTime();
       }
 
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue, undefined, { numeric: true });
-        return sortDirection === 'asc' ? comparison : -comparison;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue, undefined, {
+          numeric: true,
+        });
+        return sortDirection === "asc" ? comparison : -comparison;
       }
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
 
       return 0;
@@ -121,15 +137,15 @@ export default function IncomeReceiptTable({
   // Calculate totals for the table footer
   const tableTotals = useMemo(() => {
     const maintenanceTotal = sortedContributions
-      .filter(contribution => contribution.type === 'maintenance')
+      .filter((contribution) => contribution.type === "maintenance")
       .reduce((sum, contribution) => sum + contribution.amount, 0);
     const worksTotal = sortedContributions
-      .filter(contribution => contribution.type === 'works')
+      .filter((contribution) => contribution.type === "works")
       .reduce((sum, contribution) => sum + contribution.amount, 0);
     const othersTotal = sortedContributions
-      .filter(contribution => contribution.type === 'others')
+      .filter((contribution) => contribution.type === "others")
       .reduce((sum, contribution) => sum + contribution.amount, 0);
-    
+
     return {
       maintenanceTotal,
       worksTotal,
@@ -140,16 +156,16 @@ export default function IncomeReceiptTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection(field === 'date' ? 'desc' : 'asc'); // Default to desc for dates, asc for others
+      setSortDirection(field === "date" ? "desc" : "asc"); // Default to desc for dates, asc for others
     }
   };
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
+    return sortDirection === "asc" ? (
       <ChevronUp className="ml-1 h-4 w-4" />
     ) : (
       <ChevronDown className="ml-1 h-4 w-4" />
@@ -166,64 +182,66 @@ export default function IncomeReceiptTable({
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('date')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("date")}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.date}
-                      {getSortIcon('date')}
+                      {getSortIcon("date")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('type')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("type")}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.type}
-                      {getSortIcon('type')}
+                      {getSortIcon("type")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('lotId')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("lotId")}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.lot}
-                      {getSortIcon('lotId')}
+                      {getSortIcon("lotId")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('description')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("description")}
                   >
                     <div className="flex items-center gap-1">
                       {translations.labels.description}
-                      {getSortIcon('description')}
+                      {getSortIcon("description")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-right font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('amount')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("amount")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       {translations.labels.amount}
-                      {getSortIcon('amount')}
+                      {getSortIcon("amount")}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer select-none px-6 py-4 text-left font-semibold tracking-wide transition-colors hover:bg-muted/70 border-b-2 border-border"
-                    onClick={() => handleSort('receiptNumber')}
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("receiptNumber")}
                   >
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1">
                         {translations.labels.receiptNumber}
-                        {getSortIcon('receiptNumber')}
+                        {getSortIcon("receiptNumber")}
                       </div>
                       {(() => {
-                        const withReceipts = sortedContributions.filter(c => c.receiptFileUrl || c.receiptNumber).length;
+                        const withReceipts = sortedContributions.filter(
+                          (c) => c.receiptFileUrl || c.receiptNumber
+                        ).length;
                         const total = sortedContributions.length;
                         return total > 0 ? (
-                          <span className="text-xs text-muted-foreground mt-1">
+                          <span className="text-muted-foreground mt-1 text-xs">
                             {withReceipts}/{total}
                           </span>
                         ) : null;
@@ -231,7 +249,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   {isAuthenticated && (
-                    <TableHead className="px-6 py-4 text-center font-semibold tracking-wide border-b-2 border-border">
+                    <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
                   )}
@@ -243,8 +261,8 @@ export default function IncomeReceiptTable({
                   return (
                     <TableRow
                       key={contribution.id}
-                      className={`group transition-all duration-200 border-b border-border/50 hover:bg-muted/50 ${
-                        index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                      className={`group border-border/50 hover:bg-muted/50 border-b transition-all duration-200 ${
+                        index % 2 === 0 ? "bg-background" : "bg-muted/20"
                       }`}
                     >
                       <TableCell className="px-6 py-4">
@@ -257,9 +275,9 @@ export default function IncomeReceiptTable({
                       </TableCell>
                       <TableCell className="px-6 py-4">
                         {lotInfo ? (
-                          <Link 
+                          <Link
                             href={`/income/${contribution.lotId}`}
-                            className="font-medium text-primary hover:text-primary/80 hover:underline transition-colors"
+                            className="text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
                           >
                             {`${lotInfo.lotNumber} - ${lotInfo.owner}`}
                           </Link>
@@ -280,17 +298,22 @@ export default function IncomeReceiptTable({
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                           {contribution.receiptFileUrl && (
-                            <div 
-                              className="p-1 bg-green-100 rounded cursor-pointer hover:bg-green-200 transition-colors"
-                              onClick={() => window.open(contribution.receiptFileUrl!, '_blank')}
+                            <div
+                              className="cursor-pointer rounded bg-green-100 p-1 transition-colors hover:bg-green-200"
+                              onClick={() =>
+                                window.open(
+                                  contribution.receiptFileUrl!,
+                                  "_blank"
+                                )
+                              }
                               title={translations.actions.viewReceipt}
                             >
                               <FileText className="h-3.5 w-3.5 text-green-600" />
                             </div>
                           )}
-                          <span>{contribution.receiptNumber || '—'}</span>
+                          <span>{contribution.receiptNumber || "—"}</span>
                         </div>
                       </TableCell>
                       {isAuthenticated && (
@@ -300,7 +323,7 @@ export default function IncomeReceiptTable({
                               variant="ghost"
                               size="sm"
                               onClick={() => onEdit?.(contribution)}
-                              className="h-8 w-8 p-0 hover:bg-muted"
+                              className="hover:bg-muted h-8 w-8 p-0"
                               title={`${translations.actions.edit} ${translations.labels.income.toLowerCase()}`}
                             >
                               <Edit className="h-4 w-4" />
@@ -309,7 +332,7 @@ export default function IncomeReceiptTable({
                               variant="ghost"
                               size="sm"
                               onClick={() => onDelete?.(contribution)}
-                              className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                              className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
                               title={`${translations.actions.delete} ${translations.labels.income.toLowerCase()}`}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -322,10 +345,15 @@ export default function IncomeReceiptTable({
                 })}
                 {sortedContributions.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={isAuthenticated ? 7 : 6} className="px-6 py-12 text-center">
+                    <TableCell
+                      colSpan={isAuthenticated ? 7 : 6}
+                      className="px-6 py-12 text-center"
+                    >
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center">
-                          <span className="text-2xl text-muted-foreground">💰</span>
+                        <div className="bg-muted/30 flex h-16 w-16 items-center justify-center rounded-full">
+                          <span className="text-muted-foreground text-2xl">
+                            💰
+                          </span>
                         </div>
                         <p className="text-muted-foreground font-medium">
                           No hay ingresos para mostrar
@@ -343,12 +371,18 @@ export default function IncomeReceiptTable({
                   <>
                     {/* Separator row */}
                     <TableRow>
-                      <TableCell colSpan={isAuthenticated ? 7 : 6} className="border-t-2 border-muted p-0" />
+                      <TableCell
+                        colSpan={isAuthenticated ? 7 : 6}
+                        className="border-muted border-t-2 p-0"
+                      />
                     </TableRow>
                     {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
-                      <TableCell className="px-6 py-4 font-semibold" colSpan={4}>
-                        {translations.labels.total || 'TOTAL GENERAL'}
+                      <TableCell
+                        className="px-6 py-4 font-semibold"
+                        colSpan={4}
+                      >
+                        {translations.labels.total || "TOTAL GENERAL"}
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
                         <div className="font-bold text-emerald-600">

@@ -12,13 +12,13 @@ interface IncomePageProps {
 
 export default async function IncomePage({ searchParams }: IncomePageProps) {
   const resolvedSearchParams = await searchParams;
-  
+
   // Check if there's a lot parameter - if so, redirect to the lot page for backward compatibility
   const lotParam = resolvedSearchParams.lot;
-  if (lotParam && typeof lotParam === 'string') {
+  if (lotParam && typeof lotParam === "string") {
     // Verify the lot exists before redirecting
     const lots = await getLots();
-    const lotExists = lots.some(lot => lot.id === lotParam);
+    const lotExists = lots.some((lot) => lot.id === lotParam);
     if (lotExists) {
       redirect(`/income/${lotParam}`);
     }

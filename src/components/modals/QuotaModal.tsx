@@ -33,7 +33,11 @@ interface QuotaModalProps {
   onSuccess: (quota: QuotaConfig, isUpdate: boolean) => void;
 }
 
-export default function QuotaModal({ onClose, quota, onSuccess }: QuotaModalProps) {
+export default function QuotaModal({
+  onClose,
+  quota,
+  onSuccess,
+}: QuotaModalProps) {
   const initialState: QuotaState = { message: null, errors: {} };
   const action = quota ? updateQuotaConfigAction : createQuotaConfigAction;
   const [state, formAction] = useActionState(action, initialState);
@@ -53,10 +57,12 @@ export default function QuotaModal({ onClose, quota, onSuccess }: QuotaModalProp
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {quota ? translations.titles.editQuota : translations.titles.newQuota}
+            {quota
+              ? translations.titles.editQuota
+              : translations.titles.newQuota}
           </DialogTitle>
         </DialogHeader>
 
@@ -76,17 +82,23 @@ export default function QuotaModal({ onClose, quota, onSuccess }: QuotaModalProp
 
           {quota && <input type="hidden" name="id" value={quota.id} />}
 
-
-
           <div className="space-y-2">
             <Label htmlFor="quotaType">Tipo de Cuota</Label>
-            <Select name="quotaType" defaultValue={quota?.quotaType || "maintenance"} required>
+            <Select
+              name="quotaType"
+              defaultValue={quota?.quotaType || "maintenance"}
+              required
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="maintenance">{translations.titles.quotaTypesMaintenance}</SelectItem>
-                <SelectItem value="works">{translations.titles.quotaTypesWorks}</SelectItem>
+                <SelectItem value="maintenance">
+                  {translations.titles.quotaTypesMaintenance}
+                </SelectItem>
+                <SelectItem value="works">
+                  {translations.titles.quotaTypesWorks}
+                </SelectItem>
               </SelectContent>
             </Select>
             {state.errors?.quotaType && (
@@ -138,7 +150,11 @@ export default function QuotaModal({ onClose, quota, onSuccess }: QuotaModalProp
               type="date"
               name="dueDate"
               id="dueDate"
-              defaultValue={quota?.dueDate ? new Date(quota.dueDate).toISOString().split('T')[0] : ""}
+              defaultValue={
+                quota?.dueDate
+                  ? new Date(quota.dueDate).toISOString().split("T")[0]
+                  : ""
+              }
               required
               disabled={isPending}
             />

@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // Generate authorization URL
     const authUrl = googleOAuthService.getAuthUrl();
-    
+
     // Redirect to Google authorization page
     return NextResponse.redirect(authUrl);
   } catch (error) {

@@ -10,25 +10,25 @@ interface TypeBadgeProps {
 export default function TypeBadge({ type, className }: TypeBadgeProps) {
   const getTypeIcon = (type: ContributionType) => {
     switch (type) {
-      case 'maintenance':
-        return '🔧';
-      case 'works':
-        return '🏗️';
-      case 'others':
-        return '⚡';
+      case "maintenance":
+        return "🔧";
+      case "works":
+        return "🏗️";
+      case "others":
+        return "⚡";
       default:
-        return '📄';
+        return "📄";
     }
   };
 
   const getTypeLabel = (type: ContributionType) => {
     switch (type) {
-      case 'maintenance':
-        return 'Mant.';
-      case 'works':
-        return 'Obras';
-      case 'others':
-        return 'Otros';
+      case "maintenance":
+        return "Mant.";
+      case "works":
+        return "Obras";
+      case "others":
+        return "Otros";
       default:
         return type;
     }
@@ -36,19 +36,19 @@ export default function TypeBadge({ type, className }: TypeBadgeProps) {
 
   const getTypeBadgeClasses = (type: ContributionType) => {
     switch (type) {
-      case 'maintenance':
-        return 'bg-blue-50 text-blue-700 border-blue-200 rounded-full';
-      case 'works':
-        return 'bg-amber-50 text-amber-700 border-amber-200 rounded-full';
-      case 'others':
-        return 'bg-purple-50 text-purple-700 border-purple-200 rounded-full';
+      case "maintenance":
+        return "bg-blue-50 text-blue-700 border-blue-200 rounded-full";
+      case "works":
+        return "bg-amber-50 text-amber-700 border-amber-200 rounded-full";
+      case "others":
+        return "bg-purple-50 text-purple-700 border-purple-200 rounded-full";
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200 rounded-full';
+        return "bg-gray-50 text-gray-700 border-gray-200 rounded-full";
     }
   };
 
   return (
-    <Badge 
+    <Badge
       variant="outline"
       className={cn(getTypeBadgeClasses(type), className)}
     >
