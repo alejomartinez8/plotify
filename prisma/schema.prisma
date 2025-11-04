@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Lot {
-  id               String         @id @default(uuid())
-  lotNumber        String         @unique
-  owner            String
-  initialWorksDebt Int            @default(0)
-  isExempt         Boolean        @default(false)
-  exemptionReason  String?
-  contributions    Contribution[]
+  id                      String                   @id @default(uuid())
+  lotNumber               String                   @unique
+  owner                   String
+  initialWorksDebt        Int                      @default(0)
+  isExempt                Boolean                  @default(false)
+  exemptionReason         String?
+  collaboratorAssignments CollaboratorAssignment[]
+  contributions           Contribution[]
 
   @@map("lots")
 }
@@ -62,4 +63,28 @@ model QuotaConfig {
   createdAt   DateTime  @default(now())
 
   @@map("quota_configs")
+}
+
+model Collaborator {
+  id             String                   @id @default(uuid())
+  name           String
+  photoFileId    String?
+  photoFileName  String?
+  photoFileUrl   String?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  lotAssignments CollaboratorAssignment[]
+
+  @@map("collaborators")
+}
+
+model CollaboratorAssignment {
+  collaboratorId String
+  lotId          String
+  assignedAt     DateTime     @default(now())
+  collaborator   Collaborator @relation(fields: [collaboratorId], references: [id], onDelete: Cascade)
+  lot            Lot          @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@id([collaboratorId, lotId])
+  @@map("collaborator_assignments")
 }
