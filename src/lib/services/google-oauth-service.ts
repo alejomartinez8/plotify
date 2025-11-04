@@ -85,29 +85,37 @@ class GoogleOAuthService {
    */
   async generateFileName(
     data: {
-      date: string;
-      type: "income" | "expense";
+      date?: string;
+      type: "income" | "expense" | "collaborator";
       lotNumber?: string;
       category?: string;
-      amount: number;
+      amount?: number;
       receiptNumber?: string;
+      collaboratorName?: string;
       fileExtension: string;
     },
     folderId: string
   ): Promise<string> {
-    const { date, type, lotNumber, category, fileExtension } = data;
-
-    // Format date as YYYY-MM-DD
-    const formattedDate = new Date(date).toISOString().split("T")[0];
+    const { date, type, lotNumber, category, collaboratorName, fileExtension } = data;
 
     // Generate base filename without counter
     let baseFileName: string;
-    if (type === "income") {
-      const lot = lotNumber ? `lote-${lotNumber.padStart(2, "0")}` : "lote-XX";
-      baseFileName = `${formattedDate}_${lot}`;
+    if (type === "collaborator") {
+      // Collaborator photos: collaborator_{name}_{timestamp}
+      const timestamp = Date.now();
+      const cleanName = (collaboratorName || "unknown").toLowerCase().replace(/\s+/g, "-");
+      baseFileName = `collaborator_${cleanName}_${timestamp}`;
     } else {
-      const cat = category || "general";
-      baseFileName = `${formattedDate}_gasto-${cat}`;
+      // Format date as YYYY-MM-DD for receipts
+      const formattedDate = new Date(date!).toISOString().split("T")[0];
+
+      if (type === "income") {
+        const lot = lotNumber ? `lote-${lotNumber.padStart(2, "0")}` : "lote-XX";
+        baseFileName = `${formattedDate}_${lot}`;
+      } else {
+        const cat = category || "general";
+        baseFileName = `${formattedDate}_gasto-${cat}`;
+      }
     }
 
     // Receipt number is not added to filename - stored only in database
@@ -182,8 +190,8 @@ class GoogleOAuthService {
    * Creates year-based folder structure if it doesn't exist
    */
   private async createFolderStructure(
-    date: string,
-    type: "income" | "expense"
+    date: string | undefined,
+    type: "income" | "expense" | "collaborator"
   ): Promise<string> {
     const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
     if (!rootFolderId) {
@@ -191,6 +199,25 @@ class GoogleOAuthService {
     }
 
     try {
+      // For collaborator photos, create a simple Collaborators folder in root
+      if (type === "collaborator") {
+        console.log("Creating folder structure: Collaborators");
+        let collaboratorsFolderId = await this.findFolder("Collaborators", rootFolderId);
+        if (!collaboratorsFolderId) {
+          console.log("Collaborators folder not found, creating...");
+          collaboratorsFolderId = await this.createFolder("Collaborators", rootFolderId);
+          console.log(`Collaborators folder created (ID: ${collaboratorsFolderId})`);
+        } else {
+          console.log(`Collaborators folder found (ID: ${collaboratorsFolderId})`);
+        }
+        return collaboratorsFolderId;
+      }
+
+      // For receipts (income/expense), use year-based structure
+      if (!date) {
+        throw new Error("Date is required for receipt uploads");
+      }
+
       // Extract year from date
       const year = new Date(date).getFullYear().toString();
       const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
@@ -390,11 +417,14 @@ class GoogleOAuthService {
         console.log("Permissions set successfully");
       }
 
+      // Generate direct image URL for embedding
+      const directImageUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+
       return {
         id: response.data.id!,
         name: response.data.name!,
-        url: response.data.webViewLink!,
-        downloadUrl: response.data.webContentLink!,
+        url: directImageUrl,
+        downloadUrl: response.data.webContentLink || directImageUrl,
       };
     } catch (error) {
       console.error("Error uploading file to Google Drive:", error);
@@ -419,12 +449,13 @@ class GoogleOAuthService {
     file: Buffer;
     originalName: string;
     mimeType: string;
-    date: string;
-    type: "income" | "expense";
+    date?: string;
+    type: "income" | "expense" | "collaborator";
     lotNumber?: string;
     category?: string;
-    amount: number;
+    amount?: number;
     receiptNumber?: string;
+    collaboratorName?: string;
   }): Promise<DriveFile> {
     try {
       // Load credentials from NextAuth session
@@ -436,6 +467,7 @@ class GoogleOAuthService {
         date: data.date,
         type: data.type,
         fileSize: data.file.length,
+        collaboratorName: data.collaboratorName,
       });
 
       const fileExtension =
@@ -454,6 +486,7 @@ class GoogleOAuthService {
           category: data.category,
           amount: data.amount,
           receiptNumber: data.receiptNumber,
+          collaboratorName: data.collaboratorName,
           fileExtension,
         },
         folderId
@@ -579,11 +612,14 @@ class GoogleOAuthService {
         fields: "id, name, webViewLink, webContentLink",
       });
 
+      // Generate direct image URL for embedding
+      const directImageUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+
       return {
         id: response.data.id!,
         name: response.data.name!,
-        url: response.data.webViewLink!,
-        downloadUrl: response.data.webContentLink!,
+        url: directImageUrl,
+        downloadUrl: response.data.webContentLink || directImageUrl,
       };
     } catch (error) {
       console.error("Error getting file metadata:", error);

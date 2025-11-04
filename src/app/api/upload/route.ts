@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { googleOAuthService } from "@/lib/services/google-oauth-service";
 import { logger } from "@/lib/logger";
+import { auth } from "@/lib/auth";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = [
@@ -18,23 +19,37 @@ export async function POST(req: NextRequest) {
   try {
     requestLogger.apiRequest();
 
-    // Check if Google OAuth is configured
+    // Check authentication
+    const session = await auth();
+    if (!session?.user?.email) {
+      logger.error("Unauthorized upload attempt", undefined, {
+        hasSession: !!session,
+      });
+      const duration = timer.end();
+      requestLogger.apiResponse(401, duration);
+      return NextResponse.json(
+        {
+          error: "Authentication required. Please sign in to upload files.",
+        },
+        { status: 401 }
+      );
+    }
+
+    // Check if Google OAuth is configured (client credentials only)
     if (
       !process.env.GOOGLE_CLIENT_ID ||
-      !process.env.GOOGLE_CLIENT_SECRET ||
-      !process.env.GOOGLE_REFRESH_TOKEN
+      !process.env.GOOGLE_CLIENT_SECRET
     ) {
       logger.error("Google OAuth configuration missing", undefined, {
         hasClientId: !!process.env.GOOGLE_CLIENT_ID,
         hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-        hasRefreshToken: !!process.env.GOOGLE_REFRESH_TOKEN,
       });
       const duration = timer.end();
       requestLogger.apiResponse(500, duration);
       return NextResponse.json(
         {
           error:
-            "Google OAuth not configured. Please complete authorization first.",
+            "Google OAuth not configured. Please check your environment variables.",
         },
         { status: 500 }
       );
@@ -42,14 +57,15 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const type = formData.get("type") as "income" | "expense";
+    const type = formData.get("type") as "income" | "expense" | "collaborator";
     const date = formData.get("date") as string;
-    const amount = parseFloat(formData.get("amount") as string);
+    const amount = formData.get("amount") as string;
     const receiptNumber = formData.get("receiptNumber") as string;
 
     // Optional fields based on type
     const lotNumber = formData.get("lotNumber") as string;
     const category = formData.get("category") as string;
+    const collaboratorName = formData.get("collaboratorName") as string;
 
     logger.debug("Upload API received form data", {
       hasFile: !!file,
@@ -57,26 +73,44 @@ export async function POST(req: NextRequest) {
       fileSize: file?.size,
       fileType: file?.type,
       type,
-      date,
-      amount,
+      date: date || "[empty]",
+      amount: amount || "[empty]",
       receiptNumber: receiptNumber || "[empty]",
       lotNumber: lotNumber || "[empty]",
       category: category || "[empty]",
+      collaboratorName: collaboratorName || "[empty]",
     });
 
-    // Validate required fields
-    if (!file || !type || !date || !amount) {
+    // Validate required fields based on type
+    if (!file || !type) {
       logger.validation(
         "error",
         "required_fields",
-        { file: !!file, type, date, amount },
-        "Missing required fields: file, type, date, amount"
+        { file: !!file, type },
+        "Missing required fields: file, type"
       );
 
       const duration = timer.end();
       requestLogger.apiResponse(400, duration);
       return NextResponse.json(
-        { error: "Missing required fields: file, type, date, amount" },
+        { error: "Missing required fields: file, type" },
+        { status: 400 }
+      );
+    }
+
+    // Type-specific validation
+    if (type !== "collaborator" && (!date || !amount)) {
+      logger.validation(
+        "error",
+        "required_fields",
+        { file: !!file, type, date, amount },
+        "Missing required fields for receipt: date, amount"
+      );
+
+      const duration = timer.end();
+      requestLogger.apiResponse(400, duration);
+      return NextResponse.json(
+        { error: "Missing required fields for receipt: date, amount" },
         { status: 400 }
       );
     }
@@ -123,12 +157,13 @@ export async function POST(req: NextRequest) {
       file: fileBuffer,
       originalName: file.name,
       mimeType: file.type,
-      date,
+      date: date || undefined,
       type,
       lotNumber,
       category,
-      amount,
+      amount: amount ? parseFloat(amount) : undefined,
       receiptNumber,
+      collaboratorName,
     });
     const uploadDuration = uploadTimer.end();
 

@@ -61,6 +61,23 @@
 - [ ] **Contact Management** - Bulk contact updates and CSV import
 - [ ] **Landing Page** - Login-required experience
 
+**Phase 3.5: Collaborator Registration Module** ✅ (2025-11-04)
+
+> **Business Context**: Track collaborators (workers) in each lot for labor management
+>
+> - **Collaborator-Lot Relationship**: Many-to-many (collaborators can work in multiple lots)
+> - **Minimum Viable Product**: Name + Photo only
+> - **Public Viewing**: Anyone can view collaborators (like income/expenses)
+> - **Admin-Only Management**: Only administrators can add/edit/delete
+> - **Photo Storage**: Google Drive integration with thumbnail + enlarged view
+
+- ✅ **Database Schema** - Collaborator and CollaboratorAssignment models (many-to-many with Lot)
+- ✅ **Collaborator CRUD** - Create, read, update, delete operations with photo upload
+- ✅ **Collaborators Page** - Dedicated /collaborators page with lot filter and search
+- ✅ **Photo Management** - Thumbnail display + click to enlarge modal with direct Drive URLs
+- ✅ **Lot Assignment** - Multi-select checkbox interface for assigning collaborators to lots
+- ✅ **Navigation Update** - Add Collaborators link to public navigation
+
 #### 🎯 **Expected Benefits**
 
 - **Enhanced User Experience** - Proactive payment reminders via browser notifications
