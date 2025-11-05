@@ -19,13 +19,11 @@ export const translations = {
 
   // Authentication
   auth: {
-    adminLogin: "Iniciar Sesión",
-    login: "Iniciar sesión",
-    signInDescription: "Ingresa con tu cuenta de Google",
+    login: "Iniciar Sesión",
     signInWithGoogle: "Ingresar con Google",
-    signingIn: "Iniciando sesión...",
-    logout: "Cerrar sesión",
-    signingOut: "Cerrando sesión...",
+    signingIn: "Iniciando Sesión...",
+    logout: "Cerrar Sesión",
+    signingOut: "Cerrando Sesión...",
     admin: "Admin",
     owner: "Propietario",
   },

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
@@ -21,11 +20,8 @@ export function LoginCard() {
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl">
-          {translations.auth.adminLogin}
+          {translations.auth.login}
         </CardTitle>
-        <CardDescription>
-          {translations.auth.signInDescription}
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <Button onClick={handleGoogleSignIn} className="w-full gap-2">
