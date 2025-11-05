@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/Button";
 import { translations } from "@/lib/translations";
 
 interface NewExpenseButtonProps {
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 export default function NewExpenseButton({
-  isAuthenticated = false,
+  isAdmin = false,
 }: NewExpenseButtonProps) {
   const [showExpenseModal, setShowExpenseModal] = useState(false);
 
@@ -20,7 +20,7 @@ export default function NewExpenseButton({
     setShowExpenseModal(false);
   };
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return null;
   }
 

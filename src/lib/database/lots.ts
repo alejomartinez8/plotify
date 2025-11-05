@@ -30,6 +30,7 @@ export async function getLotById(id: string): Promise<Lot | null> {
 export async function createLot(data: {
   lotNumber: string;
   owner: string;
+  ownerEmail?: string | null;
   initialWorksDebt?: number;
   isExempt?: boolean;
   exemptionReason?: string | null;
@@ -39,6 +40,7 @@ export async function createLot(data: {
       data: {
         lotNumber: data.lotNumber,
         owner: data.owner,
+        ownerEmail: data.ownerEmail || null,
         initialWorksDebt: data.initialWorksDebt || 0,
         isExempt: data.isExempt || false,
         exemptionReason: data.exemptionReason || null,
@@ -56,6 +58,7 @@ export async function updateLot(
   data: {
     lotNumber?: string;
     owner?: string;
+    ownerEmail?: string | null;
     initialWorksDebt?: number;
     isExempt?: boolean;
     exemptionReason?: string | null;
@@ -67,6 +70,7 @@ export async function updateLot(
       data: {
         ...(data.lotNumber && { lotNumber: data.lotNumber }),
         ...(data.owner && { owner: data.owner }),
+        ...(data.ownerEmail !== undefined && { ownerEmail: data.ownerEmail }),
         ...(data.initialWorksDebt !== undefined && {
           initialWorksDebt: data.initialWorksDebt,
         }),

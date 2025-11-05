@@ -6,7 +6,7 @@ import "@/app/ui/global.css";
 import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
-import { auth } from "@/lib/auth";
+import { auth, getUserRole } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  const isAdmin = !!session?.user?.email;
+  const userRole = await getUserRole();
+  const isAdmin = userRole === "admin";
 
   return (
     <html lang="es">
@@ -32,7 +33,7 @@ export default async function RootLayout({
       >
         <SessionProvider session={session}>
           <Header />
-          <Navigation isAuthenticated={isAdmin} />
+          {session?.user && <Navigation isAdmin={isAdmin} />}
           <main className="min-h-screen bg-gray-50">
             {children}
             <Analytics />

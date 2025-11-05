@@ -25,7 +25,7 @@ import {
 
 interface ExpenseTableProps {
   expenses: Expense[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
 }
@@ -35,7 +35,7 @@ type SortDirection = "asc" | "desc";
 
 export default function ExpenseTable({
   expenses,
-  isAuthenticated = false,
+  isAdmin = false,
   onEdit,
   onDelete,
 }: ExpenseTableProps) {
@@ -177,7 +177,7 @@ export default function ExpenseTable({
                       })()}
                     </div>
                   </TableHead>
-                  {isAuthenticated && (
+                  {isAdmin && (
                     <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
@@ -221,7 +221,7 @@ export default function ExpenseTable({
                         <span>{expense.receiptNumber || "—"}</span>
                       </div>
                     </TableCell>
-                    {isAuthenticated && (
+                    {isAdmin && (
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <Button
@@ -250,7 +250,7 @@ export default function ExpenseTable({
                 {sortedExpenses.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={isAuthenticated ? 5 : 4}
+                      colSpan={isAdmin ? 5 : 4}
                       className="px-6 py-12 text-center"
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -271,7 +271,7 @@ export default function ExpenseTable({
                     {/* Separator row */}
                     <TableRow>
                       <TableCell
-                        colSpan={isAuthenticated ? 5 : 4}
+                        colSpan={isAdmin ? 5 : 4}
                         className="border-muted border-t-2 p-0"
                       />
                     </TableRow>
@@ -288,7 +288,7 @@ export default function ExpenseTable({
                           {formatCurrency(tableTotal)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={isAuthenticated ? 2 : 1} />
+                      <TableCell colSpan={isAdmin ? 2 : 1} />
                     </TableRow>
                   </>
                 )}

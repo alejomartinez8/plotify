@@ -14,13 +14,13 @@ import { cn } from "@/lib/utils";
 interface CollaboratorCardProps {
   collaborator: CollaboratorWithLots;
   onEdit: (collaborator: CollaboratorWithLots) => void;
-  isAuthenticated?: boolean;
+  canEdit?: boolean;
 }
 
 export default function CollaboratorCard({
   collaborator,
   onEdit,
-  isAuthenticated = false,
+  canEdit = false,
 }: CollaboratorCardProps) {
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -90,7 +90,7 @@ export default function CollaboratorCard({
         </div>
 
         {/* Action Buttons */}
-        {isAuthenticated && (
+        {canEdit && (
           <div className="mt-6 flex gap-2">
             <Button
               variant="outline"
@@ -127,7 +127,7 @@ export default function CollaboratorCard({
       )}
 
       {/* Delete Confirmation Modal */}
-      {isAuthenticated && (
+      {canEdit && (
         <ConfirmationModal
           isOpen={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}

@@ -19,11 +19,15 @@ export const translations = {
 
   // Authentication
   auth: {
-    adminLogin: "Admin Login",
-    signInDescription: "Sign in with your authorized Google account",
-    signInWithGoogle: "Sign in with Google",
-    logout: "Logout",
-    signingOut: "Signing out...",
+    adminLogin: "Iniciar Sesión",
+    login: "Iniciar sesión",
+    signInDescription: "Ingresa con tu cuenta de Google",
+    signInWithGoogle: "Ingresar con Google",
+    signingIn: "Iniciando sesión...",
+    logout: "Cerrar sesión",
+    signingOut: "Cerrando sesión...",
+    admin: "Admin",
+    owner: "Propietario",
   },
 
   // Common actions and buttons
@@ -395,6 +399,7 @@ export const translations = {
       title: "Error de Acceso",
       noPermission: "No tienes permisos para acceder a esta página",
     },
+    authRequired: "Debes iniciar sesión para ver esta página",
   },
 
   // Confirmation dialogs

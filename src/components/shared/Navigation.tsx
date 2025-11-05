@@ -13,7 +13,7 @@ import {
 import { translations } from "@/lib/translations";
 
 interface NavigationProps {
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 const navigationItems = [
@@ -30,7 +30,7 @@ const navigationItems = [
   },
   {
     href: "/quotas",
-    label: "Cuotas",
+    label: translations.navigation.quotas,
     icon: Calculator,
   },
   {
@@ -48,16 +48,14 @@ const adminNavigationItems = [
   },
 ];
 
-export default function Navigation({
-  isAuthenticated = false,
-}: NavigationProps) {
+export default function Navigation({ isAdmin = false }: NavigationProps) {
   const pathname = usePathname();
 
   return (
     <div className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Navigation - Always visible */}
-        <nav className="flex overflow-x-auto sm:justify-center space-x-4 sm:space-x-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="flex space-x-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center sm:space-x-8 [&::-webkit-scrollbar]:hidden">
           {navigationItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
             return (
@@ -76,7 +74,7 @@ export default function Navigation({
               </Link>
             );
           })}
-          {isAuthenticated &&
+          {isAdmin &&
             adminNavigationItems.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href;
               return (

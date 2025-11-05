@@ -19,13 +19,13 @@ import { exportIncomesAction } from "@/lib/actions/export-actions";
 interface IncomeViewProps {
   contributions: Contribution[];
   lots: Lot[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 export default function IncomeView({
   contributions,
   lots,
-  isAuthenticated = false,
+  isAdmin = false,
 }: IncomeViewProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
@@ -194,7 +194,7 @@ export default function IncomeView({
       <FilterSection
         title="Aportes"
         actionButton={
-          isAuthenticated ? (
+          isAdmin ? (
             <div className="flex items-center gap-2">
               <ExportButton
                 onExport={exportIncomesAction}
@@ -203,10 +203,7 @@ export default function IncomeView({
               >
                 {translations.actions.export} {translations.labels.income} CSV
               </ExportButton>
-              <NewContributionButton
-                isAuthenticated={isAuthenticated}
-                lots={lots}
-              />
+              <NewContributionButton isAdmin={isAdmin} lots={lots} />
             </div>
           ) : null
         }
@@ -258,14 +255,14 @@ export default function IncomeView({
           contributions={filteredContributions}
           lots={lots}
           incomeFilter={incomeFilter}
-          isAuthenticated={isAuthenticated}
+          isAdmin={isAdmin}
           onEdit={setEditingContribution}
           onDelete={setDeletingContribution}
         />
       </div>
 
       {/* Edit Modal */}
-      {editingContribution && isAuthenticated && (
+      {editingContribution && isAdmin && (
         <ContributionModal
           contribution={editingContribution}
           onClose={() => setEditingContribution(null)}
@@ -276,7 +273,7 @@ export default function IncomeView({
       )}
 
       {/* Delete Confirmation Modal */}
-      {isAuthenticated && (
+      {isAdmin && (
         <ConfirmationModal
           isOpen={!!deletingContribution}
           title={translations.confirmations.deleteTitle}

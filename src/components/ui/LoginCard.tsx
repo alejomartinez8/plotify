@@ -12,7 +12,7 @@ import {
 import { LogIn } from "lucide-react";
 import { translations } from "@/lib/translations";
 
-export function LoginButton() {
+export function LoginCard() {
   const handleGoogleSignIn = () => {
     signIn("google", { callbackUrl: "/" });
   };

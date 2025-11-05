@@ -25,7 +25,7 @@ interface IncomeReceiptTableProps {
   contributions: Contribution[];
   lots: Lot[];
   incomeFilter: IncomeType;
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
   onEdit?: (contribution: Contribution) => void;
   onDelete?: (contribution: Contribution) => void;
 }
@@ -43,7 +43,7 @@ export default function IncomeReceiptTable({
   contributions,
   lots,
   incomeFilter,
-  isAuthenticated = false,
+  isAdmin = false,
   onEdit,
   onDelete,
 }: IncomeReceiptTableProps) {
@@ -248,7 +248,7 @@ export default function IncomeReceiptTable({
                       })()}
                     </div>
                   </TableHead>
-                  {isAuthenticated && (
+                  {isAdmin && (
                     <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
@@ -316,7 +316,7 @@ export default function IncomeReceiptTable({
                           <span>{contribution.receiptNumber || "—"}</span>
                         </div>
                       </TableCell>
-                      {isAuthenticated && (
+                      {isAdmin && (
                         <TableCell className="px-6 py-4">
                           <div className="flex items-center justify-center gap-2">
                             <Button
@@ -346,7 +346,7 @@ export default function IncomeReceiptTable({
                 {sortedContributions.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={isAuthenticated ? 7 : 6}
+                      colSpan={isAdmin ? 7 : 6}
                       className="px-6 py-12 text-center"
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -372,7 +372,7 @@ export default function IncomeReceiptTable({
                     {/* Separator row */}
                     <TableRow>
                       <TableCell
-                        colSpan={isAuthenticated ? 7 : 6}
+                        colSpan={isAdmin ? 7 : 6}
                         className="border-muted border-t-2 p-0"
                       />
                     </TableRow>
@@ -389,7 +389,7 @@ export default function IncomeReceiptTable({
                           {formatCurrency(tableTotals.total)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={isAuthenticated ? 2 : 1} />
+                      <TableCell colSpan={isAdmin ? 2 : 1} />
                     </TableRow>
                   </>
                 )}

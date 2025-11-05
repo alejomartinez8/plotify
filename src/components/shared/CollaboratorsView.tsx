@@ -20,14 +20,17 @@ import { translations } from "@/lib/translations";
 interface CollaboratorsViewProps {
   collaborators: CollaboratorWithLots[];
   lots: Lot[];
-  isAuthenticated?: boolean;
+  userRole?: "admin" | "owner" | null;
+  userLotIds?: string[];
 }
 
 export default function CollaboratorsView({
   collaborators,
   lots,
-  isAuthenticated = false,
+  userRole = null,
+  userLotIds = [],
 }: CollaboratorsViewProps) {
+  const isAuthenticated = !!userRole;
   const [showModal, setShowModal] = useState(false);
   const [selectedCollaborator, setSelectedCollaborator] = useState<CollaboratorWithLots | null>(
     null
@@ -122,14 +125,23 @@ export default function CollaboratorsView({
       {/* Collaborators Grid */}
       {filteredCollaborators.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredCollaborators.map((collaborator) => (
-            <CollaboratorCard
-              key={collaborator.id}
-              collaborator={collaborator}
-              onEdit={handleEditCollaborator}
-              isAuthenticated={isAuthenticated}
-            />
-          ))}
+          {filteredCollaborators.map((collaborator) => {
+            // Check if user can edit this collaborator
+            // Admin can edit all, owner can edit if collaborator is assigned to at least one of their lots
+            const canEdit = userRole === "admin" ||
+              (userRole === "owner" && collaborator.lotAssignments.some(
+                (assignment) => userLotIds.includes(assignment.lotId)
+              ));
+
+            return (
+              <CollaboratorCard
+                key={collaborator.id}
+                collaborator={collaborator}
+                onEdit={handleEditCollaborator}
+                canEdit={canEdit}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">

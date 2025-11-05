@@ -9,6 +9,7 @@ import {
 } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
+import { requireAdmin } from "@/lib/auth";
 
 // Zod schema for validation
 const ExpenseSchema = z.object({
@@ -46,6 +47,17 @@ export async function createExpenseAction(
   formData: FormData
 ): Promise<ExpenseState> {
   const actionTimer = logger.timer("Create Expense Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to create expenses",
+    };
+  }
 
   // Extract and validate data
   const rawData = {
@@ -140,6 +152,17 @@ export async function updateExpenseAction(
   formData: FormData
 ): Promise<ExpenseState> {
   const actionTimer = logger.timer("Update Expense Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to update expenses",
+    };
+  }
 
   const rawData = {
     id: formData.get("id"),
@@ -238,6 +261,17 @@ export async function updateExpenseAction(
 
 export async function deleteExpenseAction(id: number) {
   const actionTimer = logger.timer("Delete Expense Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to delete expenses",
+    };
+  }
 
   try {
     const result = await deleteExpense(id);

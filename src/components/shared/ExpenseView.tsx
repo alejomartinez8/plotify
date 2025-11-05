@@ -15,7 +15,7 @@ import ExpenseTable from "@/components/shared/ExpenseTable";
 interface ExpenseViewProps {
   title: string;
   expenses: Expense[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 type ExpenseType = "all";
@@ -23,7 +23,7 @@ type ExpenseType = "all";
 export default function ExpenseView({
   title,
   expenses,
-  isAuthenticated = false,
+  isAdmin = false,
 }: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
@@ -121,7 +121,7 @@ export default function ExpenseView({
       <FilterSection
         title={title}
         actionButton={
-          isAuthenticated ? (
+          isAdmin ? (
             <div className="flex items-center gap-2">
               <ExportButton
                 onExport={exportExpensesAction}
@@ -130,7 +130,7 @@ export default function ExpenseView({
               >
                 {translations.actions.export} {translations.labels.expenses} CSV
               </ExportButton>
-              <NewExpenseButton isAuthenticated={isAuthenticated} />
+              <NewExpenseButton isAdmin={isAdmin} />
             </div>
           ) : null
         }
@@ -144,13 +144,13 @@ export default function ExpenseView({
       {/* Expenses Table */}
       <ExpenseTable
         expenses={filteredExpenses}
-        isAuthenticated={isAuthenticated}
+        isAdmin={isAdmin}
         onEdit={setEditingExpense}
         onDelete={setDeletingExpense}
       />
 
       {/* Edit Modal */}
-      {editingExpense && isAuthenticated && (
+      {editingExpense && isAdmin && (
         <ExpenseModal
           expense={editingExpense}
           onClose={() => setEditingExpense(null)}
@@ -159,7 +159,7 @@ export default function ExpenseView({
       )}
 
       {/* Delete Confirmation Modal */}
-      {isAuthenticated && (
+      {isAdmin && (
         <ConfirmationModal
           isOpen={!!deletingExpense}
           title={translations.confirmations.deleteTitle}

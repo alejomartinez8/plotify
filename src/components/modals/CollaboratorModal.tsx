@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, FormEvent, useEffect } from "react";
+import { useActionState, useState, FormEvent, useEffect, useTransition } from "react";
 import { Lot } from "@/types/lots.types";
 import { CollaboratorWithLots } from "@/types/collaborators.types";
 import {
@@ -39,6 +39,7 @@ export default function CollaboratorModal({
   const initialState: CollaboratorState = { message: null, errors: {} };
   const action = collaborator ? updateCollaboratorAction : createCollaboratorAction;
   const [state, formAction] = useActionState(action, initialState);
+  const [isPending, startTransition] = useTransition();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -110,8 +111,9 @@ export default function CollaboratorModal({
         setIsUploading(false);
       }
 
-      // Create new FormData with photo info
-      const actionFormData = new FormData(formElement);
+      // Create new FormData with all required fields
+      const actionFormData = new FormData();
+      actionFormData.set("name", name);
       if (collaborator) {
         actionFormData.set("id", collaborator.id);
       }
@@ -120,17 +122,16 @@ export default function CollaboratorModal({
       actionFormData.set("photoFileName", photoFileName || "");
       actionFormData.set("lotIds", JSON.stringify(Array.from(selectedLots)));
 
-      // Call the action
-      formAction(actionFormData);
+      // Call the action wrapped in transition
+      startTransition(() => {
+        formAction(actionFormData);
+      });
     } catch (error) {
-      const errorInstance =
-        error instanceof Error ? error : new Error(String(error));
       setIsUploading(false);
-      // Error will be shown via state.message
     }
   };
 
-  const isSubmitting = isUploading;
+  const isSubmitting = isUploading || isPending;
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -197,7 +198,7 @@ export default function CollaboratorModal({
 
           <div className="space-y-2">
             <Label>{translations.labels.assignedLots}</Label>
-            <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border p-4">
+            <div className="space-y-2 rounded-md border p-4">
               {lotsLoading ? (
                 <p className="text-sm text-muted-foreground">
                   {translations.status.loading}

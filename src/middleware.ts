@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-export function middleware(request: NextRequest) {
+const PUBLIC_ROUTES = ["/login"];
+
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
   response.headers.set("X-Frame-Options", "DENY");
@@ -15,17 +19,24 @@ export function middleware(request: NextRequest) {
     );
   }
 
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (isPublicRoute) {
+    return response;
+  }
+
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    const loginUrl = new URL("/login", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth).*)"],
 };

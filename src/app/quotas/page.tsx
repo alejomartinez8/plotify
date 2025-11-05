@@ -1,19 +1,20 @@
 import { getQuotaConfigs } from "@/lib/database/quotas";
-import { isAuthenticated } from "@/lib/auth";
+import { getUserRole } from "@/lib/auth";
 import QuotaView from "@/components/shared/QuotaView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function QuotasPage() {
   try {
-    const [quotaConfigs, isAdmin] = await Promise.all([
+    const [quotaConfigs, userRole] = await Promise.all([
       getQuotaConfigs(),
-      isAuthenticated(),
+      getUserRole(),
     ]);
 
-    return <QuotaView quotaConfigs={quotaConfigs} isAuthenticated={isAdmin} />;
+    return (
+      <QuotaView quotaConfigs={quotaConfigs} isAdmin={userRole === "admin"} />
+    );
   } catch (error) {
-    console.error("Error loading quotas data:", error);
     return (
       <ErrorLayout
         title={translations.navigation.quotas}
