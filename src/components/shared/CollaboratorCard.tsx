@@ -77,9 +77,8 @@ export default function CollaboratorCard({
                 <span
                   key={assignment.lotId}
                   className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
-                  title={`Owner: ${assignment.owner}`}
                 >
-                  {assignment.lotNumber}
+                  {assignment.lotNumber} - {assignment.owner}
                 </span>
               ))}
             </div>

@@ -57,14 +57,14 @@ export default function Navigation({
     <div className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Navigation - Always visible */}
-        <nav className="flex justify-center space-x-6 sm:space-x-8">
+        <nav className="flex overflow-x-auto sm:justify-center space-x-4 sm:space-x-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {navigationItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
+                className={`flex flex-shrink-0 flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
                   isActive
                     ? "border-primary text-primary"
                     : "text-muted-foreground hover:text-foreground border-transparent"
@@ -83,7 +83,7 @@ export default function Navigation({
                 <Link
                   key={href}
                   href={href}
-                  className={`flex flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
+                  className={`flex flex-shrink-0 flex-col items-center space-y-1 border-b-2 px-2 py-3 text-xs font-medium sm:flex-row sm:space-y-0 sm:space-x-2 sm:px-1 sm:py-4 sm:text-sm ${
                     isActive
                       ? "border-primary text-primary"
                       : "text-muted-foreground hover:text-foreground border-transparent"

@@ -26,13 +26,13 @@ export default function PhotoViewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {translations.labels.photo} - {collaboratorName}
           </DialogTitle>
         </DialogHeader>
-        <div className="relative mt-4 flex h-[70vh] w-full items-center justify-center">
+        <div className="relative mt-4 flex h-[60vh] max-h-[600px] w-full items-center justify-center sm:h-[70vh]">
           <Image
             src={photoUrl}
             alt={`Photo of ${collaboratorName}`}
