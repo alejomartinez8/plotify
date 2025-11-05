@@ -1,11 +1,11 @@
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import AdminConfig from "@/components/admin/AdminConfig";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function AdminPage() {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     return <AdminConfig />;
   } catch (error) {

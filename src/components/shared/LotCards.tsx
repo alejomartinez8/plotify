@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Edit, Trash2, Info, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Info, Eye, Mail } from "lucide-react";
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
@@ -38,7 +38,7 @@ interface LotCardsProps {
   lots: Lot[];
   contributions: Contribution[];
   lotBalances: SimpleLotBalance[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 type SortField = "lot" | "total" | "balance" | "status" | "initialDebt";
@@ -48,7 +48,7 @@ export default function LotCards({
   lots,
   contributions,
   lotBalances,
-  isAuthenticated = false,
+  isAdmin = false,
 }: LotCardsProps) {
   const [sortField, setSortField] = useState<SortField>("lot");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -220,7 +220,7 @@ export default function LotCards({
                   <SelectItem value="status-desc">
                     {translations.labels.status} Z-A
                   </SelectItem>
-                  {isAuthenticated && (
+                  {isAdmin && (
                     <SelectItem value="initialDebt-desc">
                       {translations.labels.initialDebt} ↓
                     </SelectItem>
@@ -229,7 +229,7 @@ export default function LotCards({
               </Select>
             </div>
 
-            {isAuthenticated && (
+            {isAdmin && (
               <Button
                 onClick={() => setIsCreating(true)}
                 size="sm"
@@ -300,6 +300,12 @@ export default function LotCards({
                           <div className="text-muted-foreground truncate text-xs sm:text-sm">
                             {lot.owner}
                           </div>
+                          {isAdmin && lot.ownerEmail && (
+                            <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
+                              <Mail className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{lot.ownerEmail}</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Values Section */}
@@ -410,7 +416,7 @@ export default function LotCards({
                           </Button>
                         </Link>
 
-                        {isAuthenticated && (
+                        {isAdmin && (
                           <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                               variant="ghost"
@@ -451,7 +457,7 @@ export default function LotCards({
         )}
       </CardContent>
 
-      {(isCreating || editingLot) && isAuthenticated && (
+      {(isCreating || editingLot) && isAdmin && (
         <LotModal
           lot={editingLot}
           onClose={() => {
@@ -462,7 +468,7 @@ export default function LotCards({
         />
       )}
 
-      {isAuthenticated && (
+      {isAdmin && (
         <ConfirmationModal
           isOpen={!!deletingLot}
           title={translations.confirmations.deleteTitle}

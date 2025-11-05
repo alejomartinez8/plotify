@@ -12,7 +12,11 @@ import {
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
-import { formatCurrency, formatDateForDisplay, getStatusColor } from "@/lib/utils";
+import {
+  formatCurrency,
+  formatDateForDisplay,
+  getStatusColor,
+} from "@/lib/utils";
 import { LotDebtDetail } from "@/types/quotas.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -42,7 +46,7 @@ interface LotDetailViewProps {
   lot: Lot & { contributions: Contribution[] };
   contributions: Contribution[];
   allLots: Lot[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
   debtDetail?: LotDebtDetail | null;
 }
 
@@ -53,7 +57,7 @@ export default function LotDetailView({
   lot,
   contributions,
   allLots,
-  isAuthenticated = false,
+  isAdmin = false,
   debtDetail,
 }: LotDetailViewProps) {
   const [editingContribution, setEditingContribution] =
@@ -207,7 +211,7 @@ export default function LotDetailView({
           </div>
 
           {/* Lot Selector Section - Only for admins */}
-          {isAuthenticated && (
+          {isAdmin && (
             <div className="border-t pt-4">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm font-medium">
@@ -375,7 +379,7 @@ export default function LotDetailView({
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>{translations.titles.paymentHistory}</CardTitle>
-              {isAuthenticated && (
+              {isAdmin && (
                 <Button
                   onClick={() => setShowNewContributionModal(true)}
                   size="sm"
@@ -450,7 +454,7 @@ export default function LotDetailView({
                         })()}
                       </div>
                     </TableHead>
-                    {isAuthenticated && (
+                    {isAdmin && (
                       <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                         {translations.labels.actions}
                       </TableHead>
@@ -502,7 +506,7 @@ export default function LotDetailView({
                           <span>{contribution.receiptNumber || "—"}</span>
                         </div>
                       </TableCell>
-                      {isAuthenticated && (
+                      {isAdmin && (
                         <TableCell className="px-6 py-4">
                           <div className="flex items-center justify-center gap-2">
                             <Button
@@ -536,7 +540,7 @@ export default function LotDetailView({
                   {sortedContributions.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={isAuthenticated ? 6 : 5}
+                        colSpan={isAdmin ? 6 : 5}
                         className="px-6 py-12 text-center"
                       >
                         <div className="flex flex-col items-center gap-3">
@@ -556,7 +560,7 @@ export default function LotDetailView({
                     <>
                       <TableRow>
                         <TableCell
-                          colSpan={isAuthenticated ? 6 : 5}
+                          colSpan={isAdmin ? 6 : 5}
                           className="border-muted border-t-2 p-0"
                         />
                       </TableRow>
@@ -572,7 +576,7 @@ export default function LotDetailView({
                             {formatCurrency(fundTotals.total)}
                           </div>
                         </TableCell>
-                        <TableCell colSpan={isAuthenticated ? 2 : 1} />
+                        <TableCell colSpan={isAdmin ? 2 : 1} />
                       </TableRow>
                     </>
                   )}
@@ -583,7 +587,7 @@ export default function LotDetailView({
         </Card>
 
         {/* Edit Modal */}
-        {editingContribution && isAuthenticated && (
+        {editingContribution && isAdmin && (
           <ContributionModal
             contribution={editingContribution}
             onClose={() => setEditingContribution(null)}
@@ -594,7 +598,7 @@ export default function LotDetailView({
         )}
 
         {/* New Contribution Modal */}
-        {showNewContributionModal && isAuthenticated && (
+        {showNewContributionModal && isAdmin && (
           <ContributionModal
             onClose={() => setShowNewContributionModal(false)}
             onSuccess={handleNewContributionSuccess}
@@ -605,7 +609,7 @@ export default function LotDetailView({
         )}
 
         {/* Delete Confirmation Modal */}
-        {isAuthenticated && (
+        {isAdmin && (
           <ConfirmationModal
             isOpen={!!deletingContribution}
             title={translations.confirmations.deleteTitle}

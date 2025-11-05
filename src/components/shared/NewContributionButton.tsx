@@ -9,12 +9,12 @@ import { Lot } from "@/types/lots.types";
 import { translations } from "@/lib/translations";
 
 interface NewContributionButtonProps {
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
   lots?: Lot[];
 }
 
 export default function NewContributionButton({
-  isAuthenticated = false,
+  isAdmin = false,
   lots: propLots = [],
 }: NewContributionButtonProps) {
   const [showContributionModal, setShowContributionModal] = useState(false);
@@ -47,7 +47,7 @@ export default function NewContributionButton({
     setShowContributionModal(true);
   };
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return null;
   }
 

@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Collaborator, CollaboratorWithLots } from "@/types/collaborators.types";
+import { logger } from "@/lib/logger";
 
 export async function getCollaborators(): Promise<CollaboratorWithLots[]> {
   try {
@@ -35,7 +36,11 @@ export async function getCollaborators(): Promise<CollaboratorWithLots[]> {
       })),
     }));
   } catch (error) {
-    console.error("Error fetching collaborators:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error fetching collaborators", errorInstance, {
+      component: "getCollaborators",
+    });
     return [];
   }
 }
@@ -74,7 +79,12 @@ export async function getCollaboratorById(id: string): Promise<CollaboratorWithL
       })),
     };
   } catch (error) {
-    console.error("Error fetching collaborator by ID:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error fetching collaborator by ID", errorInstance, {
+      component: "getCollaboratorById",
+      collaboratorId: id,
+    });
     return null;
   }
 }
@@ -120,7 +130,12 @@ export async function getCollaboratorsByLotId(lotId: string): Promise<Collaborat
       })),
     }));
   } catch (error) {
-    console.error("Error fetching collaborators by lot ID:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error fetching collaborators by lot ID", errorInstance, {
+      component: "getCollaboratorsByLotId",
+      lotId,
+    });
     return [];
   }
 }
@@ -151,7 +166,12 @@ export async function createCollaborator(data: {
     });
     return collaborator;
   } catch (error) {
-    console.error("Error creating collaborator:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error creating collaborator", errorInstance, {
+      component: "createCollaborator",
+      name: data.name,
+    });
     return null;
   }
 }
@@ -177,7 +197,12 @@ export async function updateCollaborator(
     });
     return collaborator;
   } catch (error) {
-    console.error("Error updating collaborator:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error updating collaborator", errorInstance, {
+      component: "updateCollaborator",
+      collaboratorId: id,
+    });
     return null;
   }
 }
@@ -189,7 +214,12 @@ export async function deleteCollaborator(id: string): Promise<boolean> {
     });
     return true;
   } catch (error) {
-    console.error("Error deleting collaborator:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error deleting collaborator", errorInstance, {
+      component: "deleteCollaborator",
+      collaboratorId: id,
+    });
     return false;
   }
 }
@@ -207,7 +237,13 @@ export async function assignCollaboratorToLot(
     });
     return true;
   } catch (error) {
-    console.error("Error assigning collaborator to lot:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error assigning collaborator to lot", errorInstance, {
+      component: "assignCollaboratorToLot",
+      collaboratorId,
+      lotId,
+    });
     return false;
   }
 }
@@ -227,7 +263,13 @@ export async function removeCollaboratorFromLot(
     });
     return true;
   } catch (error) {
-    console.error("Error removing collaborator from lot:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error removing collaborator from lot", errorInstance, {
+      component: "removeCollaboratorFromLot",
+      collaboratorId,
+      lotId,
+    });
     return false;
   }
 }
@@ -252,7 +294,12 @@ export async function updateCollaboratorLotAssignments(
 
     return true;
   } catch (error) {
-    console.error("Error updating collaborator lot assignments:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error updating collaborator lot assignments", errorInstance, {
+      component: "updateCollaboratorLotAssignments",
+      collaboratorId,
+    });
     return false;
   }
 }

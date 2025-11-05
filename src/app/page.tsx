@@ -5,7 +5,7 @@ import {
 import { getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { calculateSimpleLotBalances } from "@/lib/utils";
-import { isAuthenticated } from "@/lib/auth";
+import { getUserRole } from "@/lib/auth";
 import FundsOverview from "@/components/shared/FundsOverview";
 import LotCards from "@/components/shared/LotCards";
 import QuotaSummaryCard from "@/components/shared/QuotaSummaryCard";
@@ -14,17 +14,17 @@ import { translations } from "@/lib/translations";
 
 export default async function Home() {
   try {
-    const [fundsData, lots, contributions, quotaConfigs, isAdmin] =
+    const [fundsData, allLots, contributions, quotaConfigs, userRole] =
       await Promise.all([
         getAllFundsBalances(),
         getLots(),
         getContributions(),
         getQuotaConfigs(),
-        isAuthenticated(),
+        getUserRole(),
       ]);
 
     const lotBalances = calculateSimpleLotBalances(
-      lots,
+      allLots,
       contributions,
       quotaConfigs
     );
@@ -32,18 +32,13 @@ export default async function Home() {
     return (
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
         <div className="space-y-8">
-          {/* Funds Overview */}
           <FundsOverview fundsData={fundsData} />
-
-          {/* Quota Summary Card */}
           <QuotaSummaryCard lotBalances={lotBalances} />
-
-          {/* Lots Cards */}
           <LotCards
-            lots={lots}
+            lots={allLots}
             contributions={contributions}
             lotBalances={lotBalances}
-            isAuthenticated={isAdmin}
+            isAdmin={userRole === "admin"}
           />
         </div>
       </div>

@@ -7,10 +7,11 @@ import {
   updateCollaborator,
   deleteCollaborator,
   updateCollaboratorLotAssignments,
+  getCollaboratorById,
 } from "@/lib/database/collaborators";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
-import { requireAuth } from "@/lib/auth";
+import { requireAllLotsAccess, requireAnyLotAccess } from "@/lib/auth";
 
 const CollaboratorSchema = z.object({
   name: z.string().min(1, translations.errors.required),
@@ -48,16 +49,6 @@ export async function createCollaboratorAction(
 ): Promise<CollaboratorState> {
   const actionTimer = logger.timer("Create Collaborator Action");
 
-  try {
-    await requireAuth();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Authentication required. Only admins can create collaborators.",
-    };
-  }
-
   const rawData = {
     name: formData.get("name"),
     photoFileId: formData.get("photoFileId"),
@@ -85,6 +76,22 @@ export async function createCollaboratorAction(
 
   const { name, photoFileId, photoFileUrl, photoFileName, lotIds } =
     validatedFields.data;
+
+  // Check lot access - must own all lots being assigned
+  try {
+    if (lotIds.length > 0) {
+      await requireAllLotsAccess(lotIds);
+    }
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "You don't have permission to assign collaborators to these lots",
+    };
+  }
 
   try {
     const result = await createCollaborator({
@@ -135,16 +142,6 @@ export async function updateCollaboratorAction(
 ): Promise<CollaboratorState> {
   const actionTimer = logger.timer("Update Collaborator Action");
 
-  try {
-    await requireAuth();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Authentication required. Only admins can update collaborators.",
-    };
-  }
-
   const rawData = {
     id: formData.get("id"),
     name: formData.get("name"),
@@ -172,6 +169,22 @@ export async function updateCollaboratorAction(
 
   const { id, name, photoFileId, photoFileUrl, photoFileName, lotIds } =
     validatedFields.data;
+
+  // Check lot access - must own all lots being assigned
+  try {
+    if (lotIds.length > 0) {
+      await requireAllLotsAccess(lotIds);
+    }
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "You don't have permission to assign collaborators to these lots",
+    };
+  }
 
   try {
     const result = await updateCollaborator(id, {
@@ -235,13 +248,45 @@ export async function updateCollaboratorAction(
 export async function deleteCollaboratorAction(id: string): Promise<CollaboratorState> {
   const actionTimer = logger.timer("Delete Collaborator Action");
 
+  // First, fetch the collaborator to get their lot assignments
+  let collaborator;
   try {
-    await requireAuth();
+    collaborator = await getCollaboratorById(id);
+    if (!collaborator) {
+      actionTimer.end();
+      return {
+        success: false,
+        message: "Collaborator not found",
+      };
+    }
+  } catch (error) {
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error fetching collaborator for deletion", errorInstance, {
+      component: "deleteCollaboratorAction",
+      collaboratorId: id,
+    });
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Failed to fetch collaborator details",
+    };
+  }
+
+  // Check lot access - must own at least one of the assigned lots
+  try {
+    const lotIds = collaborator.lotAssignments.map((assignment) => assignment.lotId);
+    if (lotIds.length > 0) {
+      await requireAnyLotAccess(lotIds);
+    }
   } catch (error) {
     actionTimer.end();
     return {
       success: false,
-      message: "Authentication required. Only admins can delete collaborators.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "You don't have permission to delete this collaborator",
     };
   }
 

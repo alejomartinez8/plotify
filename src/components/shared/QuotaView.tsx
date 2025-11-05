@@ -14,14 +14,14 @@ import { useTransition } from "react";
 
 interface QuotaViewProps {
   quotaConfigs: QuotaConfig[];
-  isAuthenticated?: boolean;
+  isAdmin?: boolean;
 }
 
 type QuotaType = "all" | "maintenance" | "works";
 
 export default function QuotaView({
   quotaConfigs,
-  isAuthenticated = false,
+  isAdmin = false,
 }: QuotaViewProps) {
   const [editingQuota, setEditingQuota] = useState<QuotaConfig | null>(null);
   const [deletingQuota, setDeletingQuota] = useState<QuotaConfig | null>(null);
@@ -130,9 +130,7 @@ export default function QuotaView({
       <FilterSection
         title={translations.navigation.quotas}
         actionButton={
-          isAuthenticated ? (
-            <NewQuotaButton onSuccess={handleQuotaSuccess} />
-          ) : null
+          isAdmin ? <NewQuotaButton onSuccess={handleQuotaSuccess} /> : null
         }
         typeFilter={{
           value: quotaFilter,
@@ -161,12 +159,12 @@ export default function QuotaView({
           quotaConfigs={filteredQuotas}
           onEdit={setEditingQuota}
           onDelete={setDeletingQuota}
-          isAuthenticated={isAuthenticated}
+          isAdmin={isAdmin}
         />
       </div>
 
       {/* Edit Modal */}
-      {editingQuota && isAuthenticated && (
+      {editingQuota && isAdmin && (
         <QuotaModal
           quota={editingQuota}
           onClose={() => setEditingQuota(null)}
@@ -175,7 +173,7 @@ export default function QuotaView({
       )}
 
       {/* Delete Confirmation Modal */}
-      {isAuthenticated && (
+      {isAdmin && (
         <ConfirmationModal
           isOpen={!!deletingQuota}
           title={translations.confirmations.deleteTitle}

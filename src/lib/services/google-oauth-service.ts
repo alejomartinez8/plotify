@@ -295,8 +295,6 @@ class GoogleOAuthService {
           )
         );
 
-        // TODO: In the future, we could implement automatic cleanup of empty duplicate folders
-
         return primaryFolder.id || null;
       }
 

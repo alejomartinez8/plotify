@@ -20,7 +20,7 @@ interface QuotaTableProps {
   quotaConfigs: QuotaConfig[];
   onEdit: (quota: QuotaConfig) => void;
   onDelete: (quota: QuotaConfig) => void;
-  isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 type SortField = "quotaType" | "amount" | "description" | "dueDate";
@@ -30,7 +30,7 @@ export default function QuotaTable({
   quotaConfigs,
   onEdit,
   onDelete,
-  isAuthenticated,
+  isAdmin,
 }: QuotaTableProps) {
   const [sortField, setSortField] = useState<SortField>("dueDate");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -164,7 +164,7 @@ export default function QuotaTable({
                     {getSortIcon("description")}
                   </div>
                 </TableHead>
-                {isAuthenticated && (
+                {isAdmin && (
                   <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                     {translations.labels.actions}
                   </TableHead>
@@ -206,7 +206,7 @@ export default function QuotaTable({
                       {quota.description || "-"}
                     </div>
                   </TableCell>
-                  {isAuthenticated && (
+                  {isAdmin && (
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
                         <Button
@@ -235,7 +235,7 @@ export default function QuotaTable({
               {sortedQuotas.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={isAuthenticated ? 5 : 4}
+                    colSpan={isAdmin ? 5 : 4}
                     className="px-6 py-12 text-center"
                   >
                     <div className="flex flex-col items-center gap-3">

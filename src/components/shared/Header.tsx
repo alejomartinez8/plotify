@@ -1,11 +1,11 @@
 import { translations } from "@/lib/translations";
-import { auth } from "@/lib/auth";
+import { auth, getUserRole } from "@/lib/auth";
 import { AuthButton } from "./AuthButton";
 import Image from "next/image";
 
 export default async function Header() {
   const session = await auth();
-  const isAdmin = !!session?.user;
+  const userRole = await getUserRole();
 
   return (
     <div className="bg-card border-b shadow-sm">
@@ -19,7 +19,8 @@ export default async function Header() {
               {translations.app.subtitle}
             </p>
           </div>
-          {isAdmin && session?.user && (
+
+          {session?.user && (
             <div className="flex items-center gap-3">
               {session.user.image && (
                 <Image
@@ -31,9 +32,20 @@ export default async function Header() {
                 />
               )}
               <div className="flex flex-col">
-                <span className="text-sm font-medium">
-                  {session.user.name}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    {session.user.name}
+                  </span>
+                  {userRole && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      userRole === 'admin'
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {userRole === 'admin' ? translations.auth.admin : translations.auth.owner}
+                    </span>
+                  )}
+                </div>
                 <span className="text-muted-foreground text-xs">
                   {session.user.email}
                 </span>

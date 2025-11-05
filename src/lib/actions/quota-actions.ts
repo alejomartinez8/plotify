@@ -9,6 +9,7 @@ import {
 } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
+import { requireAdmin } from "@/lib/auth";
 
 const QuotaConfigSchema = z.object({
   quotaType: z.enum(["maintenance", "works"]),
@@ -38,6 +39,17 @@ export async function createQuotaConfigAction(
   formData: FormData
 ): Promise<QuotaState> {
   const actionTimer = logger.timer("Create Quota Config Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to create quota configurations",
+    };
+  }
 
   const rawData = {
     quotaType: formData.get("quotaType") as string,
@@ -103,6 +115,17 @@ export async function updateQuotaConfigAction(
 ): Promise<QuotaState> {
   const actionTimer = logger.timer("Update Quota Config Action");
 
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to update quota configurations",
+    };
+  }
+
   const rawData = {
     id: formData.get("id") as string,
     quotaType: formData.get("quotaType") as string,
@@ -164,6 +187,17 @@ export async function updateQuotaConfigAction(
 
 export async function deleteQuotaConfigAction(id: string) {
   const actionTimer = logger.timer("Delete Quota Config Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to delete quota configurations",
+    };
+  }
 
   try {
     await deleteQuotaConfig(id);

@@ -206,10 +206,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const fileId = searchParams.get("fileId");
+  const { searchParams } = new URL(req.url);
+  const fileId = searchParams.get("fileId");
 
+  try {
     if (!fileId) {
       return NextResponse.json(
         { error: "File ID is required" },
@@ -221,7 +221,12 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Delete error:", error);
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Failed to delete file", errorInstance, {
+      component: "DELETE /api/upload",
+      fileId: fileId || "unknown",
+    });
     return NextResponse.json(
       { error: "Failed to delete file" },
       { status: 500 }

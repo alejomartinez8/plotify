@@ -5,11 +5,18 @@ import { revalidatePath } from "next/cache";
 import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
+import { requireAdmin } from "@/lib/auth";
 
 // Zod schema for validation
 const LotSchema = z.object({
   lotNumber: z.string().min(1, translations.errors.required),
   owner: z.string().min(1, translations.errors.ownerRequired),
+  ownerEmail: z
+    .string()
+    .email("Invalid email format")
+    .nullable()
+    .optional()
+    .or(z.literal("")),
   initialWorksDebt: z
     .number()
     .min(0, translations.errors.amountPositive)
@@ -32,6 +39,7 @@ export type State = {
   errors?: {
     lotNumber?: string[];
     owner?: string[];
+    ownerEmail?: string[];
     lotId?: string[];
     initialWorksDebt?: string[];
   };
@@ -45,10 +53,22 @@ export async function createLotAction(
 ): Promise<State> {
   const actionTimer = logger.timer("Create Lot Action");
 
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to create lots",
+    };
+  }
+
   // Extract and validate data
   const rawData = {
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
+    ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
@@ -71,13 +91,14 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } =
+  const { lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason } =
     validatedFields.data;
 
   try {
     await createLot({
       lotNumber,
       owner,
+      ownerEmail,
       initialWorksDebt,
       isExempt,
       exemptionReason,
@@ -109,10 +130,22 @@ export async function updateLotAction(
 ): Promise<State> {
   const actionTimer = logger.timer("Update Lot Action");
 
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to update lots",
+    };
+  }
+
   const rawData = {
     id: formData.get("id"),
     lotNumber: formData.get("lotNumber"),
     owner: formData.get("owner"),
+    ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
@@ -139,13 +172,14 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, initialWorksDebt, isExempt, exemptionReason } =
+  const { id, lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason } =
     validatedFields.data;
 
   try {
     await updateLot(id, {
       lotNumber,
       owner,
+      ownerEmail,
       initialWorksDebt,
       isExempt,
       exemptionReason,
@@ -175,6 +209,17 @@ export async function updateLotAction(
 export async function deleteLotAction(id: string) {
   const actionTimer = logger.timer("Delete Lot Action");
 
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to delete lots",
+    };
+  }
+
   try {
     await deleteLot(id);
     revalidatePath("/lots");
@@ -202,6 +247,17 @@ export async function updateInitialDebtAction(
   formData: FormData
 ): Promise<State> {
   const actionTimer = logger.timer("Update Initial Debt Action");
+
+  // Check admin access
+  try {
+    await requireAdmin();
+  } catch (error) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: "Admin access required to update initial debt",
+    };
+  }
 
   const rawData = {
     lotId: formData.get("lotId"),
@@ -273,3 +329,4 @@ export async function getLotsAction() {
     return [];
   }
 }
+

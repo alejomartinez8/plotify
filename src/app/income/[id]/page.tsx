@@ -2,52 +2,63 @@ import { notFound } from "next/navigation";
 import { getLotWithContributions, getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
-import { isAuthenticated } from "@/lib/auth";
+import { getUserRole } from "@/lib/auth";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { calculateLotDebtDetail } from "@/lib/utils";
 import LotDetailView from "@/components/shared/LotDetailView";
+import ErrorLayout from "@/components/layout/ErrorLayout";
 
 interface LotPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function LotPage({ params }: LotPageProps) {
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
+  try {
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
-  // Fetch lot data with contributions, debt details, and all lots for the selector
-  const [lotData, allLots, quotaConfigs, isAdmin] = await Promise.all([
-    getLotWithContributions(id),
-    getLots(),
-    getQuotaConfigs(),
-    isAuthenticated(),
-  ]);
+    const [lotData, allLotsData, quotaConfigs, userRole] = await Promise.all([
+      getLotWithContributions(id),
+      getLots(),
+      getQuotaConfigs(),
+      getUserRole(),
+    ]);
 
-  const debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
+    const debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
 
-  if (!lotData) {
-    notFound();
+    if (!lotData) {
+      notFound();
+    }
+
+    const lot = {
+      ...lotData,
+      contributions: lotData.contributions.map((contrib) => ({
+        ...contrib,
+        type: contrib.type as ContributionType,
+        date: contrib.date.toISOString().split("T")[0],
+      })) as Contribution[],
+    };
+
+    return (
+      <LotDetailView
+        lot={lot}
+        contributions={lot.contributions}
+        allLots={allLotsData}
+        isAdmin={userRole === "admin"}
+        debtDetail={debtDetail}
+      />
+    );
+  } catch (error) {
+    return (
+      <ErrorLayout
+        title={translations.navigation.income}
+        message={translations.errors.loadingIncome}
+        error={
+          error instanceof Error ? error.message : translations.errors.unknown
+        }
+      />
+    );
   }
-
-  // Transform the data to match our TypeScript interfaces
-  const lot = {
-    ...lotData,
-    contributions: lotData.contributions.map((contrib) => ({
-      ...contrib,
-      type: contrib.type as ContributionType,
-      date: contrib.date.toISOString().split("T")[0], // Convert Date to YYYY-MM-DD string
-    })) as Contribution[],
-  };
-
-  return (
-    <LotDetailView
-      lot={lot}
-      contributions={lot.contributions}
-      allLots={allLots}
-      isAuthenticated={isAdmin}
-      debtDetail={debtDetail}
-    />
-  );
 }
 
 // Generate metadata for the page
