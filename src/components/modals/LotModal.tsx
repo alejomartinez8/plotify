@@ -126,9 +126,6 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               disabled={isPending}
               placeholder="owner@example.com"
             />
-            <p className="text-xs text-gray-600">
-              Email address to grant owner access for managing collaborators on this lot
-            </p>
             {state.errors?.ownerEmail && (
               <div className="text-destructive text-sm">
                 {state.errors.ownerEmail}
