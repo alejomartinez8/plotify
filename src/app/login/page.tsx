@@ -19,6 +19,6 @@ export default async function LoginPage() {
 }
 
 export const metadata = {
-  title: "Admin Login - Plotify",
-  description: "Sign in with Google to access admin features",
+  title: "Iniciar Sesión - Parcela Jaslico",
+  description: "Ingresa con tu cuenta de Google para acceder al sistema",
 };
