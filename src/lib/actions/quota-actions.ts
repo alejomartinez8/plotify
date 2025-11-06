@@ -9,7 +9,7 @@ import {
 } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
-import { requireAdmin } from "@/lib/auth";
+import { checkAdminAccess } from "./helpers";
 
 const QuotaConfigSchema = z.object({
   quotaType: z.enum(["maintenance", "works"]),
@@ -40,16 +40,11 @@ export async function createQuotaConfigAction(
 ): Promise<QuotaState> {
   const actionTimer = logger.timer("Create Quota Config Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to create quota configurations",
-    };
-  }
+  const adminError = await checkAdminAccess<QuotaState>(
+    actionTimer,
+    "Admin access required to create quota configurations"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     quotaType: formData.get("quotaType") as string,
@@ -115,16 +110,11 @@ export async function updateQuotaConfigAction(
 ): Promise<QuotaState> {
   const actionTimer = logger.timer("Update Quota Config Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to update quota configurations",
-    };
-  }
+  const adminError = await checkAdminAccess<QuotaState>(
+    actionTimer,
+    "Admin access required to update quota configurations"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     id: formData.get("id") as string,
@@ -188,16 +178,11 @@ export async function updateQuotaConfigAction(
 export async function deleteQuotaConfigAction(id: string) {
   const actionTimer = logger.timer("Delete Quota Config Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to delete quota configurations",
-    };
-  }
+  const adminError = await checkAdminAccess<QuotaState>(
+    actionTimer,
+    "Admin access required to delete quota configurations"
+  );
+  if (adminError) return adminError;
 
   try {
     await deleteQuotaConfig(id);

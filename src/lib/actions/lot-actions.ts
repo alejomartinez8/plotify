@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
-import { requireAdmin } from "@/lib/auth";
+import { checkAdminAccess } from "./helpers";
 
 // Zod schema for validation
 const LotSchema = z.object({
@@ -53,16 +53,11 @@ export async function createLotAction(
 ): Promise<State> {
   const actionTimer = logger.timer("Create Lot Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to create lots",
-    };
-  }
+  const adminError = await checkAdminAccess<State>(
+    actionTimer,
+    "Admin access required to create lots"
+  );
+  if (adminError) return adminError;
 
   // Extract and validate data
   const rawData = {
@@ -130,16 +125,11 @@ export async function updateLotAction(
 ): Promise<State> {
   const actionTimer = logger.timer("Update Lot Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to update lots",
-    };
-  }
+  const adminError = await checkAdminAccess<State>(
+    actionTimer,
+    "Admin access required to update lots"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     id: formData.get("id"),
@@ -209,16 +199,11 @@ export async function updateLotAction(
 export async function deleteLotAction(id: string) {
   const actionTimer = logger.timer("Delete Lot Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to delete lots",
-    };
-  }
+  const adminError = await checkAdminAccess<State>(
+    actionTimer,
+    "Admin access required to delete lots"
+  );
+  if (adminError) return adminError;
 
   try {
     await deleteLot(id);
@@ -248,16 +233,11 @@ export async function updateInitialDebtAction(
 ): Promise<State> {
   const actionTimer = logger.timer("Update Initial Debt Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to update initial debt",
-    };
-  }
+  const adminError = await checkAdminAccess<State>(
+    actionTimer,
+    "Admin access required to update initial debt"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     lotId: formData.get("lotId"),

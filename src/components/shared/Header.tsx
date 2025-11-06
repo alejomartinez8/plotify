@@ -1,7 +1,6 @@
 import { translations } from "@/lib/translations";
 import { auth, getUserRole } from "@/lib/auth";
-import { AuthButton } from "./AuthButton";
-import Image from "next/image";
+import UserMenu from "./UserMenu";
 
 export default async function Header() {
   const session = await auth();
@@ -11,46 +10,18 @@ export default async function Header() {
     <div className="bg-card border-b shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4">
-          <div>
-            <h1 className="text-foreground text-2xl font-bold">
+          <div className="flex-shrink min-w-0">
+            <h1 className="text-foreground text-xl sm:text-2xl font-bold truncate">
               {translations.app.title}
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm truncate">
               {translations.app.subtitle}
             </p>
           </div>
 
           {session?.user && (
-            <div className="flex items-center gap-3">
-              {session.user.image && (
-                <Image
-                  src={session.user.image}
-                  alt={session.user.name || "User"}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-              )}
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
-                    {session.user.name}
-                  </span>
-                  {userRole && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      userRole === 'admin'
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      {userRole === 'admin' ? translations.auth.admin : translations.auth.owner}
-                    </span>
-                  )}
-                </div>
-                <span className="text-muted-foreground text-xs">
-                  {session.user.email}
-                </span>
-              </div>
-              <AuthButton />
+            <div className="flex-shrink-0 ml-4">
+              <UserMenu user={session.user} userRole={userRole} />
             </div>
           )}
         </div>

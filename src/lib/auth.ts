@@ -161,9 +161,36 @@ export async function getUserEmail(): Promise<string | null> {
 }
 
 /**
+ * Check if a user has at least one assigned lot
+ */
+export async function hasAssignedLot(email: string): Promise<boolean> {
+  try {
+    // Import prisma here to avoid circular dependencies
+    const { default: prisma } = await import("@/lib/prisma");
+
+    const lotCount = await prisma.lot.count({
+      where: { ownerEmail: email },
+    });
+
+    return lotCount > 0;
+  } catch (error) {
+    logger.error(
+      "Error checking lot assignment",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: "auth",
+        email,
+      }
+    );
+    return false;
+  }
+}
+
+/**
  * Get user role based on email
  * Admin: if email is in ADMIN_EMAILS
- * Owner: any other authenticated user
+ * Owner: authenticated user with at least one assigned lot
+ * null: authenticated user without assigned lot
  */
 export async function getUserRole(): Promise<"admin" | "owner" | null> {
   try {
@@ -173,6 +200,10 @@ export async function getUserRole(): Promise<"admin" | "owner" | null> {
     if (ADMIN_EMAILS.includes(email)) {
       return "admin";
     }
+
+    // Check if user has at least one assigned lot
+    const hasLot = await hasAssignedLot(email);
+    if (!hasLot) return null;
 
     return "owner";
   } catch (error) {

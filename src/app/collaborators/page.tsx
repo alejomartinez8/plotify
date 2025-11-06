@@ -4,8 +4,11 @@ import CollaboratorsView from "@/components/shared/CollaboratorsView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { getUserRole, getUserLotIds } from "@/lib/auth";
+import { checkLotAccess } from "@/lib/check-lot-access";
 
 export default async function CollaboratorsPage() {
+  await checkLotAccess();
+
   try {
     const [userRole, userLotIds, collaborators, allLots] = await Promise.all([
       getUserRole(),

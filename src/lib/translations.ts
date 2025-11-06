@@ -346,6 +346,11 @@ export const translations = {
     loadingLots: "Error cargando datos de lotes",
     unknown: "Error desconocido",
 
+    // Authorization
+    noLotAssigned: "No tienes un lote asignado",
+    contactAdmin: "Contacta al administrador para solicitar acceso a un lote",
+    unauthorized: "No Autorizado",
+
     // Validation
     required: "Este campo es requerido",
     lotRequired: "El lote es requerido",

@@ -8,6 +8,7 @@ import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
 import { auth, getUserRole } from "@/lib/auth";
 import { SessionProvider } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function RootLayout({
   const session = await auth();
   const userRole = await getUserRole();
   const isAdmin = userRole === "admin";
+  const hasAccess = userRole !== null; // User has access if they have a role (admin or owner)
 
   return (
     <html lang="es">
@@ -33,7 +35,7 @@ export default async function RootLayout({
       >
         <SessionProvider session={session}>
           <Header />
-          {session?.user && <Navigation isAdmin={isAdmin} />}
+          {session?.user && hasAccess && <Navigation isAdmin={isAdmin} />}
           <main className="min-h-screen bg-gray-50">
             {children}
             <Analytics />

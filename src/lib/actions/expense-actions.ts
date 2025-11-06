@@ -9,7 +9,7 @@ import {
 } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
-import { requireAdmin } from "@/lib/auth";
+import { checkAdminAccess } from "./helpers";
 
 // Zod schema for validation
 const ExpenseSchema = z.object({
@@ -48,16 +48,11 @@ export async function createExpenseAction(
 ): Promise<ExpenseState> {
   const actionTimer = logger.timer("Create Expense Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to create expenses",
-    };
-  }
+  const adminError = await checkAdminAccess<ExpenseState>(
+    actionTimer,
+    "Admin access required to create expenses"
+  );
+  if (adminError) return adminError;
 
   // Extract and validate data
   const rawData = {
@@ -153,16 +148,11 @@ export async function updateExpenseAction(
 ): Promise<ExpenseState> {
   const actionTimer = logger.timer("Update Expense Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to update expenses",
-    };
-  }
+  const adminError = await checkAdminAccess<ExpenseState>(
+    actionTimer,
+    "Admin access required to update expenses"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     id: formData.get("id"),
@@ -262,16 +252,11 @@ export async function updateExpenseAction(
 export async function deleteExpenseAction(id: number) {
   const actionTimer = logger.timer("Delete Expense Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to delete expenses",
-    };
-  }
+  const adminError = await checkAdminAccess<ExpenseState>(
+    actionTimer,
+    "Admin access required to delete expenses"
+  );
+  if (adminError) return adminError;
 
   try {
     const result = await deleteExpense(id);

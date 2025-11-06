@@ -3,8 +3,11 @@ import ExpenseView from "@/components/shared/ExpenseView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
+import { checkLotAccess } from "@/lib/check-lot-access";
 
 export default async function ExpensesPage() {
+  await checkLotAccess();
+
   try {
     const [expenses, userRole] = await Promise.all([
       getExpenses(),

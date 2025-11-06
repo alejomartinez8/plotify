@@ -5,12 +5,15 @@ import IncomeView from "@/components/shared/IncomeView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
+import { checkLotAccess } from "@/lib/check-lot-access";
 
 interface IncomePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function IncomePage({ searchParams }: IncomePageProps) {
+  await checkLotAccess();
+
   const resolvedSearchParams = await searchParams;
 
   const lotParam = resolvedSearchParams.lot;

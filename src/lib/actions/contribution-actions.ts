@@ -9,7 +9,7 @@ import {
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
-import { requireAdmin } from "@/lib/auth";
+import { checkAdminAccess } from "./helpers";
 
 const ContributionSchema = z.object({
   lotId: z.string().min(1, translations.errors.lotRequired),
@@ -49,16 +49,11 @@ export async function createContributionAction(
 ): Promise<ContributionState> {
   const actionTimer = logger.timer("Create Contribution Action");
 
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    actionTimer.end();
-    return {
-      success: false,
-      message: "Admin access required to create contributions",
-    };
-  }
+  const adminError = await checkAdminAccess<ContributionState>(
+    actionTimer,
+    "Admin access required to create contributions"
+  );
+  if (adminError) return adminError;
 
   const rawData = {
     lotId: formData.get("lotId"),
@@ -155,15 +150,13 @@ export async function updateContributionAction(
   prevState: ContributionState,
   formData: FormData
 ): Promise<ContributionState> {
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    return {
-      success: false,
-      message: "Admin access required to update contributions",
-    };
-  }
+  const actionTimer = logger.timer("Update Contribution Action");
+
+  const adminError = await checkAdminAccess<ContributionState>(
+    actionTimer,
+    "Admin access required to update contributions"
+  );
+  if (adminError) return adminError;
 
   const validatedFields = UpdateContribution.safeParse({
     id: formData.get("id"),
@@ -231,15 +224,13 @@ export async function updateContributionAction(
 }
 
 export async function deleteContributionAction(id: number) {
-  // Check admin access
-  try {
-    await requireAdmin();
-  } catch (error) {
-    return {
-      success: false,
-      message: "Admin access required to delete contributions",
-    };
-  }
+  const actionTimer = logger.timer("Delete Contribution Action");
+
+  const adminError = await checkAdminAccess<ContributionState>(
+    actionTimer,
+    "Admin access required to delete contributions"
+  );
+  if (adminError) return adminError;
 
   try {
     const result = await deleteContribution(id);

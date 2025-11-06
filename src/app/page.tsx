@@ -6,6 +6,7 @@ import { getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { calculateSimpleLotBalances } from "@/lib/utils";
 import { getUserRole } from "@/lib/auth";
+import { checkLotAccess } from "@/lib/check-lot-access";
 import FundsOverview from "@/components/shared/FundsOverview";
 import LotCards from "@/components/shared/LotCards";
 import QuotaSummaryCard from "@/components/shared/QuotaSummaryCard";
@@ -13,6 +14,9 @@ import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function Home() {
+  // Check if user has lot access before loading any data
+  await checkLotAccess();
+
   try {
     const [fundsData, allLots, contributions, quotaConfigs, userRole] =
       await Promise.all([

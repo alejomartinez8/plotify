@@ -3,6 +3,7 @@ import { getLotWithContributions, getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
+import { checkLotAccess } from "@/lib/check-lot-access";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { calculateLotDebtDetail } from "@/lib/utils";
 import LotDetailView from "@/components/shared/LotDetailView";
@@ -13,6 +14,8 @@ interface LotPageProps {
 }
 
 export default async function LotPage({ params }: LotPageProps) {
+  await checkLotAccess();
+
   try {
     const resolvedParams = await params;
     const { id } = resolvedParams;
