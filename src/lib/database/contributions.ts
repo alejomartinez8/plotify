@@ -2,6 +2,13 @@ import prisma from "@/lib/prisma";
 import { Contribution, ContributionType } from "@/types/contributions.types";
 import { formatDateForStorage } from "@/lib/utils";
 
+/**
+ * Retrieves all contributions (income) from the database.
+ *
+ * @returns Array of all contributions ordered by ID (newest first)
+ * @example
+ * const contributions = await getContributions();
+ */
 export async function getContributions(): Promise<Contribution[]> {
   try {
     const contributions = await prisma.contribution.findMany({
@@ -20,6 +27,14 @@ export async function getContributions(): Promise<Contribution[]> {
   }
 }
 
+/**
+ * Retrieves a single contribution by its ID.
+ *
+ * @param id - The unique identifier of the contribution
+ * @returns Contribution object or null if not found
+ * @example
+ * const contribution = await getContributionById(123);
+ */
 export async function getContributionById(
   id: number
 ): Promise<Contribution | null> {
@@ -39,6 +54,22 @@ export async function getContributionById(
   }
 }
 
+/**
+ * Creates a new contribution (income) record.
+ * Handles date parsing to avoid timezone issues.
+ *
+ * @param data - Contribution data including lot, type, amount, date, and optional receipt info
+ * @returns Created contribution or null on error
+ * @example
+ * const contribution = await createContribution({
+ *   lotId: "LOT-001",
+ *   type: "maintenance",
+ *   amount: 5000,
+ *   date: "2024-01-15",
+ *   description: "Monthly maintenance fee",
+ *   receiptNumber: "REC-001"
+ * });
+ */
 export async function createContribution(data: {
   lotId: string;
   type: string;
@@ -51,7 +82,6 @@ export async function createContribution(data: {
   receiptFileName?: string | null;
 }): Promise<Contribution | null> {
   try {
-    // Parse date as local date to avoid timezone issues
     let date: Date;
     if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const [year, month, day] = data.date.split("-").map(Number);
@@ -77,6 +107,19 @@ export async function createContribution(data: {
   }
 }
 
+/**
+ * Updates an existing contribution record.
+ * Handles date parsing to avoid timezone issues.
+ *
+ * @param id - The unique identifier of the contribution to update
+ * @param data - Updated contribution data (all fields optional)
+ * @returns Updated contribution or null on error
+ * @example
+ * const updated = await updateContribution(123, {
+ *   amount: 6000,
+ *   description: "Updated maintenance fee"
+ * });
+ */
 export async function updateContribution(
   id: number,
   data: {
@@ -94,7 +137,6 @@ export async function updateContribution(
   try {
     const updateData: Record<string, unknown> = { ...data };
     if (data.date) {
-      // Parse date as local date to avoid timezone issues
       if (data.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
         const [year, month, day] = data.date.split("-").map(Number);
         updateData.date = new Date(year, month - 1, day);
@@ -117,6 +159,14 @@ export async function updateContribution(
   }
 }
 
+/**
+ * Deletes a contribution record from the database.
+ *
+ * @param id - The unique identifier of the contribution to delete
+ * @returns true if successful, false on error
+ * @example
+ * const success = await deleteContribution(123);
+ */
 export async function deleteContribution(id: number): Promise<boolean> {
   try {
     await prisma.contribution.delete({
@@ -129,6 +179,14 @@ export async function deleteContribution(id: number): Promise<boolean> {
   }
 }
 
+/**
+ * Retrieves all contributions for a specific lot.
+ *
+ * @param lotId - The unique identifier of the lot
+ * @returns Array of contributions for the lot, ordered by ID (newest first)
+ * @example
+ * const lotContributions = await getContributionsByLot("LOT-001");
+ */
 export async function getContributionsByLot(
   lotId: string
 ): Promise<Contribution[]> {
@@ -150,6 +208,14 @@ export async function getContributionsByLot(
   }
 }
 
+/**
+ * Retrieves all contributions filtered by type.
+ *
+ * @param type - The contribution type (maintenance, works, or others)
+ * @returns Array of contributions of the specified type, ordered by ID (newest first)
+ * @example
+ * const maintenanceContributions = await getContributionsByType("maintenance");
+ */
 export async function getContributionsByType(
   type: string
 ): Promise<Contribution[]> {
@@ -171,6 +237,16 @@ export async function getContributionsByType(
   }
 }
 
+/**
+ * Calculates the total income (sum of contributions) for a specific type.
+ * Used by balance calculations to determine fund-specific income totals.
+ *
+ * @param type - The contribution type (maintenance, works, or others)
+ * @returns Total amount of contributions for the specified type
+ * @example
+ * const maintenanceIncome = await getIncomeByType("maintenance");
+ * // Returns: 50000
+ */
 export async function getIncomeByType(type: ContributionType): Promise<number> {
   try {
     const result = await prisma.contribution.aggregate({
@@ -183,78 +259,5 @@ export async function getIncomeByType(type: ContributionType): Promise<number> {
   } catch (error) {
     console.error(`Error calculating income for type ${type}:`, error);
     return 0;
-  }
-}
-
-export async function getExpensesByType(
-  type: ContributionType
-): Promise<number> {
-  try {
-    const result = await prisma.expense.aggregate({
-      where: { type },
-      _sum: {
-        amount: true,
-      },
-    });
-    return result._sum.amount || 0;
-  } catch (error) {
-    console.error(`Error calculating expenses for type ${type}:`, error);
-    return 0;
-  }
-}
-
-export async function getFundBalance(
-  type: ContributionType
-): Promise<{ income: number; expenses: number; balance: number }> {
-  try {
-    const [income, expenses] = await Promise.all([
-      getIncomeByType(type),
-      getExpensesByType(type),
-    ]);
-
-    return {
-      income,
-      expenses,
-      balance: income - expenses,
-    };
-  } catch (error) {
-    console.error(`Error calculating fund balance for type ${type}:`, error);
-    return { income: 0, expenses: 0, balance: 0 };
-  }
-}
-
-export async function getAllFundsBalances(): Promise<{
-  maintenance: { income: number; expenses: number; balance: number };
-  works: { income: number; expenses: number; balance: number };
-  others: { income: number; expenses: number; balance: number };
-  consolidated: { income: number; expenses: number; balance: number };
-}> {
-  try {
-    const [maintenance, works, others] = await Promise.all([
-      getFundBalance("maintenance"),
-      getFundBalance("works"),
-      getFundBalance("others"),
-    ]);
-
-    const consolidated = {
-      income: maintenance.income + works.income + others.income,
-      expenses: maintenance.expenses + works.expenses + others.expenses,
-      balance: maintenance.balance + works.balance + others.balance,
-    };
-
-    return {
-      maintenance,
-      works,
-      others,
-      consolidated,
-    };
-  } catch (error) {
-    console.error("Error calculating all funds balances:", error);
-    return {
-      maintenance: { income: 0, expenses: 0, balance: 0 },
-      works: { income: 0, expenses: 0, balance: 0 },
-      others: { income: 0, expenses: 0, balance: 0 },
-      consolidated: { income: 0, expenses: 0, balance: 0 },
-    };
   }
 }

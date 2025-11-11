@@ -2,6 +2,14 @@ import prisma from "@/lib/prisma";
 import { Collaborator, CollaboratorWithLots } from "@/types/collaborators.types";
 import { logger } from "@/lib/logger";
 
+/**
+ * Retrieves all collaborators with their assigned lots.
+ *
+ * @returns Array of collaborators with lot assignment details, ordered by name
+ * @example
+ * const collaborators = await getCollaborators();
+ * // Returns: [{ id: "1", name: "John Doe", lotAssignments: [...] }]
+ */
 export async function getCollaborators(): Promise<CollaboratorWithLots[]> {
   try {
     const collaborators = await prisma.collaborator.findMany({
@@ -45,6 +53,14 @@ export async function getCollaborators(): Promise<CollaboratorWithLots[]> {
   }
 }
 
+/**
+ * Retrieves a single collaborator by ID with their assigned lots.
+ *
+ * @param id - The unique identifier of the collaborator
+ * @returns Collaborator with lot assignments or null if not found
+ * @example
+ * const collaborator = await getCollaboratorById("abc123");
+ */
 export async function getCollaboratorById(id: string): Promise<CollaboratorWithLots | null> {
   try {
     const collaborator = await prisma.collaborator.findUnique({
@@ -89,6 +105,14 @@ export async function getCollaboratorById(id: string): Promise<CollaboratorWithL
   }
 }
 
+/**
+ * Retrieves all collaborators assigned to a specific lot.
+ *
+ * @param lotId - The unique identifier of the lot
+ * @returns Array of collaborators assigned to the lot, ordered by name
+ * @example
+ * const collaborators = await getCollaboratorsByLotId("LOT-001");
+ */
 export async function getCollaboratorsByLotId(lotId: string): Promise<CollaboratorWithLots[]> {
   try {
     const collaborators = await prisma.collaborator.findMany({
@@ -140,6 +164,18 @@ export async function getCollaboratorsByLotId(lotId: string): Promise<Collaborat
   }
 }
 
+/**
+ * Creates a new collaborator with optional lot assignments and photo.
+ *
+ * @param data - Collaborator data including name, optional photo details, and lot assignments
+ * @returns Created collaborator or null on error
+ * @example
+ * const collaborator = await createCollaborator({
+ *   name: "John Doe",
+ *   photoFileUrl: "https://...",
+ *   lotIds: ["LOT-001", "LOT-002"]
+ * });
+ */
 export async function createCollaborator(data: {
   name: string;
   photoFileId?: string | null;
@@ -176,6 +212,15 @@ export async function createCollaborator(data: {
   }
 }
 
+/**
+ * Updates a collaborator's information.
+ *
+ * @param id - The unique identifier of the collaborator
+ * @param data - Updated collaborator data (name and/or photo details)
+ * @returns Updated collaborator or null on error
+ * @example
+ * const updated = await updateCollaborator("abc123", { name: "Jane Doe" });
+ */
 export async function updateCollaborator(
   id: string,
   data: {
@@ -207,6 +252,14 @@ export async function updateCollaborator(
   }
 }
 
+/**
+ * Deletes a collaborator and all their lot assignments.
+ *
+ * @param id - The unique identifier of the collaborator to delete
+ * @returns true if successful, false on error
+ * @example
+ * const success = await deleteCollaborator("abc123");
+ */
 export async function deleteCollaborator(id: string): Promise<boolean> {
   try {
     await prisma.collaborator.delete({
@@ -224,6 +277,15 @@ export async function deleteCollaborator(id: string): Promise<boolean> {
   }
 }
 
+/**
+ * Assigns a collaborator to a specific lot.
+ *
+ * @param collaboratorId - The unique identifier of the collaborator
+ * @param lotId - The unique identifier of the lot
+ * @returns true if successful, false on error
+ * @example
+ * const success = await assignCollaboratorToLot("abc123", "LOT-001");
+ */
 export async function assignCollaboratorToLot(
   collaboratorId: string,
   lotId: string
@@ -248,6 +310,15 @@ export async function assignCollaboratorToLot(
   }
 }
 
+/**
+ * Removes a collaborator's assignment from a specific lot.
+ *
+ * @param collaboratorId - The unique identifier of the collaborator
+ * @param lotId - The unique identifier of the lot
+ * @returns true if successful, false on error
+ * @example
+ * const success = await removeCollaboratorFromLot("abc123", "LOT-001");
+ */
 export async function removeCollaboratorFromLot(
   collaboratorId: string,
   lotId: string
@@ -274,6 +345,16 @@ export async function removeCollaboratorFromLot(
   }
 }
 
+/**
+ * Updates all lot assignments for a collaborator.
+ * Removes all existing assignments and creates new ones based on provided lot IDs.
+ *
+ * @param collaboratorId - The unique identifier of the collaborator
+ * @param lotIds - Array of lot IDs to assign to the collaborator
+ * @returns true if successful, false on error
+ * @example
+ * const success = await updateCollaboratorLotAssignments("abc123", ["LOT-001", "LOT-003"]);
+ */
 export async function updateCollaboratorLotAssignments(
   collaboratorId: string,
   lotIds: string[]

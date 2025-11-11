@@ -1,7 +1,5 @@
-import {
-  getAllFundsBalances,
-  getContributions,
-} from "@/lib/database/contributions";
+import { getContributions } from "@/lib/database/contributions";
+import { getAllFundsBalances } from "@/lib/database/balances";
 import { getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { calculateSimpleLotBalances } from "@/lib/utils";
