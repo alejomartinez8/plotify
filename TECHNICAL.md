@@ -25,7 +25,6 @@
 
 - **ESLint** with Next.js config
 - **Prettier** with Tailwind CSS plugin
-- **Commitizen** for conventional commits
 - **tsx** for TypeScript execution
 - **Prisma Studio** for database management
 
@@ -260,7 +259,7 @@ npm run db:studio     # Open Prisma Studio
 - **TypeScript**: Strict mode enabled for type safety
 - **ESLint**: Next.js recommended configuration
 - **Prettier**: Consistent code formatting with Tailwind plugin
-- **Conventional Commits**: Standardized commit messages with Commitizen
+- **Conventional Commits**: Standardized commit messages
 
 ### Git Workflow
 
@@ -333,7 +332,6 @@ npm run format:check  # Check code formatting
 
 - `@tailwindcss/postcss` - Tailwind CSS v4 PostCSS plugin
 - `prettier-plugin-tailwindcss` - Prettier plugin for Tailwind
-- `commitizen` - Conventional commit tool
 - `tsx` - TypeScript execution
 
 ---
