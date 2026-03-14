@@ -8,6 +8,7 @@ import { checkLotAccess } from "@/lib/check-lot-access";
 import FundsOverview from "@/components/shared/FundsOverview";
 import LotCards from "@/components/shared/LotCards";
 import QuotaSummaryCard from "@/components/shared/QuotaSummaryCard";
+import WhatsAppReportButton from "@/components/shared/WhatsAppReportButton";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
@@ -36,6 +37,11 @@ export default async function Home() {
         <div className="space-y-8">
           <FundsOverview fundsData={fundsData} />
           <QuotaSummaryCard lotBalances={lotBalances} />
+          {userRole === "admin" && (
+            <div className="flex justify-end">
+              <WhatsAppReportButton lotBalances={lotBalances} />
+            </div>
+          )}
           <LotCards
             lots={allLots}
             contributions={contributions}

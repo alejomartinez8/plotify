@@ -424,6 +424,27 @@ export const translations = {
     confirmAction: "¿Estás seguro de que quieres realizar esta acción?",
   },
 
+  // WhatsApp report
+  whatsapp: {
+    copyReport: "Copiar Informe WhatsApp",
+    copied: "¡Copiado!",
+    copyError: "Error al copiar",
+    reportTitle: "📊 *INFORME PARCELA JASLICO*",
+    reportDate: "📅 Fecha:",
+    reportSeparator: "─────────────────────",
+    reportLots: "🏘️ *ESTADO POR LOTE*",
+    lotPrefix: "🏡 *Lote",
+    ownerPrefix: "👤",
+    contributedLabel: "💵 Aportado:",
+    owedLabel: "🔴 Debe:",
+    currentLabel: "✅ _Al día_",
+    summaryTitle: "📋 *RESUMEN GENERAL*",
+    summaryTotalLots: "Total lotes:",
+    summaryOverdue: "En mora:",
+    summaryDebt: "Cartera total:",
+    summaryFooter: "_Generado desde Parcela Jaslico_",
+  },
+
   // Date and time
   months: [
     "ENE",
