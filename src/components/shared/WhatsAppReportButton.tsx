@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { SimpleLotBalance } from "@/types/quotas.types";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
@@ -18,7 +18,11 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
   lines.push(t.reportSeparator);
   lines.push(t.reportLots);
 
-  for (const lot of lotBalances) {
+  const sorted = [...lotBalances].sort((a, b) =>
+    a.lotNumber.localeCompare(b.lotNumber, undefined, { numeric: true })
+  );
+
+  for (const lot of sorted) {
     lines.push("");
     lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
     lines.push(`${t.contributedLabel} ${formatCurrency(lot.totalContributions)}`);
