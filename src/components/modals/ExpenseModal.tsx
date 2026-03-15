@@ -38,11 +38,11 @@ export default function ExpenseModal({
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewFileName, setPreviewFileName] = useState<string | undefined>(
     expense?.receiptFileName || undefined
   );
   const { uploadReceipt, isUploading } = useReceiptUpload();
+  const isLoading = isUploading || isPending;
 
   useEffect(() => {
     if (state?.success) {
@@ -51,21 +51,14 @@ export default function ExpenseModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true);
-
     try {
-      // Handle receipt upload for new files OR preserve existing receipt data
       if (selectedFile || (expense && expense.receiptFileId)) {
-        const additionalData: Record<string, string> = {
-          category: formData.get("category") as string,
-        };
-
         await uploadReceipt({
           type: "expense",
           formData,
           selectedFile,
           existingRecord: expense,
-          additionalData,
+          additionalData: { category: formData.get("category") as string },
         });
       }
 
@@ -85,10 +78,7 @@ export default function ExpenseModal({
     } catch (error) {
       const errorInstance =
         error instanceof Error ? error : new Error(String(error));
-      // Show error to user
       alert(`Error: ${errorInstance.message}`);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -130,7 +120,7 @@ export default function ExpenseModal({
               required
               min="0"
               step="1"
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.amount && (
               <div className="text-destructive text-sm">
@@ -149,7 +139,7 @@ export default function ExpenseModal({
                 expense?.date ? formatDateForStorage(expense.date) : ""
               }
               required
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.date && (
               <div className="text-destructive text-sm">
@@ -168,7 +158,7 @@ export default function ExpenseModal({
               id="description"
               defaultValue={expense?.description || ""}
               placeholder={translations.placeholders.optionalDescription}
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.description && (
               <div className="text-destructive text-sm">
@@ -186,7 +176,7 @@ export default function ExpenseModal({
               defaultValue={expense?.category || ""}
               placeholder={translations.placeholders.categoryExample}
               required
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.category && (
               <div className="text-destructive text-sm">
@@ -205,7 +195,7 @@ export default function ExpenseModal({
               id="receiptNumber"
               defaultValue={expense?.receiptNumber || ""}
               placeholder={translations.placeholders.receiptNumber}
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.receiptNumber && (
               <div className="text-destructive text-sm">
@@ -217,7 +207,7 @@ export default function ExpenseModal({
           <FileUpload
             onFileSelect={setSelectedFile}
             value={selectedFile}
-            disabled={isSubmitting || isUploading}
+            disabled={isLoading}
             showPreview={true}
             previewFileName={previewFileName}
             onRemovePreview={() => setPreviewFileName(undefined)}
@@ -228,7 +218,7 @@ export default function ExpenseModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isSubmitting || isUploading || isPending}
+            disabled={isLoading}
           >
             {translations.actions.cancel}
           </Button>
@@ -236,9 +226,9 @@ export default function ExpenseModal({
             type="submit"
             form="expense-form"
             variant="secondary"
-            disabled={isSubmitting || isUploading || isPending}
+            disabled={isLoading}
           >
-            {isSubmitting || isUploading || isPending
+            {isLoading
               ? translations.status.processing
               : expense
                 ? translations.actions.update
