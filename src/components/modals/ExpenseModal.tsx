@@ -225,7 +225,7 @@ export default function ExpenseModal({
           <Button
             type="submit"
             form="expense-form"
-            variant="secondary"
+            variant="default"
             disabled={isLoading}
           >
             {isLoading
