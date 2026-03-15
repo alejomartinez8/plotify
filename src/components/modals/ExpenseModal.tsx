@@ -36,7 +36,7 @@ export default function ExpenseModal({
   const initialState: ExpenseState = { message: null, errors: {} };
   const action = expense ? updateExpenseAction : createExpenseAction;
   const [state, formAction] = useActionState(action, initialState);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewFileName, setPreviewFileName] = useState<string | undefined>(
@@ -228,7 +228,7 @@ export default function ExpenseModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isSubmitting || isUploading}
+            disabled={isSubmitting || isUploading || isPending}
           >
             {translations.actions.cancel}
           </Button>
@@ -236,9 +236,9 @@ export default function ExpenseModal({
             type="submit"
             form="expense-form"
             variant="secondary"
-            disabled={isSubmitting || isUploading}
+            disabled={isSubmitting || isUploading || isPending}
           >
-            {isSubmitting || isUploading
+            {isSubmitting || isUploading || isPending
               ? translations.status.processing
               : expense
                 ? translations.actions.update
