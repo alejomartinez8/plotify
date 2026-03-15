@@ -63,6 +63,7 @@ export async function createLot(data: {
   initialWorksDebt?: number;
   isExempt?: boolean;
   exemptionReason?: string | null;
+  exemptionEndDate?: Date | string | null;
 }): Promise<Lot | null> {
   try {
     const lot = await prisma.lot.create({
@@ -73,6 +74,7 @@ export async function createLot(data: {
         initialWorksDebt: data.initialWorksDebt || 0,
         isExempt: data.isExempt || false,
         exemptionReason: data.exemptionReason || null,
+        exemptionEndDate: data.exemptionEndDate ? new Date(data.exemptionEndDate) : null,
       },
     });
     return lot;
@@ -103,6 +105,7 @@ export async function updateLot(
     initialWorksDebt?: number;
     isExempt?: boolean;
     exemptionReason?: string | null;
+    exemptionEndDate?: Date | string | null;
   }
 ): Promise<Lot | null> {
   try {
@@ -118,6 +121,9 @@ export async function updateLot(
         ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
         ...(data.exemptionReason !== undefined && {
           exemptionReason: data.exemptionReason,
+        }),
+        ...(data.exemptionEndDate !== undefined && {
+          exemptionEndDate: data.exemptionEndDate ? new Date(data.exemptionEndDate) : null,
         }),
       },
     });

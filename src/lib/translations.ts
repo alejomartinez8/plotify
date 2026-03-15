@@ -119,6 +119,7 @@ export const translations = {
     exempt: "Exento",
     exemption: "Exención",
     exemptionReason: "Razón de exención",
+    exemptionEndDate: "Activo desde",
     exemptLot: "Exentar lote",
     activateLot: "Activar lote",
     notApplicable: "N/A",

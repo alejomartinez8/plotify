@@ -25,7 +25,6 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
   for (const lot of sorted) {
     lines.push("");
     lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
-    lines.push(`${t.contributedLabel} ${formatCurrency(lot.totalContributions)}`);
     if (lot.outstandingBalance === 0) {
       lines.push(t.currentLabel);
     } else {
@@ -34,6 +33,7 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
   }
 
   const overdueCount = lotBalances.filter((l) => l.status === "overdue").length;
+  const currentCount = lotBalances.filter((l) => l.status === "current").length;
   const totalDebt = lotBalances.reduce((sum, l) => sum + l.outstandingBalance, 0);
 
   lines.push("");
@@ -41,6 +41,7 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
   lines.push(t.summaryTitle);
   lines.push(`${t.summaryTotalLots} ${lotBalances.length}`);
   lines.push(`${t.summaryOverdue} ${overdueCount}`);
+  lines.push(`✅ Al día: ${currentCount}`);
   lines.push(`${t.summaryDebt} ${formatCurrency(totalDebt)}`);
   lines.push(t.reportSeparator);
   lines.push(t.summaryFooter);

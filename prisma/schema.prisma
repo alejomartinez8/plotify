@@ -15,6 +15,7 @@ model Lot {
   initialWorksDebt        Int                      @default(0)
   isExempt                Boolean                  @default(false)
   exemptionReason         String?
+  exemptionEndDate        DateTime?
   collaboratorAssignments CollaboratorAssignment[]
   contributions           Contribution[]
 

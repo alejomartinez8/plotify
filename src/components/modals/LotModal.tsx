@@ -49,6 +49,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
           parseInt(formData.get("initialWorksDebt") as string) || 0,
         isExempt: formData.get("isExempt") === "on",
         exemptionReason: (formData.get("exemptionReason") as string) || null,
+        exemptionEndDate: (formData.get("exemptionEndDate") as string) || null,
       };
       onSuccess(updatedLot, !!lot);
       formAction(formData);
@@ -189,6 +190,23 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
               <p className="text-xs text-gray-600">
                 Razón por la cual este lote no debe computar en cálculos de
                 deuda (opcional)
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="exemptionEndDate">
+                {translations.labels.exemptionEndDate}
+              </Label>
+              <Input
+                type="date"
+                name="exemptionEndDate"
+                id="exemptionEndDate"
+                defaultValue={lot?.exemptionEndDate ? new Date(lot.exemptionEndDate).toISOString().slice(0, 10) : ""}
+                disabled={isPending}
+              />
+              <p className="text-xs text-gray-600">
+                Si se establece, el lote participará en los cálculos de cuotas a partir de esta fecha.
+                Si se deja vacío (y el lote está marcado como exento), quedará excluido completamente.
               </p>
             </div>
           </div>

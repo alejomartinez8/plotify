@@ -120,16 +120,27 @@ export function calculateSimpleLotBalances(
   });
 
   const lotBalances: SimpleLotBalance[] = lots
-    .filter((lot) => !lot.isExempt) // Exclude exempt lots from debt calculations
+    .filter((lot) => !lot.isExempt || lot.exemptionEndDate) // Exclude fully exempt lots (no end date)
     .map((lot) => {
-      const lotContributions = contributions.filter((c) => c.lotId === lot.id);
+      // If an active-from date is set, only count quotas and contributions from that date onwards
+      const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
+
+      const lotContributions = contributions.filter(
+        (c) => c.lotId === lot.id && (!activeFrom || new Date(c.date) >= activeFrom)
+      );
       const totalContributions = lotContributions.reduce(
         (sum, c) => sum + c.amount,
         0
       );
 
+      const lotQuotas = activeFrom
+        ? applicableQuotas.filter(
+            (q) => q.dueDate && new Date(q.dueDate) >= activeFrom
+          )
+        : applicableQuotas;
+
       // Calculate total quotas applicable to this lot
-      const totalQuotas = applicableQuotas.reduce(
+      const totalQuotas = lotQuotas.reduce(
         (sum, quota) => sum + quota.amount,
         0
       );
@@ -174,8 +185,8 @@ export function calculateLotDebtDetail(
 ): LotDebtDetail | null {
   if (!lotWithContributions) return null;
 
-  // Return null for exempt lots (they don't have debt calculations)
-  if (lotWithContributions.isExempt) return null;
+  // Return null for fully exempt lots (no exemptionEndDate means completely excluded)
+  if (lotWithContributions.isExempt && !lotWithContributions.exemptionEndDate) return null;
 
   const currentDate = new Date();
 
@@ -187,7 +198,21 @@ export function calculateLotDebtDetail(
     return false;
   });
 
-  const lotContributions = lotWithContributions.contributions || [];
+  // If an active-from date is set, only count quotas and contributions from that date onwards
+  const activeFrom = lotWithContributions.exemptionEndDate
+    ? new Date(lotWithContributions.exemptionEndDate)
+    : null;
+
+  const lotQuotas = activeFrom
+    ? applicableQuotas.filter(
+        (q) => q.dueDate && new Date(q.dueDate) >= activeFrom
+      )
+    : applicableQuotas;
+
+  const allContributions = lotWithContributions.contributions || [];
+  const lotContributions = activeFrom
+    ? allContributions.filter((c: any) => c.date && new Date(c.date) >= activeFrom)
+    : allContributions;
 
   // Calculate contributions by type
   const maintenanceContributions = lotContributions
@@ -201,11 +226,11 @@ export function calculateLotDebtDetail(
   const totalContributions = maintenanceContributions + worksContributions;
 
   // Calculate quotas by type
-  const maintenanceQuotas = applicableQuotas
+  const maintenanceQuotas = lotQuotas
     .filter((q) => q.quotaType === "maintenance")
     .reduce((sum, q) => sum + q.amount, 0);
 
-  const worksQuotas = applicableQuotas
+  const worksQuotas = lotQuotas
     .filter((q) => q.quotaType === "works")
     .reduce((sum, q) => sum + q.amount, 0);
 
