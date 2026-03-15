@@ -23,6 +23,7 @@ const LotSchema = z.object({
     .optional(),
   isExempt: z.boolean().optional(),
   exemptionReason: z.string().nullable().optional(),
+  exemptionEndDate: z.string().nullable().optional(),
 });
 
 const CreateLot = LotSchema;
@@ -68,6 +69,7 @@ export async function createLotAction(
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
       (formData.get("exemptionReason") as string)?.trim() || null,
+    exemptionEndDate: (formData.get("exemptionEndDate") as string) || null,
   };
 
   const validatedFields = CreateLot.safeParse(rawData);
@@ -86,7 +88,7 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason } =
+  const { lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
     validatedFields.data;
 
   try {
@@ -97,6 +99,7 @@ export async function createLotAction(
       initialWorksDebt,
       isExempt,
       exemptionReason,
+      exemptionEndDate,
     });
   } catch (error) {
     const errorInstance =
@@ -114,6 +117,7 @@ export async function createLotAction(
   }
 
   revalidatePath("/lots");
+  revalidatePath("/");
   actionTimer.end();
 
   return { message: `${translations.messages.created}.`, success: true };
@@ -140,6 +144,7 @@ export async function updateLotAction(
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
       (formData.get("exemptionReason") as string)?.trim() || null,
+    exemptionEndDate: (formData.get("exemptionEndDate") as string) || null,
   };
 
   const validatedFields = UpdateLot.safeParse(rawData);
@@ -162,7 +167,7 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason } =
+  const { id, lotNumber, owner, ownerEmail, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
     validatedFields.data;
 
   try {
@@ -173,6 +178,7 @@ export async function updateLotAction(
       initialWorksDebt,
       isExempt,
       exemptionReason,
+      exemptionEndDate,
     });
   } catch (error) {
     const errorInstance =
@@ -191,6 +197,7 @@ export async function updateLotAction(
   }
 
   revalidatePath("/lots");
+  revalidatePath("/");
   actionTimer.end();
 
   return { message: `${translations.messages.updated}.`, success: true };
@@ -208,6 +215,7 @@ export async function deleteLotAction(id: string) {
   try {
     await deleteLot(id);
     revalidatePath("/lots");
+    revalidatePath("/");
     actionTimer.end();
 
     return { message: `${translations.messages.deleted}.`, success: true };

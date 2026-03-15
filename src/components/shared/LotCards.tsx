@@ -5,7 +5,7 @@ import { Plus, Edit, Trash2, Info, Eye, Mail } from "lucide-react";
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
-import { getStatusColor, formatCurrency } from "@/lib/utils";
+import { getStatusColor, formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { SimpleLotBalance } from "@/types/quotas.types";
 import { translations } from "@/lib/translations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -277,6 +277,7 @@ export default function LotCards({
                                 <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
                                   {lot.exemptionReason ||
                                     translations.labels.exempt}
+                                  {lot.exemptionEndDate && ` (activo desde ${formatDateForDisplay(lot.exemptionEndDate)})`}
                                   <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
                                 </div>
                               </div>
@@ -383,7 +384,7 @@ export default function LotCards({
                             </span>
                             <span
                               className={`text-xs font-medium sm:text-sm sm:font-semibold ${
-                                lot.isExempt
+                                lot.isExempt && !lot.exemptionEndDate
                                   ? "text-gray-500"
                                   : lot.balance?.outstandingBalance &&
                                       lot.balance.outstandingBalance > 0
@@ -391,7 +392,7 @@ export default function LotCards({
                                     : "text-green-600"
                               }`}
                             >
-                              {lot.isExempt
+                              {lot.isExempt && !lot.exemptionEndDate
                                 ? "-"
                                 : lot.balance
                                   ? formatCurrency(
