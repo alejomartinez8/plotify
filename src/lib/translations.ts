@@ -443,6 +443,7 @@ export const translations = {
     summaryTotalLots: "Total lotes:",
     summaryOverdue: "En mora:",
     summaryDebt: "Cartera total:",
+    summaryCashBalance: "💰 Saldo de caja:",
     summaryFooter: "_Generado desde Parcela Jaslico_",
   },
 
