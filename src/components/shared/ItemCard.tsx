@@ -1,4 +1,4 @@
-import { Edit, Trash2, Calendar, Receipt, Eye, FileText } from "lucide-react";
+import { Edit, Trash2, Receipt, Eye, FileText } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
@@ -62,7 +62,6 @@ export default function ItemCard({
       {/* Header Row - Date */}
       <div className="mb-3 pr-24">
         <div className="flex items-center gap-2 text-gray-500">
-          <Calendar className="h-4 w-4" />
           <time className="text-sm font-medium">
             {formatDateForDisplay(date)}
           </time>
