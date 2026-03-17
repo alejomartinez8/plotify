@@ -39,7 +39,7 @@ export default async function Home() {
           <QuotaSummaryCard lotBalances={lotBalances} />
           {userRole === "admin" && (
             <div className="flex justify-end">
-              <WhatsAppReportButton lotBalances={lotBalances} />
+              <WhatsAppReportButton lotBalances={lotBalances} cashBalance={fundsData.consolidated.balance} />
             </div>
           )}
           <LotCards

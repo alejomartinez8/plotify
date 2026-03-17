@@ -9,7 +9,10 @@ import { translations } from "@/lib/translations";
 
 const t = translations.whatsapp;
 
-function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
+function generateWhatsAppReport(
+  lotBalances: SimpleLotBalance[],
+  cashBalance: number
+): string {
   const today = formatDateForDisplay(new Date());
   const lines: string[] = [];
 
@@ -23,25 +26,26 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[]): string {
   );
 
   for (const lot of sorted) {
-    lines.push("");
-    lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
-    lines.push(`${t.contributedLabel} ${formatCurrency(lot.totalContributions)}`);
-    if (lot.outstandingBalance === 0) {
-      lines.push(t.currentLabel);
-    } else {
-      lines.push(`${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`);
-    }
+    const status =
+      lot.outstandingBalance === 0
+        ? t.currentStatus
+        : `${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`;
+    lines.push(
+      `${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner} — ${status}`
+    );
   }
 
   const overdueCount = lotBalances.filter((l) => l.status === "overdue").length;
   const totalDebt = lotBalances.reduce((sum, l) => sum + l.outstandingBalance, 0);
 
-  lines.push("");
   lines.push(t.reportSeparator);
-  lines.push(t.summaryTitle);
-  lines.push(`${t.summaryTotalLots} ${lotBalances.length}`);
-  lines.push(`${t.summaryOverdue} ${overdueCount}`);
-  lines.push(`${t.summaryDebt} ${formatCurrency(totalDebt)}`);
+  lines.push(
+    t.summaryLine
+      .replace("%total%", String(lotBalances.length))
+      .replace("%overdue%", String(overdueCount))
+      .replace("%debt%", formatCurrency(totalDebt))
+  );
+  lines.push(`${t.cashBalance} ${formatCurrency(cashBalance)}`);
   lines.push(t.reportSeparator);
   lines.push(t.summaryFooter);
 
@@ -52,14 +56,18 @@ type CopyStatus = "idle" | "copied" | "error";
 
 interface WhatsAppReportButtonProps {
   lotBalances: SimpleLotBalance[];
+  cashBalance: number;
 }
 
-export default function WhatsAppReportButton({ lotBalances }: WhatsAppReportButtonProps) {
+export default function WhatsAppReportButton({
+  lotBalances,
+  cashBalance,
+}: WhatsAppReportButtonProps) {
   const [status, setStatus] = useState<CopyStatus>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleClick() {
-    const text = generateWhatsAppReport(lotBalances);
+    const text = generateWhatsAppReport(lotBalances, cashBalance);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
