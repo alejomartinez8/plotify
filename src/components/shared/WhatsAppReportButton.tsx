@@ -22,10 +22,13 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBal
   );
 
   for (const lot of sorted) {
-    const status = lot.outstandingBalance === 0
-      ? t.currentLabel
-      : `${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`;
-    lines.push(`${t.lotPrefix} ${lot.lotNumber}* ${t.ownerPrefix} ${lot.owner} · ${status}`);
+    lines.push("");
+    lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
+    if (lot.outstandingBalance === 0) {
+      lines.push(t.currentLabel);
+    } else {
+      lines.push(`${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`);
+    }
   }
 
   const overdueCount = lotBalances.filter((l) => l.status === "overdue").length;
