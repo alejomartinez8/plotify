@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useActionState, useTransition, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useReceiptUpload } from "@/hooks/useReceiptUpload";
 import { Expense } from "@/types/expenses.types";
 import {
@@ -37,12 +38,13 @@ export default function ExpenseModal({
   const action = expense ? updateExpenseAction : createExpenseAction;
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewFileName, setPreviewFileName] = useState<string | undefined>(
     expense?.receiptFileName || undefined
   );
   const { uploadReceipt, isUploading } = useReceiptUpload();
-  const isLoading = isUploading || isPending;
+  const isLoading = isUploading || isPending || isSubmitting;
 
   useEffect(() => {
     if (state?.success) {
@@ -51,6 +53,7 @@ export default function ExpenseModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true);
     try {
       if (selectedFile || (expense && expense.receiptFileId)) {
         await uploadReceipt({
@@ -76,6 +79,7 @@ export default function ExpenseModal({
         formAction(formData);
       });
     } catch (error) {
+      setIsSubmitting(false);
       const errorInstance =
         error instanceof Error ? error : new Error(String(error));
       alert(`Error: ${errorInstance.message}`);
@@ -225,14 +229,18 @@ export default function ExpenseModal({
           <Button
             type="submit"
             form="expense-form"
-            variant="secondary"
             disabled={isLoading}
           >
-            {isLoading
-              ? translations.status.processing
-              : expense
-                ? translations.actions.update
-                : translations.actions.save}
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                {translations.status.processing}
+              </>
+            ) : expense ? (
+              translations.actions.update
+            ) : (
+              translations.actions.save
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
