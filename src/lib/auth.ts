@@ -31,6 +31,13 @@ const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
 const redirectProxyUrl =
   isPreview && productionUrl ? `${productionUrl}/api/auth` : undefined;
 
+// For preview deployments, tell Auth.js its own URL so it correctly
+// encodes the preview URL in the OAuth state parameter.
+// Production reads this state and redirects back to the preview URL.
+if (isPreview && process.env.VERCEL_URL && !process.env.AUTH_URL) {
+  process.env.AUTH_URL = `https://${process.env.VERCEL_URL}`;
+}
+
 export const authConfig: NextAuthConfig = {
   ...(redirectProxyUrl && { redirectProxyUrl }),
   providers: [
