@@ -26,7 +26,13 @@ declare module "@auth/core/jwt" {
 const ADMIN_EMAILS =
   process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [];
 
+const isPreview = process.env.VERCEL_ENV === "preview";
+const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
+const redirectProxyUrl =
+  isPreview && productionUrl ? `${productionUrl}/api/auth` : undefined;
+
 export const authConfig: NextAuthConfig = {
+  ...(redirectProxyUrl && { redirectProxyUrl }),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
