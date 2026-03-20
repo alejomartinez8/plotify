@@ -26,7 +26,23 @@ declare module "@auth/core/jwt" {
 const ADMIN_EMAILS =
   process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [];
 
+const isPreview = process.env.VERCEL_ENV === "preview";
+const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
+
+// Set redirectProxyUrl on BOTH preview and production:
+// - Preview: routes OAuth callbacks through production (Google's redirect_uri points to production)
+// - Production: enables Auth.js to relay callbacks back to preview deployments
+const redirectProxyUrl = productionUrl ? `${productionUrl}/api/auth` : undefined;
+
+// For preview deployments, tell Auth.js its own URL so it correctly
+// encodes the preview URL in the OAuth state parameter.
+// Production reads this state and redirects back to the preview URL.
+if (isPreview && process.env.VERCEL_URL && !process.env.AUTH_URL) {
+  process.env.AUTH_URL = `https://${process.env.VERCEL_URL}`;
+}
+
 export const authConfig: NextAuthConfig = {
+  ...(redirectProxyUrl && { redirectProxyUrl }),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
