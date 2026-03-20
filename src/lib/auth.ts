@@ -26,10 +26,13 @@ declare module "@auth/core/jwt" {
 const ADMIN_EMAILS =
   process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [];
 
-const isPreview = process.env.VERCEL_ENV === "preview";
+// Set redirectProxyUrl in ALL environments so that production can proxy
+// OAuth callbacks back to preview deployments (Auth.js v5 requirement).
+// See: https://authjs.dev/getting-started/deployment#securing-a-preview-deployment
 const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
-const redirectProxyUrl =
-  isPreview && productionUrl ? `${productionUrl}/api/auth` : undefined;
+const redirectProxyUrl = productionUrl
+  ? `${productionUrl}/api/auth`
+  : undefined;
 
 export const authConfig: NextAuthConfig = {
   ...(redirectProxyUrl && { redirectProxyUrl }),
