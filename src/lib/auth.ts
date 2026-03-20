@@ -28,8 +28,11 @@ const ADMIN_EMAILS =
 
 const isPreview = process.env.VERCEL_ENV === "preview";
 const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
-const redirectProxyUrl =
-  isPreview && productionUrl ? `${productionUrl}/api/auth` : undefined;
+
+// Set redirectProxyUrl on BOTH preview and production:
+// - Preview: routes OAuth callbacks through production (Google's redirect_uri points to production)
+// - Production: enables Auth.js to relay callbacks back to preview deployments
+const redirectProxyUrl = productionUrl ? `${productionUrl}/api/auth` : undefined;
 
 // For preview deployments, tell Auth.js its own URL so it correctly
 // encodes the preview URL in the OAuth state parameter.
