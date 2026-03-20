@@ -29,7 +29,13 @@ const ADMIN_EMAILS =
 // Set redirectProxyUrl in ALL environments so that production can proxy
 // OAuth callbacks back to preview deployments (Auth.js v5 requirement).
 // See: https://authjs.dev/getting-started/deployment#securing-a-preview-deployment
-const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
+//
+// VERCEL_PROJECT_PRODUCTION_URL is a Vercel system env var (no https:// prefix)
+// automatically available in all environments (production, preview, development).
+// Falls back to NEXTAUTH_URL for non-Vercel environments.
+const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : process.env.NEXTAUTH_URL?.replace(/\/$/, "");
 const redirectProxyUrl = productionUrl
   ? `${productionUrl}/api/auth`
   : undefined;
