@@ -26,7 +26,18 @@ declare module "@auth/core/jwt" {
 const ADMIN_EMAILS =
   process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [];
 
+// Set redirectProxyUrl in ALL environments (production and preview) so that
+// production can proxy OAuth callbacks back to the preview deployment URL.
+// Auth.js encodes the current deployment URL (preview) in the OAuth state,
+// so production knows where to redirect back after the callback.
+// See: https://authjs.dev/getting-started/deployment#securing-a-preview-deployment
+const productionUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "");
+const redirectProxyUrl = productionUrl
+  ? `${productionUrl}/api/auth`
+  : undefined;
+
 export const authConfig: NextAuthConfig = {
+  ...(redirectProxyUrl && { redirectProxyUrl }),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
