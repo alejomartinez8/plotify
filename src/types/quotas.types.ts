@@ -34,6 +34,10 @@ export interface LotDebtDetail {
   worksDebt: number;
   /** Total debt owed (maintenance + works) */
   totalDebt: number;
+  /** Maintenance contributions counted in balance (filtered by activeFrom if applicable) */
+  maintenanceContributions: number;
+  /** Works contributions counted in balance (filtered by activeFrom if applicable) */
+  worksContributions: number;
   /** Total contributions made by the lot */
   totalContributions: number;
   /** Total quotas assigned to the lot */

@@ -258,6 +258,8 @@ export function calculateLotDebtDetail(
     maintenanceDebt,
     worksDebt,
     totalDebt,
+    maintenanceContributions,
+    worksContributions,
     totalContributions,
     totalQuotas,
     outstandingBalance,
