@@ -122,11 +122,11 @@ export function calculateSimpleLotBalances(
   const lotBalances: SimpleLotBalance[] = lots
     .filter((lot) => !lot.isExempt || lot.exemptionEndDate) // Exclude fully exempt lots (no end date)
     .map((lot) => {
-      // If an active-from date is set, only count quotas and contributions from that date onwards
+      // activeFrom limits which quotas apply, but all contributions count regardless of date
       const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
 
       const lotContributions = contributions.filter(
-        (c) => c.lotId === lot.id && (!activeFrom || new Date(c.date) >= activeFrom)
+        (c) => c.lotId === lot.id
       );
       const totalContributions = lotContributions.reduce(
         (sum, c) => sum + c.amount,
@@ -198,7 +198,7 @@ export function calculateLotDebtDetail(
     return false;
   });
 
-  // If an active-from date is set, only count quotas and contributions from that date onwards
+  // activeFrom limits which quotas apply, but all contributions count regardless of date
   const activeFrom = lotWithContributions.exemptionEndDate
     ? new Date(lotWithContributions.exemptionEndDate)
     : null;
@@ -209,10 +209,7 @@ export function calculateLotDebtDetail(
       )
     : applicableQuotas;
 
-  const allContributions = lotWithContributions.contributions || [];
-  const lotContributions = activeFrom
-    ? allContributions.filter((c: any) => c.date && new Date(c.date) >= activeFrom)
-    : allContributions;
+  const lotContributions = lotWithContributions.contributions || [];
 
   // Calculate contributions by type
   const maintenanceContributions = lotContributions
