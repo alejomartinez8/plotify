@@ -124,17 +124,24 @@ export default function LotDetailView({
     });
   }, [contributions, sortField, sortDirection]);
 
-  // Calculate totals by fund type
+  // Calculate totals by fund type using debtDetail filtered contributions when available,
+  // so that "Paid" and "Owes" columns are consistent (both respect the activeFrom date).
   const fundTotals = useMemo(() => {
-    const maintenanceTotal = contributions
-      .filter((c) => c.type === "maintenance")
-      .reduce((sum, c) => sum + c.amount, 0);
-    const worksTotal = contributions
-      .filter((c) => c.type === "works")
-      .reduce((sum, c) => sum + c.amount, 0);
     const othersTotal = contributions
       .filter((c) => c.type === "others")
       .reduce((sum, c) => sum + c.amount, 0);
+
+    const maintenanceTotal =
+      debtDetail?.maintenanceContributions ??
+      contributions
+        .filter((c) => c.type === "maintenance")
+        .reduce((sum, c) => sum + c.amount, 0);
+
+    const worksTotal =
+      debtDetail?.worksContributions ??
+      contributions
+        .filter((c) => c.type === "works")
+        .reduce((sum, c) => sum + c.amount, 0);
 
     return {
       maintenance: maintenanceTotal,
@@ -142,7 +149,7 @@ export default function LotDetailView({
       others: othersTotal,
       total: maintenanceTotal + worksTotal + othersTotal,
     };
-  }, [contributions]);
+  }, [contributions, debtDetail]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
