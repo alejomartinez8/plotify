@@ -126,22 +126,22 @@ export function calculateSimpleLotBalances(
       const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
 
       const lotContributions = contributions.filter(
-        (c) => c.lotId === lot.id
+        (contribution) => contribution.lotId === lot.id
       );
       const totalContributions = lotContributions.reduce(
-        (sum, c) => sum + c.amount,
+        (total, contribution) => total + contribution.amount,
         0
       );
 
       const lotQuotas = activeFrom
         ? applicableQuotas.filter(
-            (q) => q.dueDate && new Date(q.dueDate) >= activeFrom
+            (quota) => quota.dueDate && new Date(quota.dueDate) >= activeFrom
           )
         : applicableQuotas;
 
       // Calculate total quotas applicable to this lot
       const totalQuotas = lotQuotas.reduce(
-        (sum, quota) => sum + quota.amount,
+        (total, quota) => total + quota.amount,
         0
       );
 
@@ -168,7 +168,7 @@ export function calculateSimpleLotBalances(
     });
 
   return lotBalances.sort(
-    (a, b) => b.outstandingBalance - a.outstandingBalance
+    (first, second) => second.outstandingBalance - first.outstandingBalance
   );
 }
 
@@ -205,7 +205,7 @@ export function calculateLotDebtDetail(
 
   const lotQuotas = activeFrom
     ? applicableQuotas.filter(
-        (q) => q.dueDate && new Date(q.dueDate) >= activeFrom
+        (quota) => quota.dueDate && new Date(quota.dueDate) >= activeFrom
       )
     : applicableQuotas;
 
@@ -213,23 +213,23 @@ export function calculateLotDebtDetail(
 
   // Calculate contributions by type
   const maintenanceContributions = lotContributions
-    .filter((c: any) => c.type === "maintenance")
-    .reduce((sum: number, c: any) => sum + c.amount, 0);
+    .filter((contribution: any) => contribution.type === "maintenance")
+    .reduce((total: number, contribution: any) => total + contribution.amount, 0);
 
   const worksContributions = lotContributions
-    .filter((c: any) => c.type === "works")
-    .reduce((sum: number, c: any) => sum + c.amount, 0);
+    .filter((contribution: any) => contribution.type === "works")
+    .reduce((total: number, contribution: any) => total + contribution.amount, 0);
 
   const totalContributions = maintenanceContributions + worksContributions;
 
   // Calculate quotas by type
   const maintenanceQuotas = lotQuotas
-    .filter((q) => q.quotaType === "maintenance")
-    .reduce((sum, q) => sum + q.amount, 0);
+    .filter((quota) => quota.quotaType === "maintenance")
+    .reduce((total, quota) => total + quota.amount, 0);
 
   const worksQuotas = lotQuotas
-    .filter((q) => q.quotaType === "works")
-    .reduce((sum, q) => sum + q.amount, 0);
+    .filter((quota) => quota.quotaType === "works")
+    .reduce((total, quota) => total + quota.amount, 0);
 
   // Calculate debt by type
   const maintenanceDebt = Math.max(

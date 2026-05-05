@@ -128,20 +128,20 @@ export default function LotDetailView({
   // so that "Paid" and "Owes" columns are consistent (both respect the activeFrom date).
   const fundTotals = useMemo(() => {
     const othersTotal = contributions
-      .filter((c) => c.type === "others")
-      .reduce((sum, c) => sum + c.amount, 0);
+      .filter((contribution) => contribution.type === "others")
+      .reduce((total, contribution) => total + contribution.amount, 0);
 
     const maintenanceTotal =
       debtDetail?.maintenanceContributions ??
       contributions
-        .filter((c) => c.type === "maintenance")
-        .reduce((sum, c) => sum + c.amount, 0);
+        .filter((contribution) => contribution.type === "maintenance")
+        .reduce((total, contribution) => total + contribution.amount, 0);
 
     const worksTotal =
       debtDetail?.worksContributions ??
       contributions
-        .filter((c) => c.type === "works")
-        .reduce((sum, c) => sum + c.amount, 0);
+        .filter((contribution) => contribution.type === "works")
+        .reduce((total, contribution) => total + contribution.amount, 0);
 
     return {
       maintenance: maintenanceTotal,
