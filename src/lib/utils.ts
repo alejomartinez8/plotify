@@ -139,21 +139,32 @@ export function calculateSimpleLotBalances(
           )
         : applicableQuotas;
 
+      // Calculate per-type quotas and contributions
+      const maintenanceQuotas = lotQuotas
+        .filter((quota) => quota.quotaType === "maintenance")
+        .reduce((total, quota) => total + quota.amount, 0);
+      const worksQuotas = lotQuotas
+        .filter((quota) => quota.quotaType === "works")
+        .reduce((total, quota) => total + quota.amount, 0);
+
+      const maintenanceContributions = lotContributions
+        .filter((c) => c.type === "maintenance")
+        .reduce((total, c) => total + c.amount, 0);
+      const worksContributions = lotContributions
+        .filter((c) => c.type === "works")
+        .reduce((total, c) => total + c.amount, 0);
+
       // Calculate total quotas applicable to this lot
-      const totalQuotas = lotQuotas.reduce(
-        (total, quota) => total + quota.amount,
-        0
-      );
+      const totalQuotas = maintenanceQuotas + worksQuotas + lot.initialWorksDebt;
 
-      // Calculate balance: quotas + initial debt - contributions
-      const balance = totalQuotas + lot.initialWorksDebt - totalContributions;
-
-      // Outstanding balance: only show debt owed (0 if paid in advance)
-      const outstandingBalance = Math.max(0, balance);
+      // Each type is a separate obligation: overpayment in one type does not offset debt in another
+      const maintenanceDebt = Math.max(0, maintenanceQuotas - maintenanceContributions);
+      const worksDebt = Math.max(0, worksQuotas + lot.initialWorksDebt - worksContributions);
+      const outstandingBalance = maintenanceDebt + worksDebt;
 
       // Determine status: only "current" (paid up) or "overdue" (owes money)
       const status: "current" | "overdue" =
-        balance <= 0 ? "current" : "overdue";
+        outstandingBalance <= 0 ? "current" : "overdue";
 
       return {
         lotId: lot.id,
@@ -244,7 +255,7 @@ export function calculateLotDebtDetail(
   const totalQuotas =
     maintenanceQuotas + worksQuotas + lotWithContributions.initialWorksDebt;
   const totalDebt = maintenanceDebt + worksDebt;
-  const outstandingBalance = Math.max(0, totalQuotas - totalContributions);
+  const outstandingBalance = totalDebt;
 
   const status: "current" | "overdue" =
     outstandingBalance <= 0 ? "current" : "overdue";
