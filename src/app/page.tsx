@@ -1,5 +1,5 @@
 import { getContributions } from "@/lib/database/contributions";
-import { getAllFundsBalances } from "@/lib/database/balances";
+import { getAllFundsBalances, getMonthlyTotals } from "@/lib/database/balances";
 import { getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { calculateSimpleLotBalances } from "@/lib/utils";
@@ -17,13 +17,14 @@ export default async function Home() {
   await checkLotAccess();
 
   try {
-    const [fundsData, allLots, contributions, quotaConfigs, userRole] =
+    const [fundsData, allLots, contributions, quotaConfigs, userRole, monthlyData] =
       await Promise.all([
         getAllFundsBalances(),
         getLots(),
         getContributions(),
         getQuotaConfigs(),
         getUserRole(),
+        getMonthlyTotals(),
       ]);
 
     const lotBalances = calculateSimpleLotBalances(
@@ -35,7 +36,7 @@ export default async function Home() {
     return (
       <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
         <div className="space-y-8">
-          <FundsOverview fundsData={fundsData} />
+          <FundsOverview fundsData={fundsData} monthlyData={monthlyData} />
           <QuotaSummaryCard lotBalances={lotBalances} />
           {userRole === "admin" && (
             <div className="flex justify-end">

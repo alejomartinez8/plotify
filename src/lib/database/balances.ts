@@ -1,6 +1,48 @@
 import { ContributionType } from "@/types/contributions.types";
 import { getIncomeByType } from "./contributions";
 import { getTotalExpenses } from "./expenses";
+import prisma from "@/lib/prisma";
+
+export interface MonthlyDataPoint {
+  month: string; // "YYYY-MM"
+  income: number;
+  expenses: number;
+}
+
+export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
+  try {
+    const [contributions, expenses] = await Promise.all([
+      prisma.contribution.findMany({ select: { date: true, amount: true } }),
+      prisma.expense.findMany({ select: { date: true, amount: true } }),
+    ]);
+
+    const map = new Map<string, MonthlyDataPoint>();
+
+    const getOrCreate = (key: string) => {
+      if (!map.has(key)) map.set(key, { month: key, income: 0, expenses: 0 });
+      return map.get(key)!;
+    };
+
+    for (const c of contributions) {
+      const d = new Date(c.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      getOrCreate(key).income += c.amount;
+    }
+
+    for (const e of expenses) {
+      // expense.date is stored as "YYYY-MM-DD" string
+      const key = e.date.slice(0, 7);
+      getOrCreate(key).expenses += e.amount;
+    }
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.month.localeCompare(b.month)
+    );
+  } catch (error) {
+    console.error("Error fetching monthly totals:", error);
+    return [];
+  }
+}
 
 /**
  * Calculates the balance for a specific fund type.
