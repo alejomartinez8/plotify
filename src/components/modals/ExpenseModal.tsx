@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState, useTransition, useState } from "react";
+import { useEffect, useActionState, useTransition, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { useReceiptUpload } from "@/hooks/useReceiptUpload";
 import { Expense } from "@/types/expenses.types";
@@ -39,6 +39,7 @@ export default function ExpenseModal({
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewFileName, setPreviewFileName] = useState<string | undefined>(
     expense?.receiptFileName || undefined
@@ -53,6 +54,8 @@ export default function ExpenseModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       if (selectedFile || (expense && expense.receiptFileId)) {
@@ -79,6 +82,7 @@ export default function ExpenseModal({
         formAction(formData);
       });
     } catch (error) {
+      submittingRef.current = false;
       setIsSubmitting(false);
       const errorInstance =
         error instanceof Error ? error : new Error(String(error));
