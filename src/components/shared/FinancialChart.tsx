@@ -46,7 +46,7 @@ function CustomTooltip({
       </p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }}>
-          {p.name}:{" "}
+          {p.name === "income" ? translations.labels.income : translations.labels.expenses}:{" "}
           <span className="font-semibold">
             {new Intl.NumberFormat("es-CO", {
               style: "currency",
@@ -112,9 +112,9 @@ export default function FinancialChart({ data }: FinancialChartProps) {
         <Line
           type="monotone"
           dataKey="expenses"
-          stroke="#6b7280"
+          stroke="#dc2626"
           strokeWidth={2}
-          dot={{ r: 3, fill: "#6b7280" }}
+          dot={{ r: 3, fill: "#dc2626" }}
           activeDot={{ r: 5 }}
         />
       </LineChart>
