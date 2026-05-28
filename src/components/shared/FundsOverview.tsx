@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { translations } from "@/lib/translations";
 import { formatCurrency } from "@/lib/utils";
 import TypeBadge from "@/components/shared/TypeBadge";
+import FinancialChart from "@/components/shared/FinancialChart";
 import { ContributionType } from "@/types/contributions.types";
+import { MonthlyDataPoint } from "@/lib/database/balances";
 
 interface FundBalance {
   income: number;
@@ -18,9 +20,10 @@ interface FundsOverviewProps {
     others: FundBalance;
     consolidated: FundBalance;
   };
+  monthlyData: MonthlyDataPoint[];
 }
 
-export default function FundsOverview({ fundsData }: FundsOverviewProps) {
+export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewProps) {
   const incomeCategories = [
     {
       key: "maintenance" as ContributionType,
@@ -121,6 +124,14 @@ export default function FundsOverview({ fundsData }: FundsOverviewProps) {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Monthly Income vs Expenses Chart */}
+          <div className="border-t pt-4">
+            <h4 className="mb-3 text-sm font-semibold text-gray-700">
+              {translations.labels.evolutionChart}
+            </h4>
+            <FinancialChart data={monthlyData} />
           </div>
         </CardContent>
       </Card>

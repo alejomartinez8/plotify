@@ -128,6 +128,8 @@ export const translations = {
     outstandingBalance: "Saldo Adeudado",
     totalOutstandingDebt: "Total Deuda",
     sortBy: "Ordenar por",
+    evolutionChart: "Evolución de Ingresos y Egresos",
+    noChartData: "No hay datos suficientes para mostrar la gráfica",
   },
 
   // Status messages
