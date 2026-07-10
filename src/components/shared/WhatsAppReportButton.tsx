@@ -21,7 +21,9 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBal
     a.lotNumber.localeCompare(b.lotNumber, undefined, { numeric: true })
   );
 
-  for (const lot of sorted) {
+  const debtors = sorted.filter((l) => l.outstandingBalance > 0);
+
+  for (const lot of debtors) {
     lines.push("");
     lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
     if (lot.outstandingBalance === 0) {
