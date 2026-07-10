@@ -32,7 +32,7 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBal
     .sort((a, b) => a.lotNumber.localeCompare(b.lotNumber, undefined, { numeric: true }));
 
   for (const lot of debtors) {
-    lines.push(`🔴 *${lot.lotNumber}* — ${lot.owner} — ${formatCurrency(lot.outstandingBalance)}`);
+    lines.push(`🔴 ${t.lotPrefix} ${lot.lotNumber}* — ${lot.owner} — ${formatCurrency(lot.outstandingBalance)}`);
   }
 
   lines.push(t.reportSeparator);
