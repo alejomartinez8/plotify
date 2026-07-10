@@ -436,6 +436,8 @@ export const translations = {
     reportDate: "📅 Fecha:",
     reportSeparator: "─────────────────────",
     reportLots: "🏘️ *ESTADO POR LOTE*",
+    reportDebtorsList: "📋 *LISTA DE DEUDORES*",
+    reportDebtorsMotivation: "_Su pago oportuno contribuye a la valorización y el bienestar de nuestra Parcela. ¡Gracias por su compromiso!_",
     lotPrefix: "🏡 *Lote",
     ownerPrefix: "👤",
     contributedLabel: "💵 Aportado:",
