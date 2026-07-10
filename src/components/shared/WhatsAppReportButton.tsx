@@ -13,35 +13,30 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBal
   const today = formatDateForDisplay(new Date());
   const lines: string[] = [];
 
-  lines.push(`${t.reportTitle} — ${today}`);
-  lines.push(t.reportSeparator);
-  lines.push(t.reportLots);
-
-  const sorted = [...lotBalances].sort((a, b) =>
-    a.lotNumber.localeCompare(b.lotNumber, undefined, { numeric: true })
-  );
-
-  const debtors = sorted.filter((l) => l.outstandingBalance > 0);
-
-  for (const lot of debtors) {
-    lines.push("");
-    lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
-    if (lot.outstandingBalance === 0) {
-      lines.push(t.currentLabel);
-    } else {
-      lines.push(`${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`);
-    }
-  }
-
   const overdueCount = lotBalances.filter((l) => l.status === "overdue").length;
   const currentCount = lotBalances.filter((l) => l.status === "current").length;
   const totalDebt = lotBalances.reduce((sum, l) => sum + l.outstandingBalance, 0);
 
+  lines.push(`${t.reportTitle} — ${today}`);
   lines.push(t.reportSeparator);
   lines.push(t.summaryTitle);
-  lines.push(`${t.summaryTotalLots} ${lotBalances.length} · ${t.summaryOverdue} ${overdueCount} · ✅ ${currentCount}`);
+  lines.push(`${t.summaryTotalLots} ${lotBalances.length} · ${t.summaryOverdue} 🔴 ${overdueCount} · ✅ ${currentCount}`);
   lines.push(`${t.summaryDebt} ${formatCurrency(totalDebt)}`);
   lines.push(`${t.summaryCashBalance} ${formatCurrency(consolidatedBalance)}`);
+  lines.push(t.reportSeparator);
+  lines.push(t.reportDebtorsList);
+  lines.push(t.reportDebtorsMotivation);
+
+  const debtors = [...lotBalances]
+    .filter((l) => l.outstandingBalance > 0)
+    .sort((a, b) => a.lotNumber.localeCompare(b.lotNumber, undefined, { numeric: true }));
+
+  for (const lot of debtors) {
+    lines.push("");
+    lines.push(`${t.lotPrefix} ${lot.lotNumber}* — ${t.ownerPrefix} ${lot.owner}`);
+    lines.push(`${t.owedLabel} ${formatCurrency(lot.outstandingBalance)}`);
+  }
+
   lines.push(t.reportSeparator);
   lines.push(t.summaryFooter);
 
