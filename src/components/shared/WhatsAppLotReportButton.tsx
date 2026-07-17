@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { LotDebtDetail } from "@/types/quotas.types";
-import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
+import { QuotaLineStatus, formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 
 const t = translations.whatsapp;
@@ -13,42 +13,56 @@ interface WhatsAppLotReportButtonProps {
   lotNumber: string;
   owner: string;
   debtDetail: LotDebtDetail;
-  maintenancePaid: number;
-  worksPaid: number;
+  quotaBreakdown: QuotaLineStatus[];
 }
 
 function generateLotReport(
   lotNumber: string,
   owner: string,
   debtDetail: LotDebtDetail,
-  maintenancePaid: number,
-  worksPaid: number
+  quotaBreakdown: QuotaLineStatus[]
 ): string {
   const today = formatDateForDisplay(new Date());
   const lines: string[] = [];
 
-  const maintenanceTotalQuota = maintenancePaid + debtDetail.maintenanceDebt;
-  const worksTotalQuota = worksPaid + debtDetail.worksDebt;
-
-  lines.push(`${t.lotReportTitle}`);
+  lines.push(t.lotReportTitle);
   lines.push(`${t.lotReportLotPrefix} ${lotNumber}* — ${owner}`);
   lines.push(t.reportSeparator);
 
-  if (debtDetail.initialWorksDebt > 0) {
-    lines.push(`${t.lotReportInitialBalance} ${formatCurrency(debtDetail.initialWorksDebt)}`);
+  const maintenanceLines = quotaBreakdown.filter((q) => q.quotaType === "maintenance");
+  const worksLines = quotaBreakdown.filter((q) => q.quotaType === "works" || q.quotaType === "initial");
+
+  if (maintenanceLines.length > 0) {
+    lines.push(t.lotReportMaintenance);
+    for (const q of maintenanceLines) {
+      const icon =
+        q.status === "paid" ? t.lotReportQuotaPaid :
+        q.status === "partial" ? t.lotReportQuotaPartial :
+        t.lotReportQuotaOwed;
+      const suffix =
+        q.status === "partial"
+          ? ` (${formatCurrency(q.paidAmount)} / ${formatCurrency(q.amount)})`
+          : ` — ${formatCurrency(q.amount)}`;
+      lines.push(`  ${icon} ${q.label}${suffix}`);
+    }
     lines.push("");
   }
 
-  lines.push(t.lotReportMaintenance);
-  lines.push(`${t.lotReportTotalQuota} ${formatCurrency(maintenanceTotalQuota)}`);
-  lines.push(`${t.lotReportPaid} ${formatCurrency(maintenancePaid)}`);
-  lines.push(`${t.lotReportOwed} ${formatCurrency(debtDetail.maintenanceDebt)}`);
-  lines.push("");
-
-  lines.push(t.lotReportWorks);
-  lines.push(`${t.lotReportTotalQuota} ${formatCurrency(worksTotalQuota)}`);
-  lines.push(`${t.lotReportPaid} ${formatCurrency(worksPaid)}`);
-  lines.push(`${t.lotReportOwed} ${formatCurrency(debtDetail.worksDebt)}`);
+  if (worksLines.length > 0) {
+    lines.push(t.lotReportWorks);
+    for (const q of worksLines) {
+      const icon =
+        q.status === "paid" ? t.lotReportQuotaPaid :
+        q.status === "partial" ? t.lotReportQuotaPartial :
+        t.lotReportQuotaOwed;
+      const suffix =
+        q.status === "partial"
+          ? ` (${formatCurrency(q.paidAmount)} / ${formatCurrency(q.amount)})`
+          : ` — ${formatCurrency(q.amount)}`;
+      lines.push(`  ${icon} ${q.label}${suffix}`);
+    }
+    lines.push("");
+  }
 
   lines.push(t.reportSeparator);
 
@@ -70,14 +84,13 @@ export default function WhatsAppLotReportButton({
   lotNumber,
   owner,
   debtDetail,
-  maintenancePaid,
-  worksPaid,
+  quotaBreakdown,
 }: WhatsAppLotReportButtonProps) {
   const [status, setStatus] = useState<CopyStatus>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleClick() {
-    const text = generateLotReport(lotNumber, owner, debtDetail, maintenancePaid, worksPaid);
+    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);

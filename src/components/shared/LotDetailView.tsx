@@ -16,6 +16,8 @@ import {
   formatCurrency,
   formatDateForDisplay,
   getStatusColor,
+  buildQuotaBreakdown,
+  QuotaLineStatus,
 } from "@/lib/utils";
 import { LotDebtDetail } from "@/types/quotas.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -43,12 +45,21 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 
+interface QuotaConfig {
+  id: string;
+  quotaType: string;
+  amount: number;
+  description: string | null;
+  dueDate: Date | null;
+}
+
 interface LotDetailViewProps {
   lot: Lot & { contributions: Contribution[] };
   contributions: Contribution[];
   allLots: Lot[];
   isAdmin?: boolean;
   debtDetail?: LotDebtDetail | null;
+  quotaConfigs?: QuotaConfig[];
 }
 
 type SortField = "date" | "description" | "type" | "amount" | "receiptNumber";
@@ -60,6 +71,7 @@ export default function LotDetailView({
   allLots,
   isAdmin = false,
   debtDetail,
+  quotaConfigs = [],
 }: LotDetailViewProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
@@ -152,6 +164,11 @@ export default function LotDetailView({
     };
   }, [contributions, debtDetail]);
 
+  const quotaBreakdown = useMemo<QuotaLineStatus[]>(() => {
+    if (!quotaConfigs.length) return [];
+    return buildQuotaBreakdown(quotaConfigs, contributions, lot);
+  }, [quotaConfigs, contributions, lot]);
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -221,8 +238,7 @@ export default function LotDetailView({
                 lotNumber={lot.lotNumber}
                 owner={lot.owner}
                 debtDetail={debtDetail}
-                maintenancePaid={fundTotals.maintenance}
-                worksPaid={fundTotals.works}
+                quotaBreakdown={quotaBreakdown}
               />
             )}
           </div>
@@ -389,6 +405,72 @@ export default function LotDetailView({
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {/* Quota Breakdown Table */}
+        {quotaBreakdown.length > 0 && (
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle>{translations.titles.quotaBreakdown}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-hidden rounded-md border-0">
+                <Table className="border-separate border-spacing-0">
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="border-border border-b-2 px-6 py-4 font-semibold tracking-wide">
+                        {translations.labels.description}
+                      </TableHead>
+                      <TableHead className="border-border border-b-2 px-6 py-4 font-semibold tracking-wide">
+                        {translations.labels.type}
+                      </TableHead>
+                      <TableHead className="border-border border-b-2 px-6 py-4 text-right font-semibold tracking-wide">
+                        {translations.labels.amount}
+                      </TableHead>
+                      <TableHead className="border-border border-b-2 px-6 py-4 font-semibold tracking-wide">
+                        {translations.labels.status}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {quotaBreakdown.map((line, index) => (
+                      <TableRow
+                        key={line.id + index}
+                        className={`border-border/50 border-b transition-all duration-200 ${
+                          index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                        }`}
+                      >
+                        <TableCell className="px-6 py-3 font-medium">{line.label}</TableCell>
+                        <TableCell className="px-6 py-3">
+                          <TypeBadge type={line.quotaType === "initial" ? "works" : line.quotaType as "maintenance" | "works"} />
+                        </TableCell>
+                        <TableCell className="px-6 py-3 text-right font-semibold">
+                          {formatCurrency(line.amount)}
+                        </TableCell>
+                        <TableCell className="px-6 py-3">
+                          {line.status === "paid" && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
+                              ✅ {translations.labels.paid}
+                            </span>
+                          )}
+                          {line.status === "partial" && (
+                            <span className="inline-flex flex-col rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
+                              ⚠️ Parcial ({formatCurrency(line.paidAmount)} / {formatCurrency(line.amount)})
+                            </span>
+                          )}
+                          {line.status === "owed" && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">
+                              🔴 {translations.labels.owes}
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Payments Table */}

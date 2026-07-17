@@ -200,6 +200,7 @@ export const translations = {
     noQuotasConfigured: "No hay cuotas configuradas",
     quotaSummary: "Resumen de Cuotas",
     viewQuotas: "Ver cuotas",
+    quotaBreakdown: "Estado de Cuotas",
 
     // Grid headers
     maintenanceContributions: "Aportes de Mantenimiento",
@@ -462,6 +463,9 @@ export const translations = {
     lotReportTotalOwed: "💰 *Total adeudado:*",
     lotReportCurrentStatus: "✅ *Al día*",
     lotReportDate: "📅",
+    lotReportQuotaPaid: "✅",
+    lotReportQuotaOwed: "🔴",
+    lotReportQuotaPartial: "⚠️",
   },
 
   // Date and time

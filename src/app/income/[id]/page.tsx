@@ -49,6 +49,7 @@ export default async function LotPage({ params }: LotPageProps) {
         allLots={allLotsData}
         isAdmin={userRole === "admin"}
         debtDetail={debtDetail}
+        quotaConfigs={quotaConfigs}
       />
     );
   } catch (error) {
