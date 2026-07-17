@@ -449,6 +449,19 @@ export const translations = {
     summaryDebt: "Cartera total:",
     summaryCashBalance: "💰 Saldo de caja:",
     summaryFooter: "_Generado desde Parcela Jaslico_",
+    // Lot-specific report
+    lotReportCopy: "Copiar Resumen del Lote",
+    lotReportTitle: "📊 *ESTADO DE CUENTA*",
+    lotReportLotPrefix: "🏡 *Lote",
+    lotReportInitialBalance: "📋 *Saldo inicial (obras):*",
+    lotReportMaintenance: "🔧 *MANTENIMIENTO*",
+    lotReportWorks: "🏗️ *OBRAS*",
+    lotReportTotalQuota: "  Total cuotas:",
+    lotReportPaid: "  💵 Pagado:",
+    lotReportOwed: "  🔴 Debe:",
+    lotReportTotalOwed: "💰 *Total adeudado:*",
+    lotReportCurrentStatus: "✅ *Al día*",
+    lotReportDate: "📅",
   },
 
   // Date and time
