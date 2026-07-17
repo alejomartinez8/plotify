@@ -291,3 +291,102 @@ export function getStatusColor(status: LotPaymentStatus): string {
   }
 }
 
+export interface QuotaLineStatus {
+  id: string;
+  label: string;
+  quotaType: "maintenance" | "works" | "initial";
+  amount: number;
+  paidAmount: number;
+  status: "paid" | "partial" | "owed";
+}
+
+/**
+ * Builds a per-quota paid/owed breakdown for a lot.
+ * Uses oldest-debt-first allocation: contributions are applied to the earliest
+ * quotas first. Works quotas include an optional initial-debt entry at the top.
+ */
+export function buildQuotaBreakdown(
+  quotaConfigs: { id: string; quotaType: string; amount: number; description: string | null; dueDate: Date | null }[],
+  contributions: { type: string; amount: number }[],
+  lot: { initialWorksDebt: number; exemptionEndDate?: Date | string | null }
+): QuotaLineStatus[] {
+  const today = new Date();
+  const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
+
+  const applicable = quotaConfigs.filter((q) => {
+    if (!q.dueDate) return false;
+    const due = new Date(q.dueDate);
+    if (due > today) return false;
+    if (activeFrom && due < activeFrom) return false;
+    return true;
+  });
+
+  const maintenanceQuotas = applicable
+    .filter((q) => q.quotaType === "maintenance")
+    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+
+  const worksQuotas = applicable
+    .filter((q) => q.quotaType === "works")
+    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+
+  const maintenancePaid = contributions
+    .filter((c) => c.type === "maintenance")
+    .reduce((s, c) => s + c.amount, 0);
+
+  const worksPaid = contributions
+    .filter((c) => c.type === "works")
+    .reduce((s, c) => s + c.amount, 0);
+
+  const result: QuotaLineStatus[] = [];
+
+  // --- Maintenance ---
+  let remaining = maintenancePaid;
+  for (const q of maintenanceQuotas) {
+    const label = q.description || formatQuotaDateLabel(q.dueDate!);
+    if (remaining >= q.amount) {
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: q.amount, status: "paid" });
+      remaining -= q.amount;
+    } else if (remaining > 0) {
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: remaining, status: "partial" });
+      remaining = 0;
+    } else {
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: 0, status: "owed" });
+    }
+  }
+
+  // --- Works (initial debt first, then quotas) ---
+  let remainingWorks = worksPaid;
+  if (lot.initialWorksDebt > 0) {
+    const debt = lot.initialWorksDebt;
+    if (remainingWorks >= debt) {
+      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: debt, status: "paid" });
+      remainingWorks -= debt;
+    } else if (remainingWorks > 0) {
+      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: remainingWorks, status: "partial" });
+      remainingWorks = 0;
+    } else {
+      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: 0, status: "owed" });
+    }
+  }
+  for (const q of worksQuotas) {
+    const label = q.description || formatQuotaDateLabel(q.dueDate!);
+    if (remainingWorks >= q.amount) {
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: q.amount, status: "paid" });
+      remainingWorks -= q.amount;
+    } else if (remainingWorks > 0) {
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: remainingWorks, status: "partial" });
+      remainingWorks = 0;
+    } else {
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: 0, status: "owed" });
+    }
+  }
+
+  return result;
+}
+
+function formatQuotaDateLabel(dueDate: Date | string): string {
+  const d = new Date(dueDate);
+  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  return `${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
