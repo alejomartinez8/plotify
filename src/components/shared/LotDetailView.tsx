@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import TypeBadge from "@/components/shared/TypeBadge";
+import WhatsAppLotReportButton from "@/components/shared/WhatsAppLotReportButton";
 import ContributionModal from "@/components/modals/ContributionModal";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import { deleteContributionAction } from "@/lib/actions/contribution-actions";
@@ -215,6 +216,15 @@ export default function LotDetailView({
               </h1>
               <p className="text-muted-foreground mt-1 text-lg">{lot.owner}</p>
             </div>
+            {debtDetail && (
+              <WhatsAppLotReportButton
+                lotNumber={lot.lotNumber}
+                owner={lot.owner}
+                debtDetail={debtDetail}
+                maintenancePaid={fundTotals.maintenance}
+                worksPaid={fundTotals.works}
+              />
+            )}
           </div>
 
           {/* Lot Selector Section - Only for admins */}
