@@ -1,4 +1,4 @@
-export type ExpenseType = "general";
+export type ExpenseType = "maintenance" | "works" | "others";
 
 export interface Expense {
   id: number;

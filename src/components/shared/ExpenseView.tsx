@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Expense } from "@/types/expenses.types";
+import { Expense, ExpenseType } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
@@ -18,7 +18,7 @@ interface ExpenseViewProps {
   isAdmin?: boolean;
 }
 
-type ExpenseType = "all";
+type ExpenseFilter = "all" | ExpenseType;
 
 export default function ExpenseView({
   title,
@@ -27,37 +27,42 @@ export default function ExpenseView({
 }: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
+  const [typeFilter, setTypeFilter] = useState<ExpenseFilter>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Initialize filters from URL parameters
   useEffect(() => {
     const yearParam = searchParams.get("year");
+    const typeParam = searchParams.get("type") as ExpenseFilter | null;
 
-    if (yearParam) {
-      setYearFilter(yearParam);
-    } else {
-      setYearFilter("all");
-    }
+    setYearFilter(yearParam || "all");
+    setTypeFilter(typeParam || "all");
   }, [searchParams]);
+
+  const updateURL = (params: Record<string, string>) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === "all") {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    router.replace(`?${newParams.toString()}`, { scroll: false });
+  };
+
+  const handleTypeFilterChange = (type: string) => {
+    setTypeFilter(type as ExpenseFilter);
+    updateURL({ type });
+  };
 
   const handleYearFilterChange = (year: string) => {
     setYearFilter(year);
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (year !== "all") {
-      params.set("year", year);
-    } else {
-      params.delete("year");
-    }
-
-    // Update URL without causing a page refresh
-    router.replace(`?${params.toString()}`, { scroll: false });
+    updateURL({ year });
   };
 
-  // Extract unique years from expenses for filter options
   const availableYears = useMemo(() => {
     const years = new Set<string>();
     expenses.forEach((expense) => {
@@ -66,8 +71,15 @@ export default function ExpenseView({
         years.add(date.getFullYear().toString());
       }
     });
-    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a));
   }, [expenses]);
+
+  const typeFilterOptions = [
+    { value: "all", label: translations.filters.allExpenses },
+    { value: "maintenance", label: translations.labels.maintenance },
+    { value: "works", label: translations.labels.works },
+    { value: "others", label: translations.labels.others },
+  ];
 
   const yearFilterOptions = useMemo(
     () => [
@@ -80,7 +92,10 @@ export default function ExpenseView({
   const filteredExpenses = useMemo(() => {
     let filtered = expenses;
 
-    // Filter by year
+    if (typeFilter !== "all") {
+      filtered = filtered.filter((expense) => expense.type === typeFilter);
+    }
+
     if (yearFilter !== "all") {
       filtered = filtered.filter((expense) => {
         const date = new Date(expense.date);
@@ -90,13 +105,12 @@ export default function ExpenseView({
       });
     }
 
-    // Sort by date (most recent first)
     return filtered.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [expenses, yearFilter]);
+  }, [expenses, typeFilter, yearFilter]);
 
-  const handleExpenseSuccess = (expense: Expense, isUpdate: boolean) => {
+  const handleExpenseSuccess = (_expense: Expense, _isUpdate: boolean) => {
     setEditingExpense(null);
   };
 
@@ -117,7 +131,6 @@ export default function ExpenseView({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header with filters */}
       <FilterSection
         title={title}
         actionButton={
@@ -134,6 +147,11 @@ export default function ExpenseView({
             </div>
           ) : null
         }
+        typeFilter={{
+          value: typeFilter,
+          onChange: handleTypeFilterChange,
+          options: typeFilterOptions,
+        }}
         yearFilter={{
           value: yearFilter,
           onChange: handleYearFilterChange,
@@ -141,7 +159,6 @@ export default function ExpenseView({
         }}
       />
 
-      {/* Expenses Table */}
       <ExpenseTable
         expenses={filteredExpenses}
         isAdmin={isAdmin}
@@ -149,7 +166,6 @@ export default function ExpenseView({
         onDelete={setDeletingExpense}
       />
 
-      {/* Edit Modal */}
       {editingExpense && isAdmin && (
         <ExpenseModal
           expense={editingExpense}
@@ -158,7 +174,6 @@ export default function ExpenseView({
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       {isAdmin && (
         <ConfirmationModal
           isOpen={!!deletingExpense}
