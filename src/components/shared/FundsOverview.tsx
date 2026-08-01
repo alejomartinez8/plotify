@@ -103,7 +103,6 @@ export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewP
               {fundCategories.map(({ key, data }) => (
                 <div
                   key={key}
-<<<<<<< HEAD
                   className="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden"
                 >
                   {/* Header */}
