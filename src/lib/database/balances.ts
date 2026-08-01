@@ -1,6 +1,6 @@
 import { ContributionType } from "@/types/contributions.types";
 import { getIncomeByType } from "./contributions";
-import { getTotalExpenses } from "./expenses";
+import { getTotalExpenses, getTotalExpensesByType } from "./expenses";
 import prisma from "@/lib/prisma";
 
 export interface MonthlyDataPoint {
@@ -30,7 +30,6 @@ export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
     }
 
     for (const e of expenses) {
-      // expense.date is stored as "YYYY-MM-DD" string
       const key = e.date.slice(0, 7);
       getOrCreate(key).expenses += e.amount;
     }
@@ -44,26 +43,19 @@ export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
   }
 }
 
-/**
- * Calculates the balance for a specific fund type.
- * Individual funds only track their income; expenses are tracked at the consolidated level.
- *
- * @param type - The contribution type (maintenance, works, or others)
- * @returns Object containing income, expenses (always 0), and balance (equal to income)
- * @example
- * const maintenanceBalance = await getFundBalance("maintenance");
- * // Returns: { income: 50000, expenses: 0, balance: 50000 }
- */
 export async function getFundBalance(
   type: ContributionType
 ): Promise<{ income: number; expenses: number; balance: number }> {
   try {
-    const income = await getIncomeByType(type);
+    const [income, expenses] = await Promise.all([
+      getIncomeByType(type),
+      getTotalExpensesByType(type),
+    ]);
 
     return {
       income,
-      expenses: 0,
-      balance: income,
+      expenses,
+      balance: income - expenses,
     };
   } catch (error) {
     console.error(`Error calculating fund balance for type ${type}:`, error);
@@ -71,27 +63,6 @@ export async function getFundBalance(
   }
 }
 
-/**
- * Retrieves balances for all fund types and calculates consolidated totals.
- *
- * Architecture:
- * - Individual funds (maintenance/works/others): Track only income, expenses = 0
- * - Consolidated: Sums all income and all expenses (general type) from database
- *
- * This design reflects that expenses are general (not fund-specific) and should be
- * deducted from the total income rather than allocated per fund.
- *
- * @returns Object with balances for maintenance, works, others, and consolidated totals
- * @example
- * const balances = await getAllFundsBalances();
- * // Returns:
- * // {
- * //   maintenance: { income: 50000, expenses: 0, balance: 50000 },
- * //   works: { income: 30000, expenses: 0, balance: 30000 },
- * //   others: { income: 20000, expenses: 0, balance: 20000 },
- * //   consolidated: { income: 100000, expenses: 15000, balance: 85000 }
- * // }
- */
 export async function getAllFundsBalances(): Promise<{
   maintenance: { income: number; expenses: number; balance: number };
   works: { income: number; expenses: number; balance: number };
@@ -106,8 +77,7 @@ export async function getAllFundsBalances(): Promise<{
       getTotalExpenses(),
     ]);
 
-    const totalIncome =
-      maintenance.income + works.income + others.income;
+    const totalIncome = maintenance.income + works.income + others.income;
 
     const consolidated = {
       income: totalIncome,

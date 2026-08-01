@@ -69,7 +69,16 @@
 - ✅ **Build Verification** - Production build passing without errors
 - ✅ **TypeScript Strict** - No type errors or ESLint warnings
 
-### 🚧 Phase 4: Browser Notifications (Future Enhancement)
+### ✅ Phase 4: Unified Income/Expense Categories (Cajas) - COMPLETED _(2026-08-01)_
+
+- ✅ **Unified categories** - Expenses now use same types as contributions (maintenance/works/others)
+- ✅ **Per-fund balance** - Dashboard shows income, expenses and balance for each fund category
+- ✅ **Expense type filter** - Expense page now has type filter (maintenance/works/others)
+- ✅ **TypeBadge on expenses** - Expense table shows fund type badge with color coding
+- ✅ **DB migration** - Existing "general" expenses migrated to "others" type
+- ✅ **Import/Export updated** - CSV correctly maps Spanish labels to enum values
+
+### 🚧 Phase 5: Browser Notifications (Future Enhancement)
 
 > **Note**: Browser notifications feature has been deprioritized. Current authentication system via Google OAuth meets business needs.
 >

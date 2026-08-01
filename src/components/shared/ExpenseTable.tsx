@@ -6,14 +6,15 @@ import {
   ChevronDown,
   Edit,
   Trash2,
-  Eye,
   FileText,
 } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
+import { ContributionType } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import TypeBadge from "@/components/shared/TypeBadge";
 import {
   Table,
   TableBody,
@@ -30,7 +31,7 @@ interface ExpenseTableProps {
   onDelete?: (expense: Expense) => void;
 }
 
-type SortField = "date" | "description" | "amount" | "receiptNumber";
+type SortField = "date" | "description" | "amount" | "receiptNumber" | "type";
 type SortDirection = "asc" | "desc";
 
 export default function ExpenseTable({
@@ -42,14 +43,8 @@ export default function ExpenseTable({
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  // Use all expenses (no filtering by type)
-  const filteredExpenses = useMemo(() => {
-    return expenses;
-  }, [expenses]);
-
-  // Sort expenses
   const sortedExpenses = useMemo(() => {
-    return [...filteredExpenses].sort((a, b) => {
+    return [...expenses].sort((a, b) => {
       let aValue: string | number | Date;
       let bValue: string | number | Date;
 
@@ -69,6 +64,10 @@ export default function ExpenseTable({
         case "receiptNumber":
           aValue = a.receiptNumber || "";
           bValue = b.receiptNumber || "";
+          break;
+        case "type":
+          aValue = a.type;
+          bValue = b.type;
           break;
         default:
           aValue = new Date(a.date);
@@ -94,9 +93,8 @@ export default function ExpenseTable({
 
       return 0;
     });
-  }, [filteredExpenses, sortField, sortDirection]);
+  }, [expenses, sortField, sortDirection]);
 
-  // Calculate total for the table footer
   const tableTotal = useMemo(() => {
     return sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
   }, [sortedExpenses]);
@@ -106,7 +104,7 @@ export default function ExpenseTable({
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection(field === "date" ? "desc" : "asc"); // Default to desc for dates, asc for others
+      setSortDirection(field === "date" ? "desc" : "asc");
     }
   };
 
@@ -121,7 +119,6 @@ export default function ExpenseTable({
 
   return (
     <div className="space-y-6">
-      {/* Expense Table */}
       <Card className="shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-hidden rounded-md border-0">
@@ -135,6 +132,15 @@ export default function ExpenseTable({
                     <div className="flex items-center gap-1">
                       {translations.labels.date}
                       {getSortIcon("date")}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    onClick={() => handleSort("type")}
+                  >
+                    <div className="flex items-center gap-1">
+                      {translations.labels.type}
+                      {getSortIcon("type")}
                     </div>
                   </TableHead>
                   <TableHead
@@ -198,7 +204,15 @@ export default function ExpenseTable({
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-4">
+                      <TypeBadge type={expense.type as ContributionType} />
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
                       <div className="font-medium">{expense.description}</div>
+                      {expense.category && (
+                        <div className="text-muted-foreground text-xs mt-0.5">
+                          {expense.category}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       <div className="text-destructive font-semibold">
@@ -250,7 +264,7 @@ export default function ExpenseTable({
                 {sortedExpenses.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={isAdmin ? 5 : 4}
+                      colSpan={isAdmin ? 6 : 5}
                       className="px-6 py-12 text-center"
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -268,20 +282,18 @@ export default function ExpenseTable({
                 )}
                 {sortedExpenses.length > 0 && (
                   <>
-                    {/* Separator row */}
                     <TableRow>
                       <TableCell
-                        colSpan={isAdmin ? 5 : 4}
+                        colSpan={isAdmin ? 6 : 5}
                         className="border-muted border-t-2 p-0"
                       />
                     </TableRow>
-                    {/* Totals row */}
                     <TableRow className="bg-muted/40 hover:bg-muted/50 transition-colors">
                       <TableCell
                         className="px-6 py-4 font-semibold"
-                        colSpan={2}
+                        colSpan={3}
                       >
-                        {translations.labels.total || "TOTAL GENERAL"}
+                        {translations.labels.total}
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
                         <div className="text-destructive font-bold">

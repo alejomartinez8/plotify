@@ -13,11 +13,13 @@ import { checkAdminAccess } from "./helpers";
 
 // Zod schema for validation
 const ExpenseSchema = z.object({
-  type: z.string().optional(),
+  type: z.enum(["maintenance", "works", "others"], {
+    message: translations.errors.typeRequired,
+  }),
   amount: z.coerce.number().positive(translations.errors.amountPositive),
   date: z.string().min(1, translations.errors.dateRequired),
   description: z.string().optional(),
-  category: z.string().min(1, translations.errors.categoryRequired),
+  category: z.string().optional(),
   receiptNumber: z.string().optional(),
   receiptFileId: z.string().nullable().optional(),
   receiptFileUrl: z.string().nullable().optional(),
@@ -97,11 +99,11 @@ export async function createExpenseAction(
 
   try {
     const result = await createExpense({
-      type: type || "general",
+      type,
       amount,
       date,
       description: description || "",
-      category,
+      category: category || "",
       receiptNumber: receiptNumber || null,
       receiptFileId: receiptFileId || null,
       receiptFileUrl: receiptFileUrl || null,
@@ -202,11 +204,11 @@ export async function updateExpenseAction(
 
   try {
     const result = await updateExpense(id, {
-      type: type || "general",
+      type,
       amount,
       date,
       description: description || "",
-      category,
+      category: category || "",
       receiptNumber: receiptNumber || null,
       receiptFileId: receiptFileId || null,
       receiptFileUrl: receiptFileUrl || null,

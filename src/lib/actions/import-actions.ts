@@ -336,16 +336,19 @@ export async function importExpensesAction(
 
       try {
         const date = parseDate(row[1]?.replace(/"/g, "") || "").toISOString();
+        const rawType = row[2]?.replace(/"/g, "") || "";
         const type =
-          row[2]?.replace(/"/g, "") === "Mantenimiento"
+          rawType === "Mantenimiento"
             ? "maintenance"
-            : "works";
+            : rawType === "Obras"
+              ? "works"
+              : "others";
         const category = row[3]?.replace(/"/g, "") || "";
         const description = row[4]?.replace(/"/g, "") || "";
         const receiptNumber = row[5]?.replace(/"/g, "") || null;
         const amount = parseInt(row[6]?.replace(/"/g, "") || "0");
 
-        if (!category || !amount || isNaN(amount)) {
+        if (!amount || isNaN(amount)) {
           errors.push(
             `Fila ${rowNum}: ${translations.errors.import.categoryRequired}`
           );

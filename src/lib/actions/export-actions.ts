@@ -115,11 +115,17 @@ export async function exportExpensesAction(): Promise<{
       "Monto",
     ];
 
+    const typeLabels: Record<string, string> = {
+      maintenance: "Mantenimiento",
+      works: "Obras",
+      others: "Otros",
+    };
+
     // Convert data to CSV format
     const csvData = expenses.map((expense) => [
       expense.id.toString(),
       formatDate(expense.date),
-      "Gasto General",
+      typeLabels[expense.type] || expense.type,
       expense.category,
       expense.description,
       expense.receiptNumber || "",

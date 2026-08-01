@@ -24,22 +24,10 @@ interface FundsOverviewProps {
 }
 
 export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewProps) {
-  const incomeCategories = [
-    {
-      key: "maintenance" as ContributionType,
-      title: translations.labels.maintenance,
-      amount: fundsData.maintenance.income,
-    },
-    {
-      key: "works" as ContributionType,
-      title: translations.labels.works,
-      amount: fundsData.works.income,
-    },
-    {
-      key: "others" as ContributionType,
-      title: translations.labels.others,
-      amount: fundsData.others.income,
-    },
+  const fundCategories: { key: ContributionType; data: FundBalance }[] = [
+    { key: "maintenance", data: fundsData.maintenance },
+    { key: "works", data: fundsData.works },
+    { key: "others", data: fundsData.others },
   ];
 
   const getBalanceColorClass = (balance: number) => {
@@ -50,7 +38,7 @@ export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewP
 
   return (
     <div className="space-y-6">
-      {/* Single Consolidated Financial Summary Card */}
+      {/* Consolidated Financial Summary Card */}
       <Card className="border border-gray-200 bg-white transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
@@ -64,7 +52,7 @@ export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewP
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Main Financial Metrics */}
+          {/* Main consolidated metrics */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Link href="/income" className="block">
               <div className="cursor-pointer rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-center transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-100 hover:shadow-md">
@@ -106,21 +94,31 @@ export default function FundsOverview({ fundsData, monthlyData }: FundsOverviewP
             </div>
           </div>
 
-          {/* Income Breakdown by Categories */}
+          {/* Per-fund cash box (caja) breakdown */}
           <div className="border-t pt-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-700">
-              {translations.labels.breakdownOf} {translations.labels.income}:
+              {translations.labels.breakdownOf} {translations.labels.balance}:
             </h4>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              {incomeCategories.map((category) => (
+              {fundCategories.map(({ key, data }) => (
                 <div
-                  key={category.key}
-                  className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                  key={key}
+                  className="rounded-lg border border-gray-100 bg-gray-50 p-3 space-y-2"
                 >
-                  <TypeBadge type={category.key} />
-                  <span className="font-semibold text-gray-800">
-                    {formatCurrency(category.amount)}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <TypeBadge type={key} />
+                    <span className={`font-bold text-sm ${getBalanceColorClass(data.balance)}`}>
+                      {formatCurrency(data.balance)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 text-xs text-gray-500">
+                    <span className="text-emerald-600">
+                      +{formatCurrency(data.income)}
+                    </span>
+                    <span className="text-right text-red-500">
+                      -{formatCurrency(data.expenses)}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -3,7 +3,7 @@
 import { useEffect, useActionState, useTransition, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { useReceiptUpload } from "@/hooks/useReceiptUpload";
-import { Expense } from "@/types/expenses.types";
+import { Expense, ExpenseType } from "@/types/expenses.types";
 import {
   createExpenseAction,
   updateExpenseAction,
@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { cn, formatDateForStorage } from "@/lib/utils";
 
@@ -71,7 +78,7 @@ export default function ExpenseModal({
       startTransition(() => {
         const updatedExpense: Expense = {
           id: expense?.id || 0,
-          type: "general",
+          type: (formData.get("type") as ExpenseType) || "others",
           amount: parseFloat(formData.get("amount") as string),
           date: formData.get("date") as string,
           description: formData.get("description") as string,
@@ -116,7 +123,36 @@ export default function ExpenseModal({
           )}
 
           {expense && <input type="hidden" name="id" value={expense.id} />}
-          <input type="hidden" name="type" value="general" />
+
+          <div className="space-y-2">
+            <Label htmlFor="type">{translations.messages.fundType}</Label>
+            <Select
+              name="type"
+              defaultValue={expense?.type || "maintenance"}
+              required
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="maintenance">
+                  {translations.labels.maintenance}
+                </SelectItem>
+                <SelectItem value="works">
+                  {translations.labels.works}
+                </SelectItem>
+                <SelectItem value="others">
+                  {translations.labels.others}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {state.errors?.type && (
+              <div className="text-destructive text-sm">
+                {state.errors.type}
+              </div>
+            )}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="amount">{translations.labels.amount}</Label>
@@ -183,7 +219,6 @@ export default function ExpenseModal({
               id="category"
               defaultValue={expense?.category || ""}
               placeholder={translations.placeholders.categoryExample}
-              required
               disabled={isLoading}
             />
             {state.errors?.category && (
