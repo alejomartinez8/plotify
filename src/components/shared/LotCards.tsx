@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, Edit, Trash2, Info, Eye, Mail } from "lucide-react";
+import { Plus, Edit, Trash2, Info, Eye, Mail, Phone, Bell, BellOff } from "lucide-react";
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
@@ -305,6 +305,22 @@ export default function LotCards({
                             <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
                               <Mail className="h-3 w-3 flex-shrink-0" />
                               <span className="truncate">{lot.ownerEmail}</span>
+                            </div>
+                          )}
+                          {isAdmin && lot.whatsappPhone && (
+                            <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
+                              <Phone className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{lot.whatsappPhone}</span>
+                              {lot.notificationsEnabled ? (
+                                <span className="ml-1 inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                                  <Bell className="h-2.5 w-2.5" />
+                                  {translations.labels.notifications}
+                                </span>
+                              ) : (
+                                <span className="ml-1 inline-flex items-center gap-0.5 rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                                  <BellOff className="h-2.5 w-2.5" />
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
