@@ -239,6 +239,7 @@ export default function LotDetailView({
                 owner={lot.owner}
                 debtDetail={debtDetail}
                 quotaBreakdown={quotaBreakdown}
+                contributions={contributions}
               />
             )}
           </div>

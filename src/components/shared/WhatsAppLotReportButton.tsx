@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { LotDebtDetail } from "@/types/quotas.types";
+import { Contribution } from "@/types/contributions.types";
 import { QuotaLineStatus, formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 
@@ -14,13 +15,21 @@ interface WhatsAppLotReportButtonProps {
   owner: string;
   debtDetail: LotDebtDetail;
   quotaBreakdown: QuotaLineStatus[];
+  contributions: Contribution[];
+}
+
+function getPaymentTypeLabel(type: string): string {
+  if (type === "maintenance") return t.lotReportPaymentTypeMaintenance;
+  if (type === "works") return t.lotReportPaymentTypeWorks;
+  return t.lotReportPaymentTypeOthers;
 }
 
 function generateLotReport(
   lotNumber: string,
   owner: string,
   debtDetail: LotDebtDetail,
-  quotaBreakdown: QuotaLineStatus[]
+  quotaBreakdown: QuotaLineStatus[],
+  contributions: Contribution[]
 ): string {
   const today = formatDateForDisplay(new Date());
   const lines: string[] = [];
@@ -66,6 +75,27 @@ function generateLotReport(
 
   lines.push(t.reportSeparator);
 
+  // Payments made section
+  lines.push(t.lotReportPayments);
+  const sortedContributions = [...contributions].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  if (sortedContributions.length === 0) {
+    lines.push(`  ${t.lotReportNoPayments}`);
+  } else {
+    for (const c of sortedContributions) {
+      const date = formatDateForDisplay(new Date(c.date));
+      const type = getPaymentTypeLabel(c.type);
+      const amount = formatCurrency(c.amount);
+      const receipt = c.receiptNumber ? ` | ${t.lotReportPaymentReceipt} ${c.receiptNumber}` : "";
+      lines.push(`  ${t.lotReportDate} ${date} | [${type}] ${c.description} | ${amount}${receipt}`);
+    }
+  }
+  lines.push("");
+
+  lines.push(t.reportSeparator);
+
   if (debtDetail.outstandingBalance > 0) {
     lines.push(`${t.lotReportTotalOwed} ${formatCurrency(debtDetail.outstandingBalance)}`);
   } else {
@@ -85,12 +115,13 @@ export default function WhatsAppLotReportButton({
   owner,
   debtDetail,
   quotaBreakdown,
+  contributions,
 }: WhatsAppLotReportButtonProps) {
   const [status, setStatus] = useState<CopyStatus>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleClick() {
-    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown);
+    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown, contributions);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
