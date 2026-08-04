@@ -473,6 +473,13 @@ export const translations = {
     lotReportQuotaPaid: "✅",
     lotReportQuotaOwed: "🔴",
     lotReportQuotaPartial: "⚠️",
+    // Payments section
+    lotReportPayments: "💸 *PAGOS REALIZADOS*",
+    lotReportPaymentReceipt: "Comp:",
+    lotReportNoPayments: "Sin pagos registrados",
+    lotReportPaymentTypeMaintenance: "Mant.",
+    lotReportPaymentTypeWorks: "Obras",
+    lotReportPaymentTypeOthers: "Otros",
   },
 
   // Date and time
