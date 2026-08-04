@@ -313,10 +313,11 @@ export function buildQuotaBreakdown(
   const today = new Date();
   const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
 
+  // Include all quotas (past and future) so advance payments are allocated correctly.
+  // Future unpaid quotas are filtered out at the end.
   const applicable = quotaConfigs.filter((q) => {
     if (!q.dueDate) return false;
     const due = new Date(q.dueDate);
-    if (due > today) return false;
     if (activeFrom && due < activeFrom) return false;
     return true;
   });
@@ -381,7 +382,17 @@ export function buildQuotaBreakdown(
     }
   }
 
-  return result;
+  // Show all past/current-due quotas. For future quotas, only show if paid or
+  // partially paid (i.e. the owner pre-paid in advance).
+  const quotaMap = new Map(quotaConfigs.map((q) => [q.id, q]));
+  return result.filter((item) => {
+    if (item.id === "initial") return true;
+    const quota = quotaMap.get(item.id);
+    if (!quota?.dueDate) return true;
+    const due = new Date(quota.dueDate);
+    if (due <= today) return true;
+    return item.status === "paid" || item.status === "partial";
+  });
 }
 
 function formatQuotaDateLabel(dueDate: Date | string): string {
