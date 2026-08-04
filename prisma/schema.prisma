@@ -12,6 +12,8 @@ model Lot {
   lotNumber               String                   @unique
   owner                   String
   ownerEmail              String?
+  whatsappPhone           String?
+  notificationsEnabled    Boolean                  @default(false)
   initialWorksDebt        Int                      @default(0)
   isExempt                Boolean                  @default(false)
   exemptionReason         String?

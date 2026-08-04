@@ -97,6 +97,11 @@ export const translations = {
     filters: "Filtros",
     goToLot: "Ir a Lote:",
 
+    // WhatsApp / notifications
+    whatsappPhone: "Teléfono WhatsApp",
+    notificationsEnabled: "Notificaciones habilitadas",
+    notifications: "Notificaciones",
+
     // Quota related labels
     quotas: "Cuotas",
     quota: "Cuota",
@@ -146,6 +151,7 @@ export const translations = {
     categoryExample: "ej. Jardinería, Seguridad, Servicios",
     lotIdExample: "ej. 22, E2-1, 18 y 19",
     ownerName: "Ingrese el nombre del propietario",
+    whatsappPhone: "573001234567 (código de país + número, sin +)",
     collaboratorName: "Ingrese el nombre del colaborador",
     search: "Buscar...",
     searchCollaborators: "Buscar colaboradores...",
@@ -365,6 +371,7 @@ export const translations = {
     dateValid: "Fecha válida es requerida",
     categoryRequired: "La categoría es requerida",
     ownerRequired: "El nombre del propietario es requerido",
+    whatsappPhoneInvalid: "El teléfono debe contener solo dígitos (10-15 caracteres, incluye código de país)",
     collaboratorNameRequired: "El nombre del colaborador es requerido",
     uploadPhoto: "Error al subir la fotografía",
     collaboratorNotFound: "Colaborador no encontrado",
