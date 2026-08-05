@@ -137,9 +137,12 @@ export default function LotDetailView({
     });
   }, [contributions, sortField, sortDirection]);
 
-  // Calculate totals by fund type using debtDetail filtered contributions when available,
-  // so that "Paid" and "Owes" columns are consistent (both respect the activeFrom date).
+  // Calculate totals by fund type.
+  // maintenance/works use debtDetail (filtered by activeFrom) for the Paid vs Owes cards.
+  // total uses ALL contributions so the payments table TOTAL row matches what's visible.
   const fundTotals = useMemo(() => {
+    const allTotal = contributions.reduce((s, c) => s + c.amount, 0);
+
     const othersTotal = contributions
       .filter((contribution) => contribution.type === "others")
       .reduce((total, contribution) => total + contribution.amount, 0);
@@ -160,7 +163,7 @@ export default function LotDetailView({
       maintenance: maintenanceTotal,
       works: worksTotal,
       others: othersTotal,
-      total: maintenanceTotal + worksTotal + othersTotal,
+      total: allTotal,
     };
   }, [contributions, debtDetail]);
 
