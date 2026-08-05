@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { Readable } from "stream";
 import { getGoogleTokens } from "@/lib/auth";
+import { parseLocalDate } from "@/lib/utils";
 
 interface DriveFile {
   id: string;
@@ -107,7 +108,8 @@ class GoogleOAuthService {
       baseFileName = `collaborator_${cleanName}_${timestamp}`;
     } else {
       // Format date as YYYY-MM-DD for receipts
-      const formattedDate = new Date(date!).toISOString().split("T")[0];
+      const d = parseLocalDate(date!);
+      const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
       if (type === "income") {
         const lot = lotNumber ? `lote-${lotNumber.padStart(2, "0")}` : "lote-XX";
@@ -219,7 +221,7 @@ class GoogleOAuthService {
       }
 
       // Extract year from date
-      const year = new Date(date).getFullYear().toString();
+      const year = parseLocalDate(date).getFullYear().toString();
       const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
 
       console.log(`Creating folder structure: ${year}/${typeFolderName}`);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { parseLocalDate } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Expense, ExpenseType } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
@@ -66,7 +67,7 @@ export default function ExpenseView({
   const availableYears = useMemo(() => {
     const years = new Set<string>();
     expenses.forEach((expense) => {
-      const date = new Date(expense.date);
+      const date = parseLocalDate(expense.date);
       if (!isNaN(date.getTime())) {
         years.add(date.getFullYear().toString());
       }
@@ -98,7 +99,7 @@ export default function ExpenseView({
 
     if (yearFilter !== "all") {
       filtered = filtered.filter((expense) => {
-        const date = new Date(expense.date);
+        const date = parseLocalDate(expense.date);
         return (
           !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter
         );

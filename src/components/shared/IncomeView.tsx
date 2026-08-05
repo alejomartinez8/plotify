@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { parseLocalDate } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
@@ -125,7 +126,7 @@ export default function IncomeView({
   const availableYears = React.useMemo(() => {
     const years = new Set<string>();
     contributions.forEach((contribution) => {
-      const date = new Date(contribution.date);
+      const date = parseLocalDate(contribution.date);
       if (!isNaN(date.getTime())) {
         years.add(date.getFullYear().toString());
       }
@@ -147,7 +148,7 @@ export default function IncomeView({
       return contributions;
     }
     return contributions.filter((contribution) => {
-      const date = new Date(contribution.date);
+      const date = parseLocalDate(contribution.date);
       return (
         !isNaN(date.getTime()) && date.getFullYear().toString() === yearFilter
       );

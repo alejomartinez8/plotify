@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { parseLocalDate } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { QuotaConfig } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
@@ -87,7 +88,7 @@ export default function QuotaView({
     if (yearFilter !== "all") {
       filtered = filtered.filter((quota) => {
         if (!quota.dueDate) return false;
-        const dueYear = new Date(quota.dueDate).getFullYear().toString();
+        const dueYear = parseLocalDate(quota.dueDate).getFullYear().toString();
         return dueYear === yearFilter;
       });
     }
@@ -101,7 +102,7 @@ export default function QuotaView({
       new Set(
         quotaConfigs
           .filter((quota) => quota.dueDate)
-          .map((quota) => new Date(quota.dueDate!).getFullYear().toString())
+          .map((quota) => parseLocalDate(quota.dueDate!).getFullYear().toString())
       )
     );
     return years.sort((a, b) => parseInt(b) - parseInt(a));
