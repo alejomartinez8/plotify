@@ -476,6 +476,7 @@ export const translations = {
     // Payments section
     lotReportPayments: "💸 *PAGOS REALIZADOS*",
     lotReportNoPayments: "Sin pagos registrados",
+    lotReportCurrentYearOnly: "Solo año actual",
     lotReportPaymentTypeMaintenance: "Mant.",
     lotReportPaymentTypeWorks: "Obras",
     lotReportPaymentTypeOthers: "Otros",

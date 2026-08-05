@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Label } from "@/components/ui/Label";
 import { LotDebtDetail } from "@/types/quotas.types";
 import { Contribution } from "@/types/contributions.types";
 import { QuotaLineStatus, formatCurrency, formatDateForDisplay } from "@/lib/utils";
@@ -109,6 +111,8 @@ function generateLotReport(
 
 type CopyStatus = "idle" | "copied" | "error";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function WhatsAppLotReportButton({
   lotNumber,
   owner,
@@ -117,10 +121,15 @@ export default function WhatsAppLotReportButton({
   contributions,
 }: WhatsAppLotReportButtonProps) {
   const [status, setStatus] = useState<CopyStatus>("idle");
+  const [currentYearOnly, setCurrentYearOnly] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const filteredContributions = currentYearOnly
+    ? contributions.filter((c) => new Date(c.date).getFullYear() === CURRENT_YEAR)
+    : contributions;
+
   async function handleClick() {
-    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown, contributions);
+    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown, filteredContributions);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -141,20 +150,35 @@ export default function WhatsAppLotReportButton({
         : t.lotReportCopy;
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleClick}
-      className={
-        status === "copied"
-          ? "border-green-500 text-green-600"
-          : status === "error"
-            ? "border-red-500 text-red-600"
-            : ""
-      }
-    >
-      <MessageSquare className="mr-2 h-4 w-4" />
-      {label}
-    </Button>
+    <div className="flex flex-col items-end gap-1.5">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleClick}
+        className={
+          status === "copied"
+            ? "border-green-500 text-green-600"
+            : status === "error"
+              ? "border-red-500 text-red-600"
+              : ""
+        }
+      >
+        <MessageSquare className="mr-2 h-4 w-4" />
+        {label}
+      </Button>
+      <div className="flex items-center gap-1.5">
+        <Checkbox
+          id="whatsapp-year-filter"
+          checked={currentYearOnly}
+          onCheckedChange={(checked) => setCurrentYearOnly(!!checked)}
+        />
+        <Label
+          htmlFor="whatsapp-year-filter"
+          className="text-muted-foreground cursor-pointer text-xs"
+        >
+          {t.lotReportCurrentYearOnly} ({CURRENT_YEAR})
+        </Label>
+      </div>
+    </div>
   );
 }
