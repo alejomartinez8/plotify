@@ -298,6 +298,7 @@ export interface QuotaLineStatus {
   amount: number;
   paidAmount: number;
   status: "paid" | "partial" | "owed";
+  year?: number;
 }
 
 /**
@@ -344,14 +345,15 @@ export function buildQuotaBreakdown(
   let remaining = maintenancePaid;
   for (const q of maintenanceQuotas) {
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
+    const year = new Date(q.dueDate!).getFullYear();
     if (remaining >= q.amount) {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: q.amount, status: "paid" });
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: q.amount, status: "paid", year });
       remaining -= q.amount;
     } else if (remaining > 0) {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: remaining, status: "partial" });
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: remaining, status: "partial", year });
       remaining = 0;
     } else {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: 0, status: "owed" });
+      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: 0, status: "owed", year });
     }
   }
 
@@ -371,14 +373,15 @@ export function buildQuotaBreakdown(
   }
   for (const q of worksQuotas) {
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
+    const year = new Date(q.dueDate!).getFullYear();
     if (remainingWorks >= q.amount) {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: q.amount, status: "paid" });
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: q.amount, status: "paid", year });
       remainingWorks -= q.amount;
     } else if (remainingWorks > 0) {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: remainingWorks, status: "partial" });
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: remainingWorks, status: "partial", year });
       remainingWorks = 0;
     } else {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: 0, status: "owed" });
+      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: 0, status: "owed", year });
     }
   }
 
