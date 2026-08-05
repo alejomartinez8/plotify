@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Label } from "@/components/ui/Label";
 import { LotDebtDetail } from "@/types/quotas.types";
 import { Contribution } from "@/types/contributions.types";
-import { QuotaLineStatus, formatCurrency, formatDateForDisplay } from "@/lib/utils";
+import { QuotaLineStatus, formatCurrency, formatDateForDisplay, parseLocalDate } from "@/lib/utils";
 import { translations } from "@/lib/translations";
 
 const t = translations.whatsapp;
@@ -80,14 +80,14 @@ function generateLotReport(
   // Payments made section
   lines.push(t.lotReportPayments);
   const sortedContributions = [...contributions].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => a.date.localeCompare(b.date)
   );
 
   if (sortedContributions.length === 0) {
     lines.push(`  ${t.lotReportNoPayments}`);
   } else {
     for (const c of sortedContributions) {
-      const date = formatDateForDisplay(new Date(c.date));
+      const date = formatDateForDisplay(c.date);
       const type = getPaymentTypeLabel(c.type);
       const amount = formatCurrency(c.amount);
       lines.push(`  ${t.lotReportDate} ${date} | [${type}] ${c.description} | ${amount}`);
@@ -125,7 +125,7 @@ export default function WhatsAppLotReportButton({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filteredContributions = currentYearOnly
-    ? contributions.filter((c) => new Date(c.date).getFullYear() === CURRENT_YEAR)
+    ? contributions.filter((c) => parseLocalDate(c.date).getFullYear() === CURRENT_YEAR)
     : contributions;
 
   const filteredQuotaBreakdown = currentYearOnly
