@@ -88,8 +88,7 @@ function generateLotReport(
       const date = formatDateForDisplay(new Date(c.date));
       const type = getPaymentTypeLabel(c.type);
       const amount = formatCurrency(c.amount);
-      const receipt = c.receiptNumber ? ` | ${t.lotReportPaymentReceipt} ${c.receiptNumber}` : "";
-      lines.push(`  ${t.lotReportDate} ${date} | [${type}] ${c.description} | ${amount}${receipt}`);
+      lines.push(`  ${t.lotReportDate} ${date} | [${type}] ${c.description} | ${amount}`);
     }
   }
   lines.push("");
