@@ -128,8 +128,12 @@ export default function WhatsAppLotReportButton({
     ? contributions.filter((c) => new Date(c.date).getFullYear() === CURRENT_YEAR)
     : contributions;
 
+  const filteredQuotaBreakdown = currentYearOnly
+    ? quotaBreakdown.filter((q) => q.quotaType !== "maintenance" || q.year === CURRENT_YEAR)
+    : quotaBreakdown;
+
   async function handleClick() {
-    const text = generateLotReport(lotNumber, owner, debtDetail, quotaBreakdown, filteredContributions);
+    const text = generateLotReport(lotNumber, owner, debtDetail, filteredQuotaBreakdown, filteredContributions);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
