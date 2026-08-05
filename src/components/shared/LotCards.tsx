@@ -255,15 +255,16 @@ export default function LotCards({
           </div>
         ) : (
           <>
-            <div className="grid gap-4">
+            <div className="grid gap-3 lg:grid-cols-2">
               {sortedLots.map((lot) => (
                 <Card
                   key={lot.id}
-                  className="hover:bg-muted/30 relative w-full overflow-hidden border transition-all duration-200 hover:shadow-md"
+                  className="relative w-full overflow-hidden border transition-all duration-200 hover:shadow-md"
                 >
                   <CardContent className="w-full p-0">
                     {/* Unified Responsive Layout */}
                     <div className="relative w-full">
+                      <Link href={`/income/${lot.id}`} className="block hover:bg-muted/30 transition-colors duration-200">
                       <div className="flex min-h-[60px] w-full sm:min-h-[70px]">
                         {/* Main Content Section */}
                         <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden px-4 py-2 sm:px-6 sm:py-3">
@@ -419,9 +420,10 @@ export default function LotCards({
                           </div>
                         </div>
                       </div>
+                      </Link>
 
-                      <div className="bg-muted/20 border-muted/30 flex items-center justify-between border-t px-2 py-1 sm:px-4 sm:py-1.5">
-                        <Link href={`/income/${lot.id}`}>
+                      <div className={`bg-muted/20 border-muted/30 flex items-center border-t px-2 py-1 sm:px-4 sm:py-1.5 ${isAdmin ? "justify-between lg:justify-end" : "justify-start lg:hidden"}`}>
+                        <Link href={`/income/${lot.id}`} className="lg:hidden">
                           <Button
                             variant="ghost"
                             size="sm"
