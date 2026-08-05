@@ -32,6 +32,25 @@ export function formatCurrency(amount: number): string {
 }
 
 /**
+ * Parses a YYYY-MM-DD string or Date object as a local-midnight Date.
+ * Avoids the UTC-midnight trap: new Date("YYYY-MM-DD") is UTC, which shifts
+ * the day by one in negative-offset timezones (e.g. Colombia UTC-5).
+ */
+export function parseLocalDate(d: Date | string): Date {
+  if (typeof d === "string") {
+    if (d.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = d.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+    // ISO timestamp string — use local year/month/day
+    const tmp = new Date(d);
+    return new Date(tmp.getFullYear(), tmp.getMonth(), tmp.getDate());
+  }
+  // Date object from Prisma — normalise to local midnight
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+/**
  * Converts a date to YYYY-MM-DD format for database storage
  * Handles timezone issues by parsing dates as local dates
  * @param dateInput - Date object or date string to convert
@@ -109,12 +128,12 @@ export function calculateSimpleLotBalances(
   contributions: any[],
   quotaConfigs: any[]
 ): SimpleLotBalance[] {
-  const currentDate = new Date();
+  const currentDate = parseLocalDate(new Date());
 
   // Filter quotas that should be applied by now based on dueDate
   const applicableQuotas = quotaConfigs.filter((quota) => {
     if (quota.dueDate) {
-      return new Date(quota.dueDate) <= currentDate;
+      return parseLocalDate(quota.dueDate) <= currentDate;
     }
     return false;
   });
@@ -123,7 +142,7 @@ export function calculateSimpleLotBalances(
     .filter((lot) => !lot.isExempt || lot.exemptionEndDate) // Exclude fully exempt lots (no end date)
     .map((lot) => {
       // activeFrom limits which quotas apply, but all contributions count regardless of date
-      const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
+      const activeFrom = lot.exemptionEndDate ? parseLocalDate(lot.exemptionEndDate) : null;
 
       const lotContributions = contributions.filter(
         (contribution) => contribution.lotId === lot.id
@@ -135,7 +154,7 @@ export function calculateSimpleLotBalances(
 
       const lotQuotas = activeFrom
         ? applicableQuotas.filter(
-            (quota) => quota.dueDate && new Date(quota.dueDate) >= activeFrom
+            (quota) => quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
           )
         : applicableQuotas;
 
@@ -199,24 +218,24 @@ export function calculateLotDebtDetail(
   // Return null for fully exempt lots (no exemptionEndDate means completely excluded)
   if (lotWithContributions.isExempt && !lotWithContributions.exemptionEndDate) return null;
 
-  const currentDate = new Date();
+  const currentDate = parseLocalDate(new Date());
 
   // Filter quotas that should be applied by now based on dueDate
   const applicableQuotas = quotaConfigs.filter((quota) => {
     if (quota.dueDate) {
-      return new Date(quota.dueDate) <= currentDate;
+      return parseLocalDate(quota.dueDate) <= currentDate;
     }
     return false;
   });
 
   // activeFrom limits which quotas apply, but all contributions count regardless of date
   const activeFrom = lotWithContributions.exemptionEndDate
-    ? new Date(lotWithContributions.exemptionEndDate)
+    ? parseLocalDate(lotWithContributions.exemptionEndDate)
     : null;
 
   const lotQuotas = activeFrom
     ? applicableQuotas.filter(
-        (quota) => quota.dueDate && new Date(quota.dueDate) >= activeFrom
+        (quota) => quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
       )
     : applicableQuotas;
 
@@ -311,25 +330,25 @@ export function buildQuotaBreakdown(
   contributions: { type: string; amount: number }[],
   lot: { initialWorksDebt: number; exemptionEndDate?: Date | string | null }
 ): QuotaLineStatus[] {
-  const today = new Date();
-  const activeFrom = lot.exemptionEndDate ? new Date(lot.exemptionEndDate) : null;
+  const today = parseLocalDate(new Date());
+  const activeFrom = lot.exemptionEndDate ? parseLocalDate(lot.exemptionEndDate) : null;
 
   // Include all quotas (past and future) so advance payments are allocated correctly.
   // Future unpaid quotas are filtered out at the end.
   const applicable = quotaConfigs.filter((q) => {
     if (!q.dueDate) return false;
-    const due = new Date(q.dueDate);
+    const due = parseLocalDate(q.dueDate);
     if (activeFrom && due < activeFrom) return false;
     return true;
   });
 
   const maintenanceQuotas = applicable
     .filter((q) => q.quotaType === "maintenance")
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+    .sort((a, b) => parseLocalDate(a.dueDate!).getTime() - parseLocalDate(b.dueDate!).getTime());
 
   const worksQuotas = applicable
     .filter((q) => q.quotaType === "works")
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+    .sort((a, b) => parseLocalDate(a.dueDate!).getTime() - parseLocalDate(b.dueDate!).getTime());
 
   const maintenancePaid = contributions
     .filter((c) => c.type === "maintenance")
@@ -345,7 +364,7 @@ export function buildQuotaBreakdown(
   let remaining = maintenancePaid;
   for (const q of maintenanceQuotas) {
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
-    const year = new Date(q.dueDate!).getFullYear();
+    const year = parseLocalDate(q.dueDate!).getFullYear();
     if (remaining >= q.amount) {
       result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: q.amount, status: "paid", year });
       remaining -= q.amount;
@@ -373,7 +392,7 @@ export function buildQuotaBreakdown(
   }
   for (const q of worksQuotas) {
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
-    const year = new Date(q.dueDate!).getFullYear();
+    const year = parseLocalDate(q.dueDate!).getFullYear();
     if (remainingWorks >= q.amount) {
       result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: q.amount, status: "paid", year });
       remainingWorks -= q.amount;
@@ -392,14 +411,14 @@ export function buildQuotaBreakdown(
     if (item.id === "initial") return true;
     const quota = quotaMap.get(item.id);
     if (!quota?.dueDate) return true;
-    const due = new Date(quota.dueDate);
+    const due = parseLocalDate(quota.dueDate);
     if (due <= today) return true;
     return item.status === "paid" || item.status === "partial";
   });
 }
 
 function formatQuotaDateLabel(dueDate: Date | string): string {
-  const d = new Date(dueDate);
+  const d = parseLocalDate(dueDate);
   const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
   return `${months[d.getMonth()]} ${d.getFullYear()}`;
 }

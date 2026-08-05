@@ -5,10 +5,10 @@ import { requireAuth } from "@/lib/auth";
 import { getExpenses } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
+import { parseLocalDate } from "@/lib/utils";
 
 function formatDate(date: string | Date): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  return dateObj.toLocaleDateString("es-CO");
+  return parseLocalDate(date).toLocaleDateString("es-CO");
 }
 
 function generateTimestamp(): string {

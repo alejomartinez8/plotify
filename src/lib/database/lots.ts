@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Lot } from "@/types/lots.types";
+import { parseLocalDate } from "@/lib/utils";
 
 /**
  * Retrieves all lots from the database.
@@ -78,7 +79,7 @@ export async function createLot(data: {
         initialWorksDebt: data.initialWorksDebt || 0,
         isExempt: data.isExempt || false,
         exemptionReason: data.exemptionReason || null,
-        exemptionEndDate: data.exemptionEndDate ? new Date(data.exemptionEndDate) : null,
+        exemptionEndDate: data.exemptionEndDate ? parseLocalDate(data.exemptionEndDate) : null,
       },
     });
     return lot;
@@ -131,7 +132,7 @@ export async function updateLot(
           exemptionReason: data.exemptionReason,
         }),
         ...(data.exemptionEndDate !== undefined && {
-          exemptionEndDate: data.exemptionEndDate ? new Date(data.exemptionEndDate) : null,
+          exemptionEndDate: data.exemptionEndDate ? parseLocalDate(data.exemptionEndDate) : null,
         }),
       },
     });

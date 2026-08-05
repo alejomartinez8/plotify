@@ -10,6 +10,7 @@ import {
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 import { checkAdminAccess } from "./helpers";
+import { parseLocalDate } from "@/lib/utils";
 
 const QuotaConfigSchema = z.object({
   quotaType: z.enum(["maintenance", "works"]),
@@ -80,7 +81,7 @@ export async function createQuotaConfigAction(
       quotaType,
       amount,
       description,
-      dueDate: dueDate ? new Date(dueDate) : null,
+      dueDate: dueDate ? parseLocalDate(dueDate) : null,
     });
   } catch (error) {
     const errorInstance =
@@ -151,7 +152,7 @@ export async function updateQuotaConfigAction(
       quotaType,
       amount,
       description,
-      dueDate: dueDate ? new Date(dueDate) : null,
+      dueDate: dueDate ? parseLocalDate(dueDate) : null,
     });
   } catch (error) {
     const errorInstance =
