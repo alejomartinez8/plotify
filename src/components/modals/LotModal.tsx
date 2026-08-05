@@ -8,6 +8,7 @@ import {
   State,
 } from "@/lib/actions/lot-actions";
 import { translations } from "@/lib/translations";
+import { formatDateForStorage } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -249,7 +250,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
                 type="date"
                 name="exemptionEndDate"
                 id="exemptionEndDate"
-                defaultValue={lot?.exemptionEndDate ? new Date(lot.exemptionEndDate).toISOString().slice(0, 10) : ""}
+                defaultValue={lot?.exemptionEndDate ? formatDateForStorage(lot.exemptionEndDate) : ""}
                 disabled={isPending}
               />
               <p className="text-xs text-gray-600">

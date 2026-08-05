@@ -8,6 +8,7 @@ import {
   QuotaState,
 } from "@/lib/actions/quota-actions";
 import { translations } from "@/lib/translations";
+import { formatDateForStorage } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -151,9 +152,7 @@ export default function QuotaModal({
               name="dueDate"
               id="dueDate"
               defaultValue={
-                quota?.dueDate
-                  ? new Date(quota.dueDate).toISOString().split("T")[0]
-                  : ""
+                quota?.dueDate ? formatDateForStorage(quota.dueDate) : ""
               }
               required
               disabled={isPending}

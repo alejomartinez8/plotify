@@ -2,6 +2,7 @@ import { ContributionType } from "@/types/contributions.types";
 import { getIncomeByType } from "./contributions";
 import { getTotalExpenses, getTotalExpensesByType } from "./expenses";
 import prisma from "@/lib/prisma";
+import { parseLocalDate } from "@/lib/utils";
 
 export interface MonthlyDataPoint {
   month: string; // "YYYY-MM"
@@ -24,7 +25,7 @@ export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
     };
 
     for (const c of contributions) {
-      const d = new Date(c.date);
+      const d = parseLocalDate(c.date);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       getOrCreate(key).income += c.amount;
     }
