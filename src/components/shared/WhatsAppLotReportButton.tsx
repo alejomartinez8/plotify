@@ -129,7 +129,7 @@ export default function WhatsAppLotReportButton({
     : contributions;
 
   const filteredQuotaBreakdown = currentYearOnly
-    ? quotaBreakdown.filter((q) => q.quotaType !== "maintenance" || q.year === CURRENT_YEAR)
+    ? quotaBreakdown.filter((q) => q.quotaType === "initial" || q.year === CURRENT_YEAR)
     : quotaBreakdown;
 
   async function handleClick() {
