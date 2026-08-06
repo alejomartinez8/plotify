@@ -54,6 +54,7 @@ export default function LotCards({
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [editingLot, setEditingLot] = useState<Lot | null>(null);
   const [deletingLot, setDeletingLot] = useState<Lot | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -151,9 +152,12 @@ export default function LotCards({
     startTransition(async () => {
       const result = await deleteLotAction(deletingLot.id);
       if (result.success) {
+        setDeletingLot(null);
+        setDeleteError(null);
         router.refresh();
+      } else {
+        setDeleteError(result.message ?? null);
       }
-      setDeletingLot(null);
     });
   };
 
@@ -493,8 +497,13 @@ export default function LotCards({
           title={translations.confirmations.deleteTitle}
           message={translations.confirmations.deleteLot}
           onConfirm={handleDeleteConfirm}
-          onClose={() => setDeletingLot(null)}
+          onClose={() => {
+            setDeletingLot(null);
+            setDeleteError(null);
+          }}
           variant="danger"
+          isLoading={isPending}
+          error={deleteError}
         />
       )}
     </Card>

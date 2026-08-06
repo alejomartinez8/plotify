@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -244,8 +245,14 @@ export async function deleteLotAction(id: string) {
     });
     actionTimer.end();
 
+    const isFkViolation =
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003";
+
     return {
-      message: `${translations.errors.database}: Failed to delete lot.`,
+      message: isFkViolation
+        ? translations.errors.deleteLotHasRelatedRecords
+        : translations.errors.database,
       success: false,
     };
   }

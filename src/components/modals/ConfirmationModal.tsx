@@ -25,6 +25,7 @@ interface ConfirmationModalProps {
   cancelText?: string;
   variant?: "danger" | "warning" | "default";
   isLoading?: boolean;
+  error?: string | null;
 }
 
 export default function ConfirmationModal({
@@ -37,6 +38,7 @@ export default function ConfirmationModal({
   cancelText = translations.actions.cancel,
   variant = "default",
   isLoading = false,
+  error = null,
 }: ConfirmationModalProps) {
   const getVariantStyles = () => {
     switch (variant) {
@@ -79,6 +81,11 @@ export default function ConfirmationModal({
             <AlertDialogTitle>{title}</AlertDialogTitle>
           </div>
           <AlertDialogDescription>{message}</AlertDialogDescription>
+          {error && (
+            <p className="mt-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>

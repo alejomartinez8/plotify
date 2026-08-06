@@ -381,6 +381,8 @@ export const translations = {
     database: "Error de base de datos",
     network: "Error de conexión",
     server: "Error del servidor",
+    deleteLotHasRelatedRecords:
+      "No se puede eliminar el lote porque tiene contribuciones u otros registros asociados.",
 
     // Export errors
     export: {

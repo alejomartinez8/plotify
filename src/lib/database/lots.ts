@@ -151,16 +151,10 @@ export async function updateLot(
  * @example
  * const success = await deleteLot("abc123");
  */
-export async function deleteLot(id: string): Promise<boolean> {
-  try {
-    await prisma.lot.delete({
-      where: { id },
-    });
-    return true;
-  } catch (error) {
-    console.error("Error deleting lot:", error);
-    return false;
-  }
+export async function deleteLot(id: string): Promise<void> {
+  await prisma.lot.delete({
+    where: { id },
+  });
 }
 
 /**
