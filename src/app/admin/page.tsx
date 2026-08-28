@@ -1,5 +1,5 @@
-import { requireAdmin } from "@/lib/auth";
-import { getTreasurers } from "@/lib/database/treasurers";
+import { requireAdmin, getUserEmail } from "@/lib/auth";
+import { getUsers } from "@/lib/database/users";
 import AdminConfig from "@/components/admin/AdminConfig";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
@@ -8,9 +8,12 @@ export default async function AdminPage() {
   try {
     await requireAdmin();
 
-    const treasurers = await getTreasurers();
+    const [users, currentUserEmail] = await Promise.all([
+      getUsers(),
+      getUserEmail(),
+    ]);
 
-    return <AdminConfig treasurers={treasurers} />;
+    return <AdminConfig users={users} currentUserEmail={currentUserEmail} />;
   } catch (error) {
     console.error("Admin page error:", error);
     return (

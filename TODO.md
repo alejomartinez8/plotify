@@ -84,7 +84,7 @@
 > entry, like reconciling a bank statement — confirming a transaction happened
 > and is recorded correctly. Full design in `docs/SPEC-TREASURER-ROLE.md`.
 
-- ✅ **Treasurer role** - New DB-managed email whitelist (`Treasurer` model), admin-managed from `/admin`
+- ✅ **Treasurer role** - New DB-managed email whitelist, admin-managed from `/admin` (the standalone `Treasurer` model was folded into the unified `User` model in Phase 7 below)
 - ✅ **Approval workflow** - `pending` → `approved`/`rejected`, with Treasurer-exclusive **Un-approve** to reverse a mistaken approval
 - ✅ **Validation-only role** - Treasurer can only approve/reject/unapprove; never creates, edits, or deletes a record
 - ✅ **Field locking** - Once approved, `amount`/`type`/`date` are immutable for everyone (incl. Admin); `description` (and `lotId` for income) stay Admin-editable
@@ -93,7 +93,19 @@
 - ✅ **Auto-resubmit** - A fixed `rejected` record automatically returns to `pending` when Admin saves an edit
 - ✅ **Backfill migration** - Existing income/expense records default to `approved` so the Treasurer's queue starts empty
 
-### 🚧 Phase 7: Browser Notifications (Future Enhancement)
+### ✅ Phase 7: Consolidate Admin/Treasurer into a User table - COMPLETED _(2026-08-28)_
+
+> **Business Context**: Admin was only assignable via the `ADMIN_EMAILS`
+> env var (redeploy required); Treasurer had its own separate table. Full
+> design in `docs/SPEC-USER-ROLES-CONSOLIDATION.md`.
+
+- ✅ **Unified `User` model** - Single `users` table (`email`, `name`, `role`) replaces the standalone `Treasurer` model; migration copies any existing treasurers over with `role: 'treasurer'`
+- ✅ **One admin screen for both roles** - `/admin` → Usuarios tab manages Admins and Treasurers together, no redeploy needed for either
+- ✅ **`ADMIN_EMAILS` kept as a permanent safety net** - still grants Admin on its own, so the app can never lock every admin out even if the `users` table ends up empty
+- ✅ **Owner stays derived, not stored** - `role` only ever holds `"admin"` or `"treasurer"`; Owner status keeps coming from `Lot.ownerEmail`, avoiding a second place that could drift out of sync
+- ✅ **Self-removal guard** - an Admin can't delete their own `User` row from the UI or the server action; another admin has to
+
+### 🚧 Phase 8: Browser Notifications (Future Enhancement)
 
 > **Note**: Browser notifications feature has been deprioritized. Current authentication system via Google OAuth meets business needs.
 >
@@ -160,11 +172,11 @@
 - **Development**: `npm run dev` for local development
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth v5 with Google OAuth provider
-- **Authorization**: Role-based (admin/treasurer/owner) — admin via ADMIN_EMAILS env variable, treasurer via DB whitelist managed from `/admin`
+- **Authorization**: Role-based (admin/treasurer/owner) — admin and treasurer via the `User` table managed from `/admin` (ADMIN_EMAILS env variable kept as a permanent recovery-only safety net for admin), owner derived from `Lot.ownerEmail`
 - **File Storage**: Google Drive OAuth integration for receipts and photos
 - **Logging**: Centralized logger service with structured logging
 - **Code Quality**: TypeScript strict mode, ESLint, comprehensive error handling
 
 ---
 
-_Last updated: 2026-08-28 - Treasurer role and approval workflow completed. Phase 6 finished._
+_Last updated: 2026-08-28 - Treasurer role, approval workflow, and Admin/Treasurer user-table consolidation completed. Phases 6-7 finished._

@@ -121,8 +121,7 @@ export const translations = {
     approved: "Aprobado",
     rejected: "Rechazado",
     approvalNote: "Nota de validación",
-    treasurer: "Tesorero",
-    treasurers: "Tesoreros",
+    role: "Rol",
     approvedBy: "Validado por",
     approvalHistory: "Historial de validación",
 
@@ -173,8 +172,8 @@ export const translations = {
     receiptNumber: "ej. 001234, FV-001",
     approvalNoteOptional: "Nota opcional",
     rejectionNoteRequired: "Explica por qué se rechaza este registro",
-    treasurerEmail: "correo@ejemplo.com",
-    treasurerName: "Nombre del tesorero (opcional)",
+    userEmail: "correo@ejemplo.com",
+    userName: "Nombre (opcional)",
   },
 
   // Filter options
@@ -254,9 +253,8 @@ export const translations = {
     contributionsThisMonth: "Aportes este mes",
     expensesThisMonth: "Gastos este mes",
 
-    // Treasurer management
-    treasurerManagement: "Gestión de Tesoreros",
-    addTreasurer: "Agregar Tesorero",
+    // User management
+    addUser: "Agregar Usuario",
     approvalHistoryTitle: "Historial de validación",
   },
 
@@ -268,11 +266,11 @@ export const translations = {
     backupTab: "Backup & Exportación",
     restoreTab: "Restauración",
     systemTab: "Sistema",
-    treasurersTab: "Tesoreros",
-    treasurersTitle: "Gestión de Tesoreros",
-    treasurersDescription:
-      "Administra los correos autorizados para validar aportes y gastos",
-    treasurersEmptyState: "No hay tesoreros registrados",
+    usersTab: "Usuarios",
+    usersTitle: "Gestión de Usuarios",
+    usersDescription:
+      "Administra quién es Admin o Tesorero sin necesidad de un redeploy",
+    usersEmptyState: "No hay usuarios registrados",
     exportTitle: "Exportar Datos en CSV",
     exportDescription:
       "Descarga todos los datos de la aplicación en formato CSV para respaldo y análisis",
@@ -420,8 +418,13 @@ export const translations = {
       "No se puede modificar el monto, tipo o fecha de un registro ya aprobado",
     cannotDeleteApproved:
       "No se puede eliminar un registro aprobado. El tesorero debe desaprobarlo primero",
-    treasurerEmailInvalid: "Ingresa un correo electrónico válido",
-    treasurerAlreadyExists: "Este correo ya está registrado como tesorero",
+
+    // User management errors
+    userEmailInvalid: "Ingresa un correo electrónico válido",
+    userRoleRequired: "Selecciona un rol",
+    userAlreadyExists: "Este correo ya está registrado como usuario",
+    cannotRemoveSelf:
+      "No puedes eliminar tu propio usuario. Pide a otro administrador que lo haga",
 
     // System
     database: "Error de base de datos",
@@ -487,8 +490,8 @@ export const translations = {
     rejectMessage: "Indica el motivo del rechazo para que el administrador pueda corregirlo.",
     unapproveTitle: "Desaprobar registro",
     unapproveMessage: "¿Confirmas que quieres revertir la aprobación? El registro volverá a quedar pendiente y podrá editarse o eliminarse.",
-    deleteTreasurer:
-      "¿Estás seguro de que quieres eliminar este tesorero? Ya no podrá validar aportes ni gastos.",
+    deleteUser:
+      "¿Estás seguro de que quieres eliminar este usuario? Perderá el acceso asociado a su rol.",
   },
 
   // WhatsApp report
