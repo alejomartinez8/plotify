@@ -1,6 +1,6 @@
 # Feature Spec: Treasurer Role & Approval Workflow
 
-> Status: Draft for review
+> Status: Resolved — ready for implementation (see 12)
 > Author: Claude (drafted from stakeholder notes)
 > Related: TODO.md Phase 6 (proposed)
 
@@ -268,7 +268,11 @@ validation status, and neither role can do the other's job.
   only way Admin knows what to fix. Writes an `ApprovalHistory` row
   (`action: "rejected"`).
 - **rejected → pending**: automatic, the moment Admin saves an edit to a
-  rejected record, so it re-enters the Treasurer's review queue.
+  rejected record, so it re-enters the Treasurer's review queue. This
+  transition does **not** write an `ApprovalHistory` row — kept simple by
+  design (see 12): the Treasurer's own approve/reject/unapprove entries
+  already capture who validated what and when; the record re-entering the
+  queue is just its `approvalStatus` going back to `"pending"`.
 - **approved → pending** ("Un-approve"): Treasurer-only action (Admin
   cannot do this — see 7.2). Clears `approvedBy`/`approvedAt` on the
   record and writes an `ApprovalHistory` row (`action: "unapproved"`,
@@ -365,18 +369,23 @@ change, only the logic inside does):
 - `errors`: `treasurerAccessRequired`, `rejectionNoteRequired`,
   `cannotEditApprovedField`, `cannotDeleteApproved`
 
-## 12. Remaining Open Question
+## 12. Open Questions — Resolved
 
-Everything from the previous round of open questions is now resolved
-(deletion rule in 7.1, no dedicated approvals page per 3, un-approve is
-Treasurer-only per 7.2, audit trail via `ApprovalHistory` per 5.3). One
-smaller detail is still worth a quick call:
+All open questions from earlier drafts are now settled:
 
-- Should the auto-resubmit (`rejected` → `pending` when Admin fixes and
-  saves) also write an `ApprovalHistory` row (e.g. `action: "resubmitted"`),
-  so the audit trail shows the full back-and-forth, not just the
-  Treasurer's actions? *Default: yes — log it for completeness, since full
-  transparency was explicitly called out as important (Goal 4).*
+- Deletion rule: 7.1 (approved records are never deletable, must be
+  un-approved first).
+- No dedicated approvals page for v1: 3.
+- Approve/Reject/Un-approve are Treasurer-exclusive, Admin has no content
+  access on approved records beyond `description`/`lotId`: 7.2.
+- Audit scope stays intentionally minimal: `ApprovalHistory` logs only the
+  three explicit Treasurer actions (`approved` / `rejected` / `unapproved`).
+  The automatic `rejected → pending` resubmit (8) does **not** get its own
+  history row — no `"resubmitted"` action, no extra bookkeeping. The
+  record's current `approvalStatus` plus its last `approvedBy`/`approvedAt`
+  (when `approved`) is enough; the full `ApprovalHistory` list already shows
+  every time the Treasurer acted on it, which is the transparency that
+  actually matters here.
 
 ## 13. Suggested TODO.md Entry
 
