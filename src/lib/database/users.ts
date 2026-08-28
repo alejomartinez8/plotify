@@ -77,6 +77,33 @@ export async function createUser(data: {
 }
 
 /**
+ * Updates an existing user's email, name, and/or role.
+ */
+export async function updateUser(
+  id: string,
+  data: {
+    email: string;
+    name?: string | null;
+    role: UserRole;
+  }
+): Promise<User | null> {
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: {
+        email: data.email,
+        name: data.name || null,
+        role: data.role,
+      },
+    });
+    return toUser(user);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+}
+
+/**
  * Removes a user, revoking whatever role they had.
  */
 export async function deleteUser(id: string): Promise<boolean> {
