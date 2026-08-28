@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
+import { CheckCircle2, RotateCcw } from "lucide-react";
 import { translations } from "@/lib/translations";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
 import { cn } from "@/lib/utils";
 
-export type ApprovalActionKind = "approve" | "reject" | "unapprove";
+export type ApprovalActionKind = "approve" | "unapprove";
 
 interface ApprovalNoteModalProps {
   isOpen: boolean;
@@ -34,7 +34,6 @@ const ACTION_CONFIG: Record<
     iconBg: string;
     title: string;
     message: string;
-    noteRequired: boolean;
     confirmLabel: string;
     confirmClass: string;
   }
@@ -45,19 +44,8 @@ const ACTION_CONFIG: Record<
     iconBg: "bg-emerald-50",
     title: translations.confirmations.approveTitle,
     message: translations.confirmations.approveMessage,
-    noteRequired: false,
     confirmLabel: translations.actions.approve,
     confirmClass: "bg-emerald-600 hover:bg-emerald-700",
-  },
-  reject: {
-    icon: XCircle,
-    iconClass: "text-destructive",
-    iconBg: "bg-destructive/10",
-    title: translations.confirmations.rejectTitle,
-    message: translations.confirmations.rejectMessage,
-    noteRequired: true,
-    confirmLabel: translations.actions.reject,
-    confirmClass: "bg-destructive hover:bg-destructive/90",
   },
   unapprove: {
     icon: RotateCcw,
@@ -65,7 +53,6 @@ const ACTION_CONFIG: Record<
     iconBg: "bg-orange-50",
     title: translations.confirmations.unapproveTitle,
     message: translations.confirmations.unapproveMessage,
-    noteRequired: false,
     confirmLabel: translations.actions.unapprove,
     confirmClass: "bg-orange-600 hover:bg-orange-700",
   },
@@ -81,7 +68,6 @@ export default function ApprovalNoteModal({
   const [note, setNote] = useState("");
   const config = ACTION_CONFIG[action];
   const Icon = config.icon;
-  const canConfirm = !config.noteRequired || note.trim().length > 0;
 
   const handleClose = () => {
     setNote("");
@@ -89,7 +75,6 @@ export default function ApprovalNoteModal({
   };
 
   const handleConfirm = () => {
-    if (!canConfirm) return;
     onConfirm(note.trim());
   };
 
@@ -113,18 +98,13 @@ export default function ApprovalNoteModal({
 
         <div className="space-y-2">
           <Label htmlFor="approval-note">
-            {translations.labels.approvalNote}
-            {!config.noteRequired && " (opcional)"}
+            {translations.labels.approvalNote} (opcional)
           </Label>
           <Textarea
             id="approval-note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder={
-              config.noteRequired
-                ? translations.placeholders.rejectionNoteRequired
-                : translations.placeholders.approvalNoteOptional
-            }
+            placeholder={translations.placeholders.approvalNoteOptional}
             disabled={isLoading}
             rows={3}
           />
@@ -142,7 +122,7 @@ export default function ApprovalNoteModal({
           <Button
             type="button"
             onClick={handleConfirm}
-            disabled={isLoading || !canConfirm}
+            disabled={isLoading}
             className={config.confirmClass}
           >
             {isLoading

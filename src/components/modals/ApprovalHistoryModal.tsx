@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, XCircle, RotateCcw, History } from "lucide-react";
+import { CheckCircle2, RotateCcw, History } from "lucide-react";
 import { translations } from "@/lib/translations";
 import {
   Dialog,
@@ -23,13 +23,11 @@ interface ApprovalHistoryModalProps {
 
 const ACTION_ICON = {
   approved: { Icon: CheckCircle2, className: "text-emerald-600" },
-  rejected: { Icon: XCircle, className: "text-destructive" },
   unapproved: { Icon: RotateCcw, className: "text-orange-600" },
 };
 
 const ACTION_LABEL = {
   approved: translations.labels.approved,
-  rejected: translations.labels.rejected,
   unapproved: translations.actions.unapprove,
 };
 

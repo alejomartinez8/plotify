@@ -85,12 +85,11 @@
 > and is recorded correctly. Full design in `docs/SPEC-TREASURER-ROLE.md`.
 
 - ✅ **Treasurer role** - New DB-managed email whitelist, admin-managed from `/admin` (the standalone `Treasurer` model was folded into the unified `User` model in Phase 7 below)
-- ✅ **Approval workflow** - `pending` → `approved`/`rejected`, with Treasurer-exclusive **Un-approve** to reverse a mistaken approval
-- ✅ **Validation-only role** - Treasurer can only approve/reject/unapprove; never creates, edits, or deletes a record
+- ✅ **Approval workflow** - Two states, `pending` ↔ `approved`, with Treasurer-exclusive **Approve** and **Un-approve** (no Reject — kept intentionally simple; inconsistencies get resolved Treasurer↔Admin directly instead of an in-app rejection flow)
+- ✅ **Validation-only role** - Treasurer can only approve/unapprove; never creates, edits, or deletes a record
 - ✅ **Field locking** - Once approved, `amount`/`type`/`date` are immutable for everyone (incl. Admin); `description` (and `lotId` for income) stay Admin-editable
 - ✅ **Deletion rule** - Approved records can never be deleted; must be un-approved first
-- ✅ **Audit trail** - `ApprovalHistory` model logs every approve/reject/unapprove with who, when, and an optional note; viewable per record
-- ✅ **Auto-resubmit** - A fixed `rejected` record automatically returns to `pending` when Admin saves an edit
+- ✅ **Audit trail** - `ApprovalHistory` model logs every approve/unapprove with who, when, and an optional note; viewable per record
 - ✅ **Backfill migration** - Existing income/expense records reset to `pending` (the original "default to approved" backfill was reversed with a one-off manual SQL fix against production, not a tracked migration) so the Treasurer reviews the full historical ledger too
 
 ### ✅ Phase 7: Consolidate Admin/Treasurer into a User table - COMPLETED _(2026-08-28)_
@@ -154,7 +153,7 @@
 
 **For Treasurers:**
 - View all financial data, same as Owners
-- Approve, reject, or un-approve any income/expense entry, with an optional/required note
+- Approve or un-approve any income/expense entry, with an optional note
 - View the full approval audit trail (who validated what, and when) per record
 - No ability to create, edit, or delete records — validation only
 

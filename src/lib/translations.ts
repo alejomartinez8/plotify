@@ -47,7 +47,6 @@ export const translations = {
     viewReceipt: "Ver Comprobante",
     viewDetail: "Ver detalle",
     approve: "Aprobar",
-    reject: "Rechazar",
     unapprove: "Desaprobar",
     viewHistory: "Ver historial",
   },
@@ -119,7 +118,6 @@ export const translations = {
     // Approval workflow labels
     pending: "Pendiente",
     approved: "Aprobado",
-    rejected: "Rechazado",
     approvalNote: "Nota de validación",
     role: "Rol",
     approvedBy: "Validado por",
@@ -171,7 +169,6 @@ export const translations = {
     searchCollaborators: "Buscar colaboradores...",
     receiptNumber: "ej. 001234, FV-001",
     approvalNoteOptional: "Nota opcional",
-    rejectionNoteRequired: "Explica por qué se rechaza este registro",
     userEmail: "correo@ejemplo.com",
     userName: "Nombre (opcional)",
   },
@@ -364,7 +361,6 @@ export const translations = {
     updated: "Actualizado exitosamente",
     deleted: "Eliminado exitosamente",
     approvedSuccess: "Registro aprobado exitosamente",
-    rejectedSuccess: "Registro rechazado exitosamente",
     unapprovedSuccess: "Aprobación revertida exitosamente",
     noApprovalHistory: "Sin historial de validación",
     approvedFieldsLockedInfo:
@@ -414,7 +410,6 @@ export const translations = {
     // Approval workflow errors
     treasurerAccessRequired:
       "Se requiere acceso de tesorero para realizar esta acción",
-    rejectionNoteRequired: "Debes indicar el motivo del rechazo",
     cannotEditApprovedField:
       "No se puede modificar el monto, tipo o fecha de un registro ya aprobado",
     cannotDeleteApproved:
@@ -489,8 +484,6 @@ export const translations = {
     // Approval workflow
     approveTitle: "Aprobar registro",
     approveMessage: "¿Confirmas que esta transacción existió y está correcta? Puedes dejar una nota opcional.",
-    rejectTitle: "Rechazar registro",
-    rejectMessage: "Indica el motivo del rechazo para que el administrador pueda corregirlo.",
     unapproveTitle: "Desaprobar registro",
     unapproveMessage: "¿Confirmas que quieres revertir la aprobación? El registro volverá a quedar pendiente y podrá editarse o eliminarse.",
     deleteUser:

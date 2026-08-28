@@ -21,7 +21,6 @@ import { ExportButton } from "@/components/shared/ExportButton";
 import { exportIncomesAction } from "@/lib/actions/export-actions";
 import {
   approveContributionAction,
-  rejectContributionAction,
   unapproveContributionAction,
 } from "@/lib/actions/approval-actions";
 
@@ -148,8 +147,6 @@ export default function IncomeView({
       const { contribution, action } = approvalTarget;
       if (action === "approve") {
         await approveContributionAction(contribution.id, note || undefined);
-      } else if (action === "reject") {
-        await rejectContributionAction(contribution.id, note);
       } else {
         await unapproveContributionAction(contribution.id, note || undefined);
       }
@@ -302,9 +299,6 @@ export default function IncomeView({
           onApprove={(contribution) =>
             setApprovalTarget({ contribution, action: "approve" })
           }
-          onReject={(contribution) =>
-            setApprovalTarget({ contribution, action: "reject" })
-          }
           onUnapprove={(contribution) =>
             setApprovalTarget({ contribution, action: "unapprove" })
           }
@@ -339,7 +333,7 @@ export default function IncomeView({
         />
       )}
 
-      {/* Approve / Reject / Unapprove Modal */}
+      {/* Approve / Unapprove Modal */}
       {approvalTarget && (
         <ApprovalNoteModal
           isOpen={!!approvalTarget}

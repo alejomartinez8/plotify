@@ -8,7 +8,6 @@ import {
   Trash2,
   FileText,
   CheckCircle2,
-  XCircle,
   RotateCcw,
   History,
 } from "lucide-react";
@@ -36,7 +35,6 @@ interface ExpenseTableProps {
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
   onApprove?: (expense: Expense) => void;
-  onReject?: (expense: Expense) => void;
   onUnapprove?: (expense: Expense) => void;
   onViewHistory?: (expense: Expense) => void;
 }
@@ -51,7 +49,6 @@ export default function ExpenseTable({
   onEdit,
   onDelete,
   onApprove,
-  onReject,
   onUnapprove,
   onViewHistory,
 }: ExpenseTableProps) {
@@ -274,26 +271,15 @@ export default function ExpenseTable({
                           {isTreasurer && (
                             <>
                               {expense.approvalStatus !== "approved" && (
-                                <>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onApprove?.(expense)}
-                                    className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-                                    title={translations.actions.approve}
-                                  >
-                                    <CheckCircle2 className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onReject?.(expense)}
-                                    className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                                    title={translations.actions.reject}
-                                  >
-                                    <XCircle className="h-4 w-4" />
-                                  </Button>
-                                </>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onApprove?.(expense)}
+                                  className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                  title={translations.actions.approve}
+                                >
+                                  <CheckCircle2 className="h-4 w-4" />
+                                </Button>
                               )}
                               {expense.approvalStatus === "approved" && (
                                 <Button

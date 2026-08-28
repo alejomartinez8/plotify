@@ -1,8 +1,8 @@
-export type ApprovalStatus = "pending" | "approved" | "rejected";
+export type ApprovalStatus = "pending" | "approved";
 
 export type ApprovalRecordType = "contribution" | "expense";
 
-export type ApprovalAction = "approved" | "rejected" | "unapproved";
+export type ApprovalAction = "approved" | "unapproved";
 
 export interface ApprovalFields {
   approvalStatus: ApprovalStatus;

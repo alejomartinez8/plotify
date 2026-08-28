@@ -1,17 +1,11 @@
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import {
   approveContribution,
-  rejectContribution,
   unapproveContribution,
 } from "@/lib/database/contributions";
-import {
-  approveExpense,
-  rejectExpense,
-  unapproveExpense,
-} from "@/lib/database/expenses";
+import { approveExpense, unapproveExpense } from "@/lib/database/expenses";
 import { getApprovalHistory } from "@/lib/database/approval-history";
 import { ApprovalHistoryEntry, ApprovalRecordType } from "@/types/approvals.types";
 import { translations } from "@/lib/translations";
@@ -19,20 +13,16 @@ import { logger } from "@/lib/logger";
 import { getUserEmail, isAdmin, isTreasurer } from "@/lib/auth";
 import { checkTreasurerAccess } from "./helpers";
 
-const RequiredNoteSchema = z.object({
-  note: z.string().min(1, translations.errors.rejectionNoteRequired),
-});
-
 export type ApprovalActionState = {
   message?: string | null;
   success?: boolean;
 };
 
 /**
- * Shared plumbing for approve/reject/unapprove: checks treasurer access,
+ * Shared plumbing for approve/unapprove: checks treasurer access,
  * resolves the acting treasurer's email, runs the DB call, and
  * revalidates. `perform` receives the treasurer's email and does the
- * actual approve/reject/unapprove DB call.
+ * actual approve/unapprove DB call.
  */
 async function runApprovalAction(
   actionName: string,
@@ -88,27 +78,6 @@ export async function approveContributionAction(
   );
 }
 
-export async function rejectContributionAction(
-  id: number,
-  note: string
-): Promise<ApprovalActionState> {
-  const validated = RequiredNoteSchema.safeParse({ note });
-  if (!validated.success) {
-    return {
-      success: false,
-      message: translations.errors.rejectionNoteRequired,
-    };
-  }
-
-  return runApprovalAction(
-    "Reject Contribution Action",
-    ["/income", "/"],
-    translations.messages.rejectedSuccess,
-    `${translations.errors.database}: Failed to reject contribution.`,
-    (treasurerEmail) => rejectContribution(id, treasurerEmail, note)
-  );
-}
-
 export async function unapproveContributionAction(
   id: number,
   note?: string
@@ -132,27 +101,6 @@ export async function approveExpenseAction(
     translations.messages.approvedSuccess,
     `${translations.errors.database}: Failed to approve expense.`,
     (treasurerEmail) => approveExpense(id, treasurerEmail, note || null)
-  );
-}
-
-export async function rejectExpenseAction(
-  id: number,
-  note: string
-): Promise<ApprovalActionState> {
-  const validated = RequiredNoteSchema.safeParse({ note });
-  if (!validated.success) {
-    return {
-      success: false,
-      message: translations.errors.rejectionNoteRequired,
-    };
-  }
-
-  return runApprovalAction(
-    "Reject Expense Action",
-    ["/expenses", "/"],
-    translations.messages.rejectedSuccess,
-    `${translations.errors.database}: Failed to reject expense.`,
-    (treasurerEmail) => rejectExpense(id, treasurerEmail, note)
   );
 }
 
