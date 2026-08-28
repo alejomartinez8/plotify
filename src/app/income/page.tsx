@@ -36,6 +36,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
         lots={allLots}
         contributions={contributions}
         isAdmin={userRole === "admin"}
+        isTreasurer={userRole === "treasurer"}
       />
     );
   } catch (error) {

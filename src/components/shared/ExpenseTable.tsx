@@ -7,6 +7,10 @@ import {
   Edit,
   Trash2,
   FileText,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  History,
 } from "lucide-react";
 import { Expense } from "@/types/expenses.types";
 import { ContributionType } from "@/types/contributions.types";
@@ -15,6 +19,7 @@ import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import TypeBadge from "@/components/shared/TypeBadge";
+import ApprovalStatusBadge from "@/components/shared/ApprovalStatusBadge";
 import {
   Table,
   TableBody,
@@ -27,8 +32,13 @@ import {
 interface ExpenseTableProps {
   expenses: Expense[];
   isAdmin?: boolean;
+  isTreasurer?: boolean;
   onEdit?: (expense: Expense) => void;
   onDelete?: (expense: Expense) => void;
+  onApprove?: (expense: Expense) => void;
+  onReject?: (expense: Expense) => void;
+  onUnapprove?: (expense: Expense) => void;
+  onViewHistory?: (expense: Expense) => void;
 }
 
 type SortField = "date" | "description" | "amount" | "receiptNumber" | "type";
@@ -37,9 +47,15 @@ type SortDirection = "asc" | "desc";
 export default function ExpenseTable({
   expenses,
   isAdmin = false,
+  isTreasurer = false,
   onEdit,
   onDelete,
+  onApprove,
+  onReject,
+  onUnapprove,
+  onViewHistory,
 }: ExpenseTableProps) {
+  const showActionsColumn = isAdmin || isTreasurer;
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -183,7 +199,10 @@ export default function ExpenseTable({
                       })()}
                     </div>
                   </TableHead>
-                  {isAdmin && (
+                  <TableHead className="border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
+                    {translations.labels.status}
+                  </TableHead>
+                  {showActionsColumn && (
                     <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
@@ -235,27 +254,84 @@ export default function ExpenseTable({
                         <span>{expense.receiptNumber || "—"}</span>
                       </div>
                     </TableCell>
-                    {isAdmin && (
+                    <TableCell className="px-6 py-4">
+                      <ApprovalStatusBadge status={expense.approvalStatus} />
+                    </TableCell>
+                    {showActionsColumn && (
                       <TableCell className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onEdit?.(expense)}
-                            className="hover:bg-muted h-8 w-8 p-0"
-                            title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onDelete?.(expense)}
-                            className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                            title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <div className="flex items-center justify-center gap-1">
+                          {(isAdmin || isTreasurer) && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onViewHistory?.(expense)}
+                              className="hover:bg-muted h-8 w-8 p-0"
+                              title={translations.actions.viewHistory}
+                            >
+                              <History className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {isTreasurer && (
+                            <>
+                              {expense.approvalStatus !== "approved" && (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onApprove?.(expense)}
+                                    className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                    title={translations.actions.approve}
+                                  >
+                                    <CheckCircle2 className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onReject?.(expense)}
+                                    className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                                    title={translations.actions.reject}
+                                  >
+                                    <XCircle className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              )}
+                              {expense.approvalStatus === "approved" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onUnapprove?.(expense)}
+                                  className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                                  title={translations.actions.unapprove}
+                                >
+                                  <RotateCcw className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </>
+                          )}
+                          {isAdmin && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onEdit?.(expense)}
+                                className="hover:bg-muted h-8 w-8 p-0"
+                                title={`${translations.actions.edit} ${translations.labels.expenses.toLowerCase()}`}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              {expense.approvalStatus !== "approved" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onDelete?.(expense)}
+                                  className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                                  title={`${translations.actions.delete} ${translations.labels.expenses.toLowerCase()}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     )}
@@ -264,7 +340,7 @@ export default function ExpenseTable({
                 {sortedExpenses.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={isAdmin ? 6 : 5}
+                      colSpan={showActionsColumn ? 7 : 6}
                       className="px-6 py-12 text-center"
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -284,7 +360,7 @@ export default function ExpenseTable({
                   <>
                     <TableRow>
                       <TableCell
-                        colSpan={isAdmin ? 6 : 5}
+                        colSpan={showActionsColumn ? 7 : 6}
                         className="border-muted border-t-2 p-0"
                       />
                     </TableRow>
@@ -300,7 +376,7 @@ export default function ExpenseTable({
                           {formatCurrency(tableTotal)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={isAdmin ? 2 : 1} />
+                      <TableCell colSpan={showActionsColumn ? 3 : 2} />
                     </TableRow>
                   </>
                 )}

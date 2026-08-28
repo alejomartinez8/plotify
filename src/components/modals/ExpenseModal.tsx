@@ -53,6 +53,7 @@ export default function ExpenseModal({
   );
   const { uploadReceipt, isUploading } = useReceiptUpload();
   const isLoading = isUploading || isPending || isSubmitting;
+  const isLocked = expense?.approvalStatus === "approved";
 
   useEffect(() => {
     if (state?.success) {
@@ -84,6 +85,7 @@ export default function ExpenseModal({
           description: formData.get("description") as string,
           category: formData.get("category") as string,
           receiptNumber: formData.get("receiptNumber") as string,
+          approvalStatus: expense?.approvalStatus || "pending",
         };
         onSuccess(updatedExpense, !!expense);
         formAction(formData);
@@ -124,29 +126,44 @@ export default function ExpenseModal({
 
           {expense && <input type="hidden" name="id" value={expense.id} />}
 
+          {isLocked && (
+            <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+              {translations.messages.approvedFieldsLockedInfo}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="type">{translations.messages.fundType}</Label>
-            <Select
-              name="type"
-              defaultValue={expense?.type || "maintenance"}
-              required
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="maintenance">
-                  {translations.labels.maintenance}
-                </SelectItem>
-                <SelectItem value="works">
-                  {translations.labels.works}
-                </SelectItem>
-                <SelectItem value="others">
-                  {translations.labels.others}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {isLocked ? (
+              <>
+                <input type="hidden" name="type" value={expense!.type} />
+                <div className="border-input bg-muted text-muted-foreground flex h-9 w-full items-center rounded-md border px-3 text-sm">
+                  {translations.labels[expense!.type]}
+                </div>
+              </>
+            ) : (
+              <Select
+                name="type"
+                defaultValue={expense?.type || "maintenance"}
+                required
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="maintenance">
+                    {translations.labels.maintenance}
+                  </SelectItem>
+                  <SelectItem value="works">
+                    {translations.labels.works}
+                  </SelectItem>
+                  <SelectItem value="others">
+                    {translations.labels.others}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             {state.errors?.type && (
               <div className="text-destructive text-sm">
                 {state.errors.type}
@@ -165,6 +182,8 @@ export default function ExpenseModal({
               min="0"
               step="1"
               disabled={isLoading}
+              readOnly={isLocked}
+              className={isLocked ? "bg-muted" : undefined}
             />
             {state.errors?.amount && (
               <div className="text-destructive text-sm">
@@ -184,6 +203,8 @@ export default function ExpenseModal({
               }
               required
               disabled={isLoading}
+              readOnly={isLocked}
+              className={isLocked ? "bg-muted" : undefined}
             />
             {state.errors?.date && (
               <div className="text-destructive text-sm">
@@ -220,6 +241,8 @@ export default function ExpenseModal({
               defaultValue={expense?.category || ""}
               placeholder={translations.placeholders.categoryExample}
               disabled={isLoading}
+              readOnly={isLocked}
+              className={isLocked ? "bg-muted" : undefined}
             />
             {state.errors?.category && (
               <div className="text-destructive text-sm">

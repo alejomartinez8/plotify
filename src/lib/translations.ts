@@ -26,6 +26,7 @@ export const translations = {
     signingOut: "Cerrando Sesión...",
     admin: "Admin",
     owner: "Propietario",
+    treasurer: "Tesorero",
   },
 
   // Common actions and buttons
@@ -45,6 +46,10 @@ export const translations = {
     uploadFile: "Subir archivo",
     viewReceipt: "Ver Comprobante",
     viewDetail: "Ver detalle",
+    approve: "Aprobar",
+    reject: "Rechazar",
+    unapprove: "Desaprobar",
+    viewHistory: "Ver historial",
   },
 
   // Common labels and fields
@@ -111,6 +116,16 @@ export const translations = {
     overdue: "Atrasado",
     initialDebt: "Deuda Inicial",
 
+    // Approval workflow labels
+    pending: "Pendiente",
+    approved: "Aprobado",
+    rejected: "Rechazado",
+    approvalNote: "Nota de validación",
+    treasurer: "Tesorero",
+    treasurers: "Tesoreros",
+    approvedBy: "Validado por",
+    approvalHistory: "Historial de validación",
+
     // Financial summary labels
     totalPaid: "Total Pagado",
     totalOwed: "Total Adeudado",
@@ -156,6 +171,10 @@ export const translations = {
     search: "Buscar...",
     searchCollaborators: "Buscar colaboradores...",
     receiptNumber: "ej. 001234, FV-001",
+    approvalNoteOptional: "Nota opcional",
+    rejectionNoteRequired: "Explica por qué se rechaza este registro",
+    treasurerEmail: "correo@ejemplo.com",
+    treasurerName: "Nombre del tesorero (opcional)",
   },
 
   // Filter options
@@ -234,6 +253,11 @@ export const translations = {
     totalLots: "Total de Lotes",
     contributionsThisMonth: "Aportes este mes",
     expensesThisMonth: "Gastos este mes",
+
+    // Treasurer management
+    treasurerManagement: "Gestión de Tesoreros",
+    addTreasurer: "Agregar Tesorero",
+    approvalHistoryTitle: "Historial de validación",
   },
 
   // Admin section
@@ -244,6 +268,11 @@ export const translations = {
     backupTab: "Backup & Exportación",
     restoreTab: "Restauración",
     systemTab: "Sistema",
+    treasurersTab: "Tesoreros",
+    treasurersTitle: "Gestión de Tesoreros",
+    treasurersDescription:
+      "Administra los correos autorizados para validar aportes y gastos",
+    treasurersEmptyState: "No hay tesoreros registrados",
     exportTitle: "Exportar Datos en CSV",
     exportDescription:
       "Descarga todos los datos de la aplicación en formato CSV para respaldo y análisis",
@@ -335,6 +364,12 @@ export const translations = {
     created: "Creado exitosamente",
     updated: "Actualizado exitosamente",
     deleted: "Eliminado exitosamente",
+    approvedSuccess: "Registro aprobado exitosamente",
+    rejectedSuccess: "Registro rechazado exitosamente",
+    unapprovedSuccess: "Aprobación revertida exitosamente",
+    noApprovalHistory: "Sin historial de validación",
+    approvedFieldsLockedInfo:
+      "Este registro ya fue aprobado por el tesorero. El monto, tipo y fecha no se pueden modificar; si necesitas corregirlos, pide al tesorero que lo desapruebe primero.",
 
     // Hints
     changeFilter: "Intenta cambiar el filtro de tipo de ingreso",
@@ -376,6 +411,17 @@ export const translations = {
     uploadPhoto: "Error al subir la fotografía",
     collaboratorNotFound: "Colaborador no encontrado",
     missingFields: "Campos faltantes",
+
+    // Approval workflow errors
+    treasurerAccessRequired:
+      "Se requiere acceso de tesorero para realizar esta acción",
+    rejectionNoteRequired: "Debes indicar el motivo del rechazo",
+    cannotEditApprovedField:
+      "No se puede modificar el monto, tipo o fecha de un registro ya aprobado",
+    cannotDeleteApproved:
+      "No se puede eliminar un registro aprobado. El tesorero debe desaprobarlo primero",
+    treasurerEmailInvalid: "Ingresa un correo electrónico válido",
+    treasurerAlreadyExists: "Este correo ya está registrado como tesorero",
 
     // System
     database: "Error de base de datos",
@@ -433,6 +479,16 @@ export const translations = {
     unsavedChanges:
       "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
     confirmAction: "¿Estás seguro de que quieres realizar esta acción?",
+
+    // Approval workflow
+    approveTitle: "Aprobar registro",
+    approveMessage: "¿Confirmas que esta transacción existió y está correcta? Puedes dejar una nota opcional.",
+    rejectTitle: "Rechazar registro",
+    rejectMessage: "Indica el motivo del rechazo para que el administrador pueda corregirlo.",
+    unapproveTitle: "Desaprobar registro",
+    unapproveMessage: "¿Confirmas que quieres revertir la aprobación? El registro volverá a quedar pendiente y podrá editarse o eliminarse.",
+    deleteTreasurer:
+      "¿Estás seguro de que quieres eliminar este tesorero? Ya no podrá validar aportes ni gastos.",
   },
 
   // WhatsApp report

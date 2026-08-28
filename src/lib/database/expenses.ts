@@ -1,6 +1,18 @@
+import type { Expense as PrismaExpense } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { Expense, ExpenseType } from "@/types/expenses.types";
+import { ApprovalStatus } from "@/types/approvals.types";
 import { formatDateForStorage } from "@/lib/utils";
+
+function toExpense(expense: PrismaExpense): Expense {
+  return {
+    ...expense,
+    type: expense.type as ExpenseType,
+    date: formatDateForStorage(expense.date),
+    approvalStatus: expense.approvalStatus as ApprovalStatus,
+    approvedAt: expense.approvedAt ? expense.approvedAt.toISOString() : null,
+  };
+}
 
 export async function getExpenses(): Promise<Expense[]> {
   try {
@@ -9,11 +21,7 @@ export async function getExpenses(): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses.map((expense) => ({
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    }));
+    return expenses.map(toExpense);
   } catch (error) {
     console.error("Error fetching expenses:", error);
     return [];
@@ -26,11 +34,7 @@ export async function getExpenseById(id: number): Promise<Expense | null> {
       where: { id },
     });
     if (!expense) return null;
-    return {
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    };
+    return toExpense(expense);
   } catch (error) {
     console.error("Error fetching expense by id:", error);
     return null;
@@ -52,11 +56,7 @@ export async function createExpense(data: {
     const expense = await prisma.expense.create({
       data,
     });
-    return {
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    };
+    return toExpense(expense);
   } catch (error) {
     console.error("Error creating expense:", error);
     return null;
@@ -82,11 +82,7 @@ export async function updateExpense(
       where: { id },
       data,
     });
-    return {
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    };
+    return toExpense(expense);
   } catch (error) {
     console.error("Error updating expense:", error);
     return null;
@@ -105,6 +101,140 @@ export async function deleteExpense(id: number): Promise<boolean> {
   }
 }
 
+/**
+ * Marks an expense as approved by the Treasurer.
+ * Writes an ApprovalHistory row in the same transaction as the update.
+ */
+export async function approveExpense(
+  id: number,
+  treasurerEmail: string,
+  note?: string | null
+): Promise<Expense | null> {
+  try {
+    const [expense] = await prisma.$transaction([
+      prisma.expense.update({
+        where: { id },
+        data: {
+          approvalStatus: "approved",
+          approvalNote: note || null,
+          approvedBy: treasurerEmail,
+          approvedAt: new Date(),
+        },
+      }),
+      prisma.approvalHistory.create({
+        data: {
+          recordType: "expense",
+          recordId: id,
+          action: "approved",
+          treasurerEmail,
+          note: note || null,
+        },
+      }),
+    ]);
+    return toExpense(expense);
+  } catch (error) {
+    console.error("Error approving expense:", error);
+    return null;
+  }
+}
+
+/**
+ * Marks an expense as rejected by the Treasurer. A note explaining what's
+ * wrong is required so Admin knows what to fix.
+ */
+export async function rejectExpense(
+  id: number,
+  treasurerEmail: string,
+  note: string
+): Promise<Expense | null> {
+  try {
+    const [expense] = await prisma.$transaction([
+      prisma.expense.update({
+        where: { id },
+        data: {
+          approvalStatus: "rejected",
+          approvalNote: note,
+          approvedBy: treasurerEmail,
+          approvedAt: new Date(),
+        },
+      }),
+      prisma.approvalHistory.create({
+        data: {
+          recordType: "expense",
+          recordId: id,
+          action: "rejected",
+          treasurerEmail,
+          note,
+        },
+      }),
+    ]);
+    return toExpense(expense);
+  } catch (error) {
+    console.error("Error rejecting expense:", error);
+    return null;
+  }
+}
+
+/**
+ * Reverses a Treasurer's approval, sending the expense back to `pending`.
+ * Treasurer-exclusive (see docs/SPEC-TREASURER-ROLE.md, 7.2).
+ */
+export async function unapproveExpense(
+  id: number,
+  treasurerEmail: string,
+  note?: string | null
+): Promise<Expense | null> {
+  try {
+    const [expense] = await prisma.$transaction([
+      prisma.expense.update({
+        where: { id },
+        data: {
+          approvalStatus: "pending",
+          approvalNote: note || null,
+          approvedBy: null,
+          approvedAt: null,
+        },
+      }),
+      prisma.approvalHistory.create({
+        data: {
+          recordType: "expense",
+          recordId: id,
+          action: "unapproved",
+          treasurerEmail,
+          note: note || null,
+        },
+      }),
+    ]);
+    return toExpense(expense);
+  } catch (error) {
+    console.error("Error unapproving expense:", error);
+    return null;
+  }
+}
+
+/**
+ * Resets a `rejected` expense back to `pending` after Admin edits it.
+ * This automatic resubmit intentionally does not write an ApprovalHistory
+ * row — see docs/SPEC-TREASURER-ROLE.md, section 12.
+ */
+export async function resetExpenseToPending(id: number): Promise<boolean> {
+  try {
+    await prisma.expense.update({
+      where: { id },
+      data: {
+        approvalStatus: "pending",
+        approvalNote: null,
+        approvedBy: null,
+        approvedAt: null,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error("Error resetting expense to pending:", error);
+    return false;
+  }
+}
+
 export async function getExpensesByType(type: string): Promise<Expense[]> {
   try {
     const expenses = await prisma.expense.findMany({
@@ -113,11 +243,7 @@ export async function getExpensesByType(type: string): Promise<Expense[]> {
         id: "desc",
       },
     });
-    return expenses.map((expense) => ({
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    }));
+    return expenses.map(toExpense);
   } catch (error) {
     console.error("Error fetching expenses by type:", error);
     return [];
@@ -134,11 +260,7 @@ export async function getExpensesByCategory(
         id: "desc",
       },
     });
-    return expenses.map((expense) => ({
-      ...expense,
-      type: expense.type as ExpenseType,
-      date: formatDateForStorage(expense.date),
-    }));
+    return expenses.map(toExpense);
   } catch (error) {
     console.error("Error fetching expenses by category:", error);
     return [];

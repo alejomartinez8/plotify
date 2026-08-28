@@ -6,6 +6,8 @@ import {
   createContribution,
   updateContribution,
   deleteContribution,
+  getContributionById,
+  resetContributionToPending,
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -192,6 +194,27 @@ export async function updateContributionAction(
     receiptFileName,
   } = validatedFields.data;
 
+  const existing = await getContributionById(id);
+  if (!existing) {
+    return {
+      message: `${translations.errors.database}: Failed to update contribution.`,
+      success: false,
+    };
+  }
+
+  // Once approved, only lotId and description may change — amount/type/date
+  // are certified by the Treasurer and locked for everyone, including Admin.
+  // See docs/SPEC-TREASURER-ROLE.md, 7 and 8.
+  if (
+    existing.approvalStatus === "approved" &&
+    (amount !== existing.amount || type !== existing.type || date !== existing.date)
+  ) {
+    return {
+      message: translations.errors.cannotEditApprovedField,
+      success: false,
+    };
+  }
+
   try {
     const result = await updateContribution(id, {
       lotId,
@@ -210,6 +233,11 @@ export async function updateContributionAction(
         message: "Database Error: Failed to update contribution.",
         success: false,
       };
+    }
+
+    // A fixed rejected record re-enters the Treasurer's review queue.
+    if (existing.approvalStatus === "rejected") {
+      await resetContributionToPending(id);
     }
   } catch (error) {
     return {
@@ -231,6 +259,15 @@ export async function deleteContributionAction(id: number) {
     "Admin access required to delete contributions"
   );
   if (adminError) return adminError;
+
+  const existing = await getContributionById(id);
+  if (existing?.approvalStatus === "approved") {
+    actionTimer.end();
+    return {
+      message: translations.errors.cannotDeleteApproved,
+      success: false,
+    };
+  }
 
   try {
     const result = await deleteContribution(id);

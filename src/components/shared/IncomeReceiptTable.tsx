@@ -2,7 +2,17 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { ChevronUp, ChevronDown, Edit, Trash2, FileText } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Edit,
+  Trash2,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  History,
+} from "lucide-react";
 import { Contribution } from "@/types/contributions.types";
 import { Lot } from "@/types/lots.types";
 import { translations } from "@/lib/translations";
@@ -10,6 +20,7 @@ import { formatCurrency, formatDateForDisplay } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import TypeBadge from "@/components/shared/TypeBadge";
+import ApprovalStatusBadge from "@/components/shared/ApprovalStatusBadge";
 import {
   Table,
   TableBody,
@@ -26,8 +37,13 @@ interface IncomeReceiptTableProps {
   lots: Lot[];
   incomeFilter: IncomeType;
   isAdmin?: boolean;
+  isTreasurer?: boolean;
   onEdit?: (contribution: Contribution) => void;
   onDelete?: (contribution: Contribution) => void;
+  onApprove?: (contribution: Contribution) => void;
+  onReject?: (contribution: Contribution) => void;
+  onUnapprove?: (contribution: Contribution) => void;
+  onViewHistory?: (contribution: Contribution) => void;
 }
 
 type SortField =
@@ -44,9 +60,15 @@ export default function IncomeReceiptTable({
   lots,
   incomeFilter,
   isAdmin = false,
+  isTreasurer = false,
   onEdit,
   onDelete,
+  onApprove,
+  onReject,
+  onUnapprove,
+  onViewHistory,
 }: IncomeReceiptTableProps) {
+  const showActionsColumn = isAdmin || isTreasurer;
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -248,7 +270,10 @@ export default function IncomeReceiptTable({
                       })()}
                     </div>
                   </TableHead>
-                  {isAdmin && (
+                  <TableHead className="border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
+                    {translations.labels.status}
+                  </TableHead>
+                  {showActionsColumn && (
                     <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
@@ -316,27 +341,84 @@ export default function IncomeReceiptTable({
                           <span>{contribution.receiptNumber || "—"}</span>
                         </div>
                       </TableCell>
-                      {isAdmin && (
+                      <TableCell className="px-6 py-4">
+                        <ApprovalStatusBadge status={contribution.approvalStatus} />
+                      </TableCell>
+                      {showActionsColumn && (
                         <TableCell className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onEdit?.(contribution)}
-                              className="hover:bg-muted h-8 w-8 p-0"
-                              title={`${translations.actions.edit} ${translations.labels.income.toLowerCase()}`}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onDelete?.(contribution)}
-                              className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                              title={`${translations.actions.delete} ${translations.labels.income.toLowerCase()}`}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <div className="flex items-center justify-center gap-1">
+                            {(isAdmin || isTreasurer) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onViewHistory?.(contribution)}
+                                className="hover:bg-muted h-8 w-8 p-0"
+                                title={translations.actions.viewHistory}
+                              >
+                                <History className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {isTreasurer && (
+                              <>
+                                {contribution.approvalStatus !== "approved" && (
+                                  <>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => onApprove?.(contribution)}
+                                      className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                      title={translations.actions.approve}
+                                    >
+                                      <CheckCircle2 className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => onReject?.(contribution)}
+                                      className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                                      title={translations.actions.reject}
+                                    >
+                                      <XCircle className="h-4 w-4" />
+                                    </Button>
+                                  </>
+                                )}
+                                {contribution.approvalStatus === "approved" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onUnapprove?.(contribution)}
+                                    className="h-8 w-8 p-0 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                                    title={translations.actions.unapprove}
+                                  >
+                                    <RotateCcw className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </>
+                            )}
+                            {isAdmin && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onEdit?.(contribution)}
+                                  className="hover:bg-muted h-8 w-8 p-0"
+                                  title={`${translations.actions.edit} ${translations.labels.income.toLowerCase()}`}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                {contribution.approvalStatus !== "approved" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onDelete?.(contribution)}
+                                    className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                                    title={`${translations.actions.delete} ${translations.labels.income.toLowerCase()}`}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </>
+                            )}
                           </div>
                         </TableCell>
                       )}
@@ -346,7 +428,7 @@ export default function IncomeReceiptTable({
                 {sortedContributions.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={isAdmin ? 7 : 6}
+                      colSpan={showActionsColumn ? 8 : 7}
                       className="px-6 py-12 text-center"
                     >
                       <div className="flex flex-col items-center gap-3">
@@ -372,7 +454,7 @@ export default function IncomeReceiptTable({
                     {/* Separator row */}
                     <TableRow>
                       <TableCell
-                        colSpan={isAdmin ? 7 : 6}
+                        colSpan={showActionsColumn ? 8 : 7}
                         className="border-muted border-t-2 p-0"
                       />
                     </TableRow>
@@ -389,7 +471,7 @@ export default function IncomeReceiptTable({
                           {formatCurrency(tableTotals.total)}
                         </div>
                       </TableCell>
-                      <TableCell colSpan={isAdmin ? 2 : 1} />
+                      <TableCell colSpan={showActionsColumn ? 3 : 2} />
                     </TableRow>
                   </>
                 )}

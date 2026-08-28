@@ -6,6 +6,8 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
+  getExpenseById,
+  resetExpenseToPending,
 } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -202,6 +204,32 @@ export async function updateExpenseAction(
     receiptFileName,
   } = validatedFields.data;
 
+  const existing = await getExpenseById(id);
+  if (!existing) {
+    actionTimer.end();
+    return {
+      message: `${translations.errors.database}: Failed to update expense.`,
+      success: false,
+    };
+  }
+
+  // Once approved, only description may change — amount/type/date/category
+  // are certified by the Treasurer and locked for everyone, including
+  // Admin. See docs/SPEC-TREASURER-ROLE.md, 7 and 8.
+  if (
+    existing.approvalStatus === "approved" &&
+    (amount !== existing.amount ||
+      type !== existing.type ||
+      date !== existing.date ||
+      (category || "") !== existing.category)
+  ) {
+    actionTimer.end();
+    return {
+      message: translations.errors.cannotEditApprovedField,
+      success: false,
+    };
+  }
+
   try {
     const result = await updateExpense(id, {
       type,
@@ -229,6 +257,11 @@ export async function updateExpenseAction(
         message: "Database Error: Failed to update expense.",
         success: false,
       };
+    }
+
+    // A fixed rejected record re-enters the Treasurer's review queue.
+    if (existing.approvalStatus === "rejected") {
+      await resetExpenseToPending(id);
     }
   } catch (error) {
     const errorInstance =
@@ -259,6 +292,15 @@ export async function deleteExpenseAction(id: number) {
     "Admin access required to delete expenses"
   );
   if (adminError) return adminError;
+
+  const existing = await getExpenseById(id);
+  if (existing?.approvalStatus === "approved") {
+    actionTimer.end();
+    return {
+      message: translations.errors.cannotDeleteApproved,
+      success: false,
+    };
+  }
 
   try {
     const result = await deleteExpense(id);

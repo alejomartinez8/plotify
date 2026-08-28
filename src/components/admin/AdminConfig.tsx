@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { FileDown, FileUp, Info } from "lucide-react";
+import { FileDown, FileUp, Info, Landmark } from "lucide-react";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { ImportButton } from "@/components/shared/ImportButton";
 import {
@@ -16,8 +16,14 @@ import {
   importLotsAction,
 } from "@/lib/actions/import-actions";
 import { translations } from "@/lib/translations";
+import TreasurerManagement from "@/components/admin/TreasurerManagement";
+import { Treasurer } from "@/types/treasurers.types";
 
-export default function AdminConfig() {
+interface AdminConfigProps {
+  treasurers: Treasurer[];
+}
+
+export default function AdminConfig({ treasurers }: AdminConfigProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
@@ -28,7 +34,7 @@ export default function AdminConfig() {
 
       {/* Admin Tabs */}
       <Tabs defaultValue="backup" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="backup" className="flex items-center gap-2">
             <FileDown className="h-4 w-4" />
             {translations.admin.backupTab}
@@ -36,6 +42,10 @@ export default function AdminConfig() {
           <TabsTrigger value="restore" className="flex items-center gap-2">
             <FileUp className="h-4 w-4" />
             {translations.admin.restoreTab}
+          </TabsTrigger>
+          <TabsTrigger value="treasurers" className="flex items-center gap-2">
+            <Landmark className="h-4 w-4" />
+            {translations.admin.treasurersTab}
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Info className="h-4 w-4" />
@@ -213,6 +223,24 @@ export default function AdminConfig() {
                   {translations.admin.importWarning.message}
                 </p>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Treasurers Tab */}
+        <TabsContent value="treasurers">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Landmark className="h-5 w-5" />
+                {translations.admin.treasurersTitle}
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                {translations.admin.treasurersDescription}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <TreasurerManagement treasurers={treasurers} />
             </CardContent>
           </Card>
         </TabsContent>

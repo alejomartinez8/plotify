@@ -19,6 +19,7 @@ export default async function ExpensesPage() {
         title={translations.navigation.expenses}
         expenses={expenses}
         isAdmin={userRole === "admin"}
+        isTreasurer={userRole === "treasurer"}
       />
     );
   } catch (error) {

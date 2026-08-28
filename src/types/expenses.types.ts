@@ -1,6 +1,8 @@
+import { ApprovalFields } from "@/types/approvals.types";
+
 export type ExpenseType = "maintenance" | "works" | "others";
 
-export interface Expense {
+export interface Expense extends ApprovalFields {
   id: number;
   type: ExpenseType;
   amount: number;

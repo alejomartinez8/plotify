@@ -6,16 +6,26 @@ import { Expense, ExpenseType } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
 import ExpenseModal from "../modals/ExpenseModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import ApprovalNoteModal, {
+  ApprovalActionKind,
+} from "../modals/ApprovalNoteModal";
+import ApprovalHistoryModal from "../modals/ApprovalHistoryModal";
 import FilterSection from "@/components/shared/FilterSection";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportExpensesAction } from "@/lib/actions/export-actions";
 import NewExpenseButton from "@/components/shared/NewExpenseButton";
 import ExpenseTable from "@/components/shared/ExpenseTable";
+import {
+  approveExpenseAction,
+  rejectExpenseAction,
+  unapproveExpenseAction,
+} from "@/lib/actions/approval-actions";
 
 interface ExpenseViewProps {
   title: string;
   expenses: Expense[];
   isAdmin?: boolean;
+  isTreasurer?: boolean;
 }
 
 type ExpenseFilter = "all" | ExpenseType;
@@ -24,9 +34,16 @@ export default function ExpenseView({
   title,
   expenses,
   isAdmin = false,
+  isTreasurer = false,
 }: ExpenseViewProps) {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
+  const [approvalTarget, setApprovalTarget] = useState<{
+    expense: Expense;
+    action: ApprovalActionKind;
+  } | null>(null);
+  const [isApprovalLoading, setIsApprovalLoading] = useState(false);
+  const [historyTarget, setHistoryTarget] = useState<Expense | null>(null);
   const [typeFilter, setTypeFilter] = useState<ExpenseFilter>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
 
@@ -129,6 +146,27 @@ export default function ExpenseView({
     }
   };
 
+  const handleApprovalConfirm = async (note: string) => {
+    if (!approvalTarget) return;
+
+    setIsApprovalLoading(true);
+    try {
+      const { expense, action } = approvalTarget;
+      if (action === "approve") {
+        await approveExpenseAction(expense.id, note || undefined);
+      } else if (action === "reject") {
+        await rejectExpenseAction(expense.id, note);
+      } else {
+        await unapproveExpenseAction(expense.id, note || undefined);
+      }
+    } catch (error) {
+      console.error("Error updating approval status:", error);
+    } finally {
+      setIsApprovalLoading(false);
+      setApprovalTarget(null);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <FilterSection
@@ -162,8 +200,19 @@ export default function ExpenseView({
       <ExpenseTable
         expenses={filteredExpenses}
         isAdmin={isAdmin}
+        isTreasurer={isTreasurer}
         onEdit={setEditingExpense}
         onDelete={setDeletingExpense}
+        onApprove={(expense) =>
+          setApprovalTarget({ expense, action: "approve" })
+        }
+        onReject={(expense) =>
+          setApprovalTarget({ expense, action: "reject" })
+        }
+        onUnapprove={(expense) =>
+          setApprovalTarget({ expense, action: "unapprove" })
+        }
+        onViewHistory={setHistoryTarget}
       />
 
       {editingExpense && isAdmin && (
@@ -182,6 +231,26 @@ export default function ExpenseView({
           onConfirm={handleDeleteConfirm}
           onClose={() => setDeletingExpense(null)}
           variant="danger"
+        />
+      )}
+
+      {/* Approve / Reject / Unapprove Modal */}
+      {approvalTarget && (
+        <ApprovalNoteModal
+          isOpen={!!approvalTarget}
+          action={approvalTarget.action}
+          onClose={() => setApprovalTarget(null)}
+          onConfirm={handleApprovalConfirm}
+          isLoading={isApprovalLoading}
+        />
+      )}
+
+      {/* Approval History Modal */}
+      {historyTarget && (
+        <ApprovalHistoryModal
+          recordType="expense"
+          recordId={historyTarget.id}
+          onClose={() => setHistoryTarget(null)}
         />
       )}
     </div>
