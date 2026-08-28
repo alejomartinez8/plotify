@@ -91,7 +91,7 @@
 - ✅ **Deletion rule** - Approved records can never be deleted; must be un-approved first
 - ✅ **Audit trail** - `ApprovalHistory` model logs every approve/reject/unapprove with who, when, and an optional note; viewable per record
 - ✅ **Auto-resubmit** - A fixed `rejected` record automatically returns to `pending` when Admin saves an edit
-- ✅ **Backfill migration** - Existing income/expense records reset to `pending` (a follow-up migration reversed the original "default to approved" backfill) so the Treasurer reviews the full historical ledger too
+- ✅ **Backfill migration** - Existing income/expense records reset to `pending` (the original "default to approved" backfill was reversed with a one-off manual SQL fix against production, not a tracked migration) so the Treasurer reviews the full historical ledger too
 
 ### ✅ Phase 7: Consolidate Admin/Treasurer into a User table - COMPLETED _(2026-08-28)_
 

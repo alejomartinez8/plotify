@@ -172,12 +172,17 @@ the note — for full transparency.
   before this feature existed."
 - Records created **after** the migration ships default to `"pending"`.
 
-> **Update (2026-08-28, post-deploy):** reversed on request. A follow-up
-> migration (`20260828150000_reset_backfilled_records_to_pending`) sets
-> every backfilled row back to `"pending"` — guarded by `approvedBy IS
-> NULL` so it only ever touches rows nobody has actually validated yet —
-> so the Treasurer reviews the full historical ledger too, not just new
-> records. The backlog tradeoff described above was accepted.
+> **Update (2026-08-28, post-deploy):** reversed on request. Applied
+> directly against production with a manual, one-off SQL `UPDATE`
+> (not tracked as a Prisma migration file, since it only ever needed to
+> run once against the already-backfilled rows) — guarded by
+> `approvedBy IS NULL` so it only touched rows nobody had actually
+> validated yet — setting every backfilled row back to `"pending"` so
+> the Treasurer reviews the full historical ledger too, not just new
+> records. The backlog tradeoff described above was accepted. A fresh
+> environment migrated from scratch never hits this case: the original
+> backfill (5.4) only ever touches rows that exist *at migration time*,
+> so an empty database has nothing to backfill in the first place.
 
 ## 6. Authorization Changes (`src/lib/auth.ts`)
 
