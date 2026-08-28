@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { FileDown, FileUp, Info, Landmark } from "lucide-react";
+import { FileDown, FileUp, Info, Users as UsersIcon } from "lucide-react";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { ImportButton } from "@/components/shared/ImportButton";
 import {
@@ -16,14 +16,18 @@ import {
   importLotsAction,
 } from "@/lib/actions/import-actions";
 import { translations } from "@/lib/translations";
-import TreasurerManagement from "@/components/admin/TreasurerManagement";
-import { Treasurer } from "@/types/treasurers.types";
+import UserManagement from "@/components/admin/UserManagement";
+import { User } from "@/types/users.types";
 
 interface AdminConfigProps {
-  treasurers: Treasurer[];
+  users: User[];
+  currentUserEmail: string | null;
 }
 
-export default function AdminConfig({ treasurers }: AdminConfigProps) {
+export default function AdminConfig({
+  users,
+  currentUserEmail,
+}: AdminConfigProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
@@ -43,9 +47,9 @@ export default function AdminConfig({ treasurers }: AdminConfigProps) {
             <FileUp className="h-4 w-4" />
             {translations.admin.restoreTab}
           </TabsTrigger>
-          <TabsTrigger value="treasurers" className="flex items-center gap-2">
-            <Landmark className="h-4 w-4" />
-            {translations.admin.treasurersTab}
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <UsersIcon className="h-4 w-4" />
+            {translations.admin.usersTab}
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Info className="h-4 w-4" />
@@ -227,20 +231,20 @@ export default function AdminConfig({ treasurers }: AdminConfigProps) {
           </Card>
         </TabsContent>
 
-        {/* Treasurers Tab */}
-        <TabsContent value="treasurers">
+        {/* Users Tab */}
+        <TabsContent value="users">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Landmark className="h-5 w-5" />
-                {translations.admin.treasurersTitle}
+                <UsersIcon className="h-5 w-5" />
+                {translations.admin.usersTitle}
               </CardTitle>
               <p className="text-sm text-gray-600">
-                {translations.admin.treasurersDescription}
+                {translations.admin.usersDescription}
               </p>
             </CardHeader>
             <CardContent>
-              <TreasurerManagement treasurers={treasurers} />
+              <UserManagement users={users} currentUserEmail={currentUserEmail} />
             </CardContent>
           </Card>
         </TabsContent>

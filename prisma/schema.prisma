@@ -63,13 +63,15 @@ model Expense {
   @@map("expenses")
 }
 
-model Treasurer {
+model User {
   id        String   @id @default(uuid())
   email     String   @unique
   name      String?
+  role      String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("treasurers")
+  @@map("users")
 }
 
 model ApprovalHistory {

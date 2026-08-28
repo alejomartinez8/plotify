@@ -161,27 +161,28 @@ export async function getUserEmail(): Promise<string | null> {
 }
 
 /**
- * Check if an email is registered in the Treasurer whitelist
+ * Look up a DB-managed role (admin or treasurer) for an email.
+ * Does not cover Admins granted solely via the ADMIN_EMAILS env var
+ * safety net — see docs/SPEC-USER-ROLES-CONSOLIDATION.md, 4.3.
  */
-export async function isTreasurerEmail(email: string): Promise<boolean> {
+export async function getDbUserRole(
+  email: string
+): Promise<"admin" | "treasurer" | null> {
   try {
-    const { default: prisma } = await import("@/lib/prisma");
+    const { getUserByEmail } = await import("@/lib/database/users");
 
-    const treasurer = await prisma.treasurer.findUnique({
-      where: { email },
-    });
-
-    return !!treasurer;
+    const user = await getUserByEmail(email);
+    return user?.role ?? null;
   } catch (error) {
     logger.error(
-      "Error checking treasurer whitelist",
+      "Error checking user role",
       error instanceof Error ? error : new Error(String(error)),
       {
         component: "auth",
         email,
       }
     );
-    return false;
+    return null;
   }
 }
 
@@ -212,11 +213,14 @@ export async function hasAssignedLot(email: string): Promise<boolean> {
 }
 
 /**
- * Get user role based on email
- * Admin: if email is in ADMIN_EMAILS
- * Treasurer: if email is registered in the Treasurer whitelist
- * Owner: authenticated user with at least one assigned lot
- * null: authenticated user without assigned lot
+ * Get user role based on email. Precedence:
+ * 1. Admin: email is in ADMIN_EMAILS (permanent recovery-only safety net —
+ *    see docs/SPEC-USER-ROLES-CONSOLIDATION.md, 4.3) or has role "admin"
+ *    in the User table.
+ * 2. Treasurer: has role "treasurer" in the User table.
+ * 3. Owner: authenticated user with at least one assigned lot — derived,
+ *    never stored (see docs/SPEC-USER-ROLES-CONSOLIDATION.md, 2.1).
+ * 4. null: authenticated user with none of the above.
  */
 export async function getUserRole(): Promise<
   "admin" | "treasurer" | "owner" | null
@@ -229,9 +233,9 @@ export async function getUserRole(): Promise<
       return "admin";
     }
 
-    const isTreasurer = await isTreasurerEmail(email);
-    if (isTreasurer) {
-      return "treasurer";
+    const dbRole = await getDbUserRole(email);
+    if (dbRole) {
+      return dbRole;
     }
 
     // Check if user has at least one assigned lot
