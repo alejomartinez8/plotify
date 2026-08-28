@@ -1,6 +1,8 @@
+import { ApprovalFields } from "@/types/approvals.types";
+
 export type ContributionType = "maintenance" | "works" | "others";
 
-export interface Contribution {
+export interface Contribution extends ApprovalFields {
   id: number;
   lotId: string | number;
   type: ContributionType;

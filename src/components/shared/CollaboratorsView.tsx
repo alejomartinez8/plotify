@@ -20,7 +20,7 @@ import { translations } from "@/lib/translations";
 interface CollaboratorsViewProps {
   collaborators: CollaboratorWithLots[];
   lots: Lot[];
-  userRole?: "admin" | "owner" | null;
+  userRole?: "admin" | "treasurer" | "owner" | null;
   userLotIds?: string[];
 }
 

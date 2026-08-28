@@ -78,7 +78,22 @@
 - ✅ **DB migration** - Existing "general" expenses migrated to "others" type
 - ✅ **Import/Export updated** - CSV correctly maps Spanish labels to enum values
 
-### 🚧 Phase 5: Browser Notifications (Future Enhancement)
+### ✅ Phase 6: Treasurer Role & Approval Workflow - COMPLETED _(2026-08-28)_
+
+> **Business Context**: A dedicated Treasurer role validates every income/expense
+> entry, like reconciling a bank statement — confirming a transaction happened
+> and is recorded correctly. Full design in `docs/SPEC-TREASURER-ROLE.md`.
+
+- ✅ **Treasurer role** - New DB-managed email whitelist (`Treasurer` model), admin-managed from `/admin`
+- ✅ **Approval workflow** - `pending` → `approved`/`rejected`, with Treasurer-exclusive **Un-approve** to reverse a mistaken approval
+- ✅ **Validation-only role** - Treasurer can only approve/reject/unapprove; never creates, edits, or deletes a record
+- ✅ **Field locking** - Once approved, `amount`/`type`/`date` are immutable for everyone (incl. Admin); `description` (and `lotId` for income) stay Admin-editable
+- ✅ **Deletion rule** - Approved records can never be deleted; must be un-approved first
+- ✅ **Audit trail** - `ApprovalHistory` model logs every approve/reject/unapprove with who, when, and an optional note; viewable per record
+- ✅ **Auto-resubmit** - A fixed `rejected` record automatically returns to `pending` when Admin saves an edit
+- ✅ **Backfill migration** - Existing income/expense records default to `approved` so the Treasurer's queue starts empty
+
+### 🚧 Phase 7: Browser Notifications (Future Enhancement)
 
 > **Note**: Browser notifications feature has been deprioritized. Current authentication system via Google OAuth meets business needs.
 >
@@ -125,6 +140,12 @@
 - Edit/delete collaborators assigned to their lots only
 - No ability to modify financial data or create new records
 
+**For Treasurers:**
+- View all financial data, same as Owners
+- Approve, reject, or un-approve any income/expense entry, with an optional/required note
+- View the full approval audit trail (who validated what, and when) per record
+- No ability to create, edit, or delete records — validation only
+
 ### 🚀 **Future Enhancements** (Not Prioritized)
 
 - **Browser Notifications** - Payment reminders via web push
@@ -139,11 +160,11 @@
 - **Development**: `npm run dev` for local development
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth v5 with Google OAuth provider
-- **Authorization**: Role-based (admin/owner) via ADMIN_EMAILS env variable
+- **Authorization**: Role-based (admin/treasurer/owner) — admin via ADMIN_EMAILS env variable, treasurer via DB whitelist managed from `/admin`
 - **File Storage**: Google Drive OAuth integration for receipts and photos
 - **Logging**: Centralized logger service with structured logging
 - **Code Quality**: TypeScript strict mode, ESLint, comprehensive error handling
 
 ---
 
-_Last updated: 2025-11-05 - Role-based access control and collaborator management completed. Phase 3 finished, system production ready._
+_Last updated: 2026-08-28 - Treasurer role and approval workflow completed. Phase 6 finished._

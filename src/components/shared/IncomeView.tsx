@@ -7,6 +7,10 @@ import { Contribution } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
 import ContributionModal from "../modals/ContributionModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import ApprovalNoteModal, {
+  ApprovalActionKind,
+} from "../modals/ApprovalNoteModal";
+import ApprovalHistoryModal from "../modals/ApprovalHistoryModal";
 import FilterSection from "@/components/shared/FilterSection";
 import IncomeReceiptTable, {
   IncomeType,
@@ -15,22 +19,37 @@ import SummarySection from "@/components/shared/SummarySection";
 import NewContributionButton from "@/components/shared/NewContributionButton";
 import { ExportButton } from "@/components/shared/ExportButton";
 import { exportIncomesAction } from "@/lib/actions/export-actions";
+import {
+  approveContributionAction,
+  rejectContributionAction,
+  unapproveContributionAction,
+} from "@/lib/actions/approval-actions";
 
 interface IncomeViewProps {
   contributions: Contribution[];
   lots: Lot[];
   isAdmin?: boolean;
+  isTreasurer?: boolean;
 }
 
 export default function IncomeView({
   contributions,
   lots,
   isAdmin = false,
+  isTreasurer = false,
 }: IncomeViewProps) {
   const [editingContribution, setEditingContribution] =
     useState<Contribution | null>(null);
   const [deletingContribution, setDeletingContribution] =
     useState<Contribution | null>(null);
+  const [approvalTarget, setApprovalTarget] = useState<{
+    contribution: Contribution;
+    action: ApprovalActionKind;
+  } | null>(null);
+  const [isApprovalLoading, setIsApprovalLoading] = useState(false);
+  const [historyTarget, setHistoryTarget] = useState<Contribution | null>(
+    null
+  );
   const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
 
@@ -118,6 +137,27 @@ export default function IncomeView({
       console.error("Error deleting contribution:", error);
     } finally {
       setDeletingContribution(null);
+    }
+  };
+
+  const handleApprovalConfirm = async (note: string) => {
+    if (!approvalTarget) return;
+
+    setIsApprovalLoading(true);
+    try {
+      const { contribution, action } = approvalTarget;
+      if (action === "approve") {
+        await approveContributionAction(contribution.id, note || undefined);
+      } else if (action === "reject") {
+        await rejectContributionAction(contribution.id, note);
+      } else {
+        await unapproveContributionAction(contribution.id, note || undefined);
+      }
+    } catch (error) {
+      console.error("Error updating approval status:", error);
+    } finally {
+      setIsApprovalLoading(false);
+      setApprovalTarget(null);
     }
   };
 
@@ -256,8 +296,19 @@ export default function IncomeView({
           lots={lots}
           incomeFilter={incomeFilter}
           isAdmin={isAdmin}
+          isTreasurer={isTreasurer}
           onEdit={setEditingContribution}
           onDelete={setDeletingContribution}
+          onApprove={(contribution) =>
+            setApprovalTarget({ contribution, action: "approve" })
+          }
+          onReject={(contribution) =>
+            setApprovalTarget({ contribution, action: "reject" })
+          }
+          onUnapprove={(contribution) =>
+            setApprovalTarget({ contribution, action: "unapprove" })
+          }
+          onViewHistory={setHistoryTarget}
         />
       </div>
 
@@ -285,6 +336,26 @@ export default function IncomeView({
           onConfirm={handleDeleteConfirm}
           onClose={() => setDeletingContribution(null)}
           variant="danger"
+        />
+      )}
+
+      {/* Approve / Reject / Unapprove Modal */}
+      {approvalTarget && (
+        <ApprovalNoteModal
+          isOpen={!!approvalTarget}
+          action={approvalTarget.action}
+          onClose={() => setApprovalTarget(null)}
+          onConfirm={handleApprovalConfirm}
+          isLoading={isApprovalLoading}
+        />
+      )}
+
+      {/* Approval History Modal */}
+      {historyTarget && (
+        <ApprovalHistoryModal
+          recordType="contribution"
+          recordId={historyTarget.id}
+          onClose={() => setHistoryTarget(null)}
         />
       )}
     </div>

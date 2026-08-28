@@ -25,23 +25,27 @@ model Lot {
 }
 
 model Contribution {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   lotId           String
   type            String
   amount          Int
   description     String
-  date            DateTime @default(now())
+  date            DateTime  @default(now())
   receiptNumber   String?
   receiptFileId   String?
   receiptFileName String?
   receiptFileUrl  String?
-  lot             Lot      @relation(fields: [lotId], references: [id])
+  approvalStatus  String    @default("pending")
+  approvalNote    String?
+  approvedBy      String?
+  approvedAt      DateTime?
+  lot             Lot       @relation(fields: [lotId], references: [id])
 
   @@map("contributions")
 }
 
 model Expense {
-  id              Int     @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   type            String
   amount          Int
   date            String
@@ -51,8 +55,34 @@ model Expense {
   receiptFileId   String?
   receiptFileName String?
   receiptFileUrl  String?
+  approvalStatus  String    @default("pending")
+  approvalNote    String?
+  approvedBy      String?
+  approvedAt      DateTime?
 
   @@map("expenses")
+}
+
+model Treasurer {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  @@map("treasurers")
+}
+
+model ApprovalHistory {
+  id             String   @id @default(uuid())
+  recordType     String
+  recordId       Int
+  action         String
+  treasurerEmail String
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@index([recordType, recordId])
+  @@map("approval_history")
 }
 
 model QuotaConfig {

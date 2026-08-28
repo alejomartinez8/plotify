@@ -161,6 +161,31 @@ export async function getUserEmail(): Promise<string | null> {
 }
 
 /**
+ * Check if an email is registered in the Treasurer whitelist
+ */
+export async function isTreasurerEmail(email: string): Promise<boolean> {
+  try {
+    const { default: prisma } = await import("@/lib/prisma");
+
+    const treasurer = await prisma.treasurer.findUnique({
+      where: { email },
+    });
+
+    return !!treasurer;
+  } catch (error) {
+    logger.error(
+      "Error checking treasurer whitelist",
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        component: "auth",
+        email,
+      }
+    );
+    return false;
+  }
+}
+
+/**
  * Check if a user has at least one assigned lot
  */
 export async function hasAssignedLot(email: string): Promise<boolean> {
@@ -189,16 +214,24 @@ export async function hasAssignedLot(email: string): Promise<boolean> {
 /**
  * Get user role based on email
  * Admin: if email is in ADMIN_EMAILS
+ * Treasurer: if email is registered in the Treasurer whitelist
  * Owner: authenticated user with at least one assigned lot
  * null: authenticated user without assigned lot
  */
-export async function getUserRole(): Promise<"admin" | "owner" | null> {
+export async function getUserRole(): Promise<
+  "admin" | "treasurer" | "owner" | null
+> {
   try {
     const email = await getUserEmail();
     if (!email) return null;
 
     if (ADMIN_EMAILS.includes(email)) {
       return "admin";
+    }
+
+    const isTreasurer = await isTreasurerEmail(email);
+    if (isTreasurer) {
+      return "treasurer";
     }
 
     // Check if user has at least one assigned lot
@@ -224,6 +257,14 @@ export async function getUserRole(): Promise<"admin" | "owner" | null> {
 export async function isAdmin(): Promise<boolean> {
   const role = await getUserRole();
   return role === "admin";
+}
+
+/**
+ * Check if current user is a treasurer
+ */
+export async function isTreasurer(): Promise<boolean> {
+  const role = await getUserRole();
+  return role === "treasurer";
 }
 
 /**
@@ -292,6 +333,18 @@ export async function requireAdmin(): Promise<void> {
   const admin = await isAdmin();
   if (!admin) {
     throw new Error("Admin access required");
+  }
+}
+
+/**
+ * Require treasurer role, throw error if not treasurer.
+ * Approve/reject/unapprove are treasurer-exclusive; admins do not get a
+ * fallback here (see docs/SPEC-TREASURER-ROLE.md, 7.2).
+ */
+export async function requireTreasurer(): Promise<void> {
+  const treasurer = await isTreasurer();
+  if (!treasurer) {
+    throw new Error("Treasurer access required");
   }
 }
 

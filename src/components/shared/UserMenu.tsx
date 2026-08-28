@@ -12,7 +12,27 @@ interface UserMenuProps {
     email?: string | null;
     image?: string | null;
   };
-  userRole: "admin" | "owner" | null;
+  userRole: "admin" | "treasurer" | "owner" | null;
+}
+
+function getRoleBadge(userRole: UserMenuProps["userRole"]) {
+  switch (userRole) {
+    case "admin":
+      return {
+        label: translations.auth.admin,
+        className: "bg-purple-100 text-purple-700",
+      };
+    case "treasurer":
+      return {
+        label: translations.auth.treasurer,
+        className: "bg-emerald-100 text-emerald-700",
+      };
+    default:
+      return {
+        label: translations.auth.owner,
+        className: "bg-blue-100 text-blue-700",
+      };
+  }
 }
 
 export default function UserMenu({ user, userRole }: UserMenuProps) {
@@ -75,15 +95,9 @@ export default function UserMenu({ user, userRole }: UserMenuProps) {
             <span className="text-sm font-medium">{user.name}</span>
             {userRole && (
               <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  userRole === "admin"
-                    ? "bg-purple-100 text-purple-700"
-                    : "bg-blue-100 text-blue-700"
-                }`}
+                className={`text-xs px-2 py-0.5 rounded-full ${getRoleBadge(userRole).className}`}
               >
-                {userRole === "admin"
-                  ? translations.auth.admin
-                  : translations.auth.owner}
+                {getRoleBadge(userRole).label}
               </span>
             )}
           </div>

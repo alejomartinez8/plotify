@@ -59,6 +59,7 @@ export default function ContributionModal({
     contribution?.receiptFileName || undefined
   );
   const { uploadReceipt, isUploading } = useReceiptUpload();
+  const isLocked = contribution?.approvalStatus === "approved";
 
   useEffect(() => {
     if (state?.success) {
@@ -101,6 +102,7 @@ export default function ContributionModal({
           date: formData.get("date") as string,
           description: formData.get("description") as string,
           receiptNumber: formData.get("receiptNumber") as string,
+          approvalStatus: contribution?.approvalStatus || "pending",
         };
         onSuccess(updatedContribution, !!contribution);
         formAction(formData);
@@ -148,6 +150,13 @@ export default function ContributionModal({
           {contribution && (
             <input type="hidden" name="id" value={contribution.id} />
           )}
+
+          {isLocked && (
+            <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+              {translations.messages.approvedFieldsLockedInfo}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="lotId">{translations.labels.lot}</Label>
             <Select
@@ -184,27 +193,36 @@ export default function ContributionModal({
 
           <div className="space-y-2">
             <Label htmlFor="type">{translations.messages.fundType}</Label>
-            <Select
-              name="type"
-              defaultValue={contribution?.type || "maintenance"}
-              required
-              disabled={isSubmitting}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="maintenance">
-                  {translations.labels.maintenance}
-                </SelectItem>
-                <SelectItem value="works">
-                  {translations.labels.works}
-                </SelectItem>
-                <SelectItem value="others">
-                  {translations.labels.others}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {isLocked ? (
+              <>
+                <input type="hidden" name="type" value={contribution!.type} />
+                <div className="border-input bg-muted text-muted-foreground flex h-9 w-full items-center rounded-md border px-3 text-sm">
+                  {translations.labels[contribution!.type]}
+                </div>
+              </>
+            ) : (
+              <Select
+                name="type"
+                defaultValue={contribution?.type || "maintenance"}
+                required
+                disabled={isSubmitting}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="maintenance">
+                    {translations.labels.maintenance}
+                  </SelectItem>
+                  <SelectItem value="works">
+                    {translations.labels.works}
+                  </SelectItem>
+                  <SelectItem value="others">
+                    {translations.labels.others}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             {state.errors?.type && (
               <div className="text-destructive text-sm">
                 {state.errors.type}
@@ -223,6 +241,8 @@ export default function ContributionModal({
               min="0"
               step="1"
               disabled={isSubmitting}
+              readOnly={isLocked}
+              className={isLocked ? "bg-muted" : undefined}
             />
             {state.errors?.amount && (
               <div className="text-destructive text-sm">
@@ -244,6 +264,8 @@ export default function ContributionModal({
               }
               required
               disabled={isSubmitting}
+              readOnly={isLocked}
+              className={isLocked ? "bg-muted" : undefined}
             />
             {state.errors?.date && (
               <div className="text-destructive text-sm">
