@@ -139,43 +139,6 @@ export async function approveExpense(
 }
 
 /**
- * Marks an expense as rejected by the Treasurer. A note explaining what's
- * wrong is required so Admin knows what to fix.
- */
-export async function rejectExpense(
-  id: number,
-  treasurerEmail: string,
-  note: string
-): Promise<Expense | null> {
-  try {
-    const [expense] = await prisma.$transaction([
-      prisma.expense.update({
-        where: { id },
-        data: {
-          approvalStatus: "rejected",
-          approvalNote: note,
-          approvedBy: treasurerEmail,
-          approvedAt: new Date(),
-        },
-      }),
-      prisma.approvalHistory.create({
-        data: {
-          recordType: "expense",
-          recordId: id,
-          action: "rejected",
-          treasurerEmail,
-          note,
-        },
-      }),
-    ]);
-    return toExpense(expense);
-  } catch (error) {
-    console.error("Error rejecting expense:", error);
-    return null;
-  }
-}
-
-/**
  * Reverses a Treasurer's approval, sending the expense back to `pending`.
  * Treasurer-exclusive (see docs/SPEC-TREASURER-ROLE.md, 7.2).
  */
@@ -209,29 +172,6 @@ export async function unapproveExpense(
   } catch (error) {
     console.error("Error unapproving expense:", error);
     return null;
-  }
-}
-
-/**
- * Resets a `rejected` expense back to `pending` after Admin edits it.
- * This automatic resubmit intentionally does not write an ApprovalHistory
- * row — see docs/SPEC-TREASURER-ROLE.md, section 12.
- */
-export async function resetExpenseToPending(id: number): Promise<boolean> {
-  try {
-    await prisma.expense.update({
-      where: { id },
-      data: {
-        approvalStatus: "pending",
-        approvalNote: null,
-        approvedBy: null,
-        approvedAt: null,
-      },
-    });
-    return true;
-  } catch (error) {
-    console.error("Error resetting expense to pending:", error);
-    return false;
   }
 }
 

@@ -6,7 +6,7 @@ import {
 } from "@/types/approvals.types";
 
 /**
- * Retrieves the approval history (approve/reject/unapprove) for a single
+ * Retrieves the approval history (approve/unapprove) for a single
  * income or expense record, newest first. This is the audit trail — who
  * validated the record, what they decided, and when.
  */

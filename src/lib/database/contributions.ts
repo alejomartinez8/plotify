@@ -219,47 +219,6 @@ export async function approveContribution(
 }
 
 /**
- * Marks a contribution as rejected by the Treasurer. A note explaining
- * what's wrong is required so Admin knows what to fix.
- *
- * @param id - The contribution to reject
- * @param treasurerEmail - Email of the treasurer rejecting it
- * @param note - Required note explaining the rejection
- */
-export async function rejectContribution(
-  id: number,
-  treasurerEmail: string,
-  note: string
-): Promise<Contribution | null> {
-  try {
-    const [contribution] = await prisma.$transaction([
-      prisma.contribution.update({
-        where: { id },
-        data: {
-          approvalStatus: "rejected",
-          approvalNote: note,
-          approvedBy: treasurerEmail,
-          approvedAt: new Date(),
-        },
-      }),
-      prisma.approvalHistory.create({
-        data: {
-          recordType: "contribution",
-          recordId: id,
-          action: "rejected",
-          treasurerEmail,
-          note,
-        },
-      }),
-    ]);
-    return toContribution(contribution);
-  } catch (error) {
-    console.error("Error rejecting contribution:", error);
-    return null;
-  }
-}
-
-/**
  * Reverses a Treasurer's approval, sending the contribution back to
  * `pending`. Treasurer-exclusive: undoing a wrong approval is not the
  * same as Admin editing content (see docs/SPEC-TREASURER-ROLE.md, 7.2).
@@ -298,31 +257,6 @@ export async function unapproveContribution(
   } catch (error) {
     console.error("Error unapproving contribution:", error);
     return null;
-  }
-}
-
-/**
- * Resets a `rejected` contribution back to `pending` after Admin edits it.
- * This automatic resubmit intentionally does not write an ApprovalHistory
- * row — see docs/SPEC-TREASURER-ROLE.md, section 12.
- */
-export async function resetContributionToPending(
-  id: number
-): Promise<boolean> {
-  try {
-    await prisma.contribution.update({
-      where: { id },
-      data: {
-        approvalStatus: "pending",
-        approvalNote: null,
-        approvedBy: null,
-        approvedAt: null,
-      },
-    });
-    return true;
-  } catch (error) {
-    console.error("Error resetting contribution to pending:", error);
-    return false;
   }
 }
 

@@ -7,7 +7,6 @@ import {
   updateExpense,
   deleteExpense,
   getExpenseById,
-  resetExpenseToPending,
 } from "@/lib/database/expenses";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -257,11 +256,6 @@ export async function updateExpenseAction(
         message: "Database Error: Failed to update expense.",
         success: false,
       };
-    }
-
-    // A fixed rejected record re-enters the Treasurer's review queue.
-    if (existing.approvalStatus === "rejected") {
-      await resetExpenseToPending(id);
     }
   } catch (error) {
     const errorInstance =

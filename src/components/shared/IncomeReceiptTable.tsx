@@ -9,7 +9,6 @@ import {
   Trash2,
   FileText,
   CheckCircle2,
-  XCircle,
   RotateCcw,
   History,
 } from "lucide-react";
@@ -41,7 +40,6 @@ interface IncomeReceiptTableProps {
   onEdit?: (contribution: Contribution) => void;
   onDelete?: (contribution: Contribution) => void;
   onApprove?: (contribution: Contribution) => void;
-  onReject?: (contribution: Contribution) => void;
   onUnapprove?: (contribution: Contribution) => void;
   onViewHistory?: (contribution: Contribution) => void;
 }
@@ -64,7 +62,6 @@ export default function IncomeReceiptTable({
   onEdit,
   onDelete,
   onApprove,
-  onReject,
   onUnapprove,
   onViewHistory,
 }: IncomeReceiptTableProps) {
@@ -361,26 +358,15 @@ export default function IncomeReceiptTable({
                             {isTreasurer && (
                               <>
                                 {contribution.approvalStatus !== "approved" && (
-                                  <>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => onApprove?.(contribution)}
-                                      className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-                                      title={translations.actions.approve}
-                                    >
-                                      <CheckCircle2 className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => onReject?.(contribution)}
-                                      className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                                      title={translations.actions.reject}
-                                    >
-                                      <XCircle className="h-4 w-4" />
-                                    </Button>
-                                  </>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onApprove?.(contribution)}
+                                    className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                    title={translations.actions.approve}
+                                  >
+                                    <CheckCircle2 className="h-4 w-4" />
+                                  </Button>
                                 )}
                                 {contribution.approvalStatus === "approved" && (
                                   <Button

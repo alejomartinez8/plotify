@@ -17,7 +17,6 @@ import NewExpenseButton from "@/components/shared/NewExpenseButton";
 import ExpenseTable from "@/components/shared/ExpenseTable";
 import {
   approveExpenseAction,
-  rejectExpenseAction,
   unapproveExpenseAction,
 } from "@/lib/actions/approval-actions";
 
@@ -154,8 +153,6 @@ export default function ExpenseView({
       const { expense, action } = approvalTarget;
       if (action === "approve") {
         await approveExpenseAction(expense.id, note || undefined);
-      } else if (action === "reject") {
-        await rejectExpenseAction(expense.id, note);
       } else {
         await unapproveExpenseAction(expense.id, note || undefined);
       }
@@ -206,9 +203,6 @@ export default function ExpenseView({
         onApprove={(expense) =>
           setApprovalTarget({ expense, action: "approve" })
         }
-        onReject={(expense) =>
-          setApprovalTarget({ expense, action: "reject" })
-        }
         onUnapprove={(expense) =>
           setApprovalTarget({ expense, action: "unapprove" })
         }
@@ -234,7 +228,7 @@ export default function ExpenseView({
         />
       )}
 
-      {/* Approve / Reject / Unapprove Modal */}
+      {/* Approve / Unapprove Modal */}
       {approvalTarget && (
         <ApprovalNoteModal
           isOpen={!!approvalTarget}

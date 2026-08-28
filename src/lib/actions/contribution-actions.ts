@@ -7,7 +7,6 @@ import {
   updateContribution,
   deleteContribution,
   getContributionById,
-  resetContributionToPending,
 } from "@/lib/database/contributions";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -233,11 +232,6 @@ export async function updateContributionAction(
         message: "Database Error: Failed to update contribution.",
         success: false,
       };
-    }
-
-    // A fixed rejected record re-enters the Treasurer's review queue.
-    if (existing.approvalStatus === "rejected") {
-      await resetContributionToPending(id);
     }
   } catch (error) {
     return {

@@ -342,7 +342,7 @@ export async function requireAdmin(): Promise<void> {
 
 /**
  * Require treasurer role, throw error if not treasurer.
- * Approve/reject/unapprove are treasurer-exclusive; admins do not get a
+ * Approve/unapprove are treasurer-exclusive; admins do not get a
  * fallback here (see docs/SPEC-TREASURER-ROLE.md, 7.2).
  */
 export async function requireTreasurer(): Promise<void> {
