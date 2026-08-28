@@ -172,6 +172,13 @@ the note — for full transparency.
   before this feature existed."
 - Records created **after** the migration ships default to `"pending"`.
 
+> **Update (2026-08-28, post-deploy):** reversed on request. A follow-up
+> migration (`20260828150000_reset_backfilled_records_to_pending`) sets
+> every backfilled row back to `"pending"` — guarded by `approvedBy IS
+> NULL` so it only ever touches rows nobody has actually validated yet —
+> so the Treasurer reviews the full historical ledger too, not just new
+> records. The backlog tradeoff described above was accepted.
+
 ## 6. Authorization Changes (`src/lib/auth.ts`)
 
 - Extend `getUserRole()` to return `"admin" | "treasurer" | "owner" | null`.
