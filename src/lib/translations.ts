@@ -255,6 +255,7 @@ export const translations = {
 
     // User management
     addUser: "Agregar Usuario",
+    editUser: "Editar Usuario",
     approvalHistoryTitle: "Historial de validación",
   },
 
@@ -425,6 +426,8 @@ export const translations = {
     userAlreadyExists: "Este correo ya está registrado como usuario",
     cannotRemoveSelf:
       "No puedes eliminar tu propio usuario. Pide a otro administrador que lo haga",
+    cannotChangeOwnRole:
+      "No puedes cambiar tu propio rol. Pide a otro administrador que lo haga",
 
     // System
     database: "Error de base de datos",

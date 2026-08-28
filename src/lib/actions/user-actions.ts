@@ -2,7 +2,12 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { createUser, deleteUser, getUserById } from "@/lib/database/users";
+import {
+  createUser,
+  deleteUser,
+  getUserById,
+  updateUser,
+} from "@/lib/database/users";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 import { getUserEmail } from "@/lib/auth";
@@ -14,6 +19,10 @@ const UserSchema = z.object({
   role: z.enum(["admin", "treasurer"], {
     message: translations.errors.userRoleRequired,
   }),
+});
+
+const UpdateUserSchema = UserSchema.extend({
+  id: z.string().min(1, translations.errors.required),
 });
 
 export type UserState = {
@@ -81,6 +90,84 @@ export async function createUserAction(
   revalidatePath("/admin");
   actionTimer.end();
   return { success: true, message: `${translations.messages.created}.` };
+}
+
+export async function updateUserAction(
+  prevState: UserState,
+  formData: FormData
+): Promise<UserState> {
+  const actionTimer = logger.timer("Update User Action");
+
+  const adminError = await checkAdminAccess<UserState>(
+    actionTimer,
+    "Admin access required to manage users"
+  );
+  if (adminError) return adminError;
+
+  const validatedFields = UpdateUserSchema.safeParse({
+    id: formData.get("id"),
+    email: formData.get("email"),
+    name: formData.get("name"),
+    role: formData.get("role"),
+  });
+
+  if (!validatedFields.success) {
+    actionTimer.end();
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: translations.errors.missingFields,
+      success: false,
+    };
+  }
+
+  const { id, email, name, role } = validatedFields.data;
+
+  // Guard against self-lockout-by-accident, same reasoning as deletion
+  // (docs/SPEC-USER-ROLES-CONSOLIDATION.md, 5.4): an admin can't change
+  // their own role away from admin here.
+  const [currentEmail, existing] = await Promise.all([
+    getUserEmail(),
+    getUserById(id),
+  ]);
+  if (
+    existing &&
+    currentEmail &&
+    existing.email === currentEmail &&
+    role !== existing.role
+  ) {
+    actionTimer.end();
+    return {
+      success: false,
+      message: translations.errors.cannotChangeOwnRole,
+    };
+  }
+
+  try {
+    const result = await updateUser(id, { email, name: name || null, role });
+
+    if (!result) {
+      actionTimer.end();
+      return {
+        success: false,
+        message: translations.errors.userAlreadyExists,
+      };
+    }
+  } catch (error) {
+    logger.error(
+      "Database error during user update",
+      error instanceof Error ? error : new Error(String(error)),
+      { component: "updateUserAction" }
+    );
+    actionTimer.end();
+    return {
+      success: false,
+      message: translations.errors.userAlreadyExists,
+    };
+  }
+
+  revalidatePath("/admin");
+  actionTimer.end();
+  return { success: true, message: `${translations.messages.updated}.` };
 }
 
 export async function deleteUserAction(id: string): Promise<UserState> {

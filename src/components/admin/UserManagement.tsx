@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { User, UserRole } from "@/types/users.types";
 import { translations } from "@/lib/translations";
 import {
@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import UserModal from "@/components/modals/UserModal";
 import { cn } from "@/lib/utils";
 
 interface UserManagementProps {
@@ -45,6 +46,7 @@ export default function UserManagement({
   const initialState: UserState = { message: null, errors: {} };
   const [state, formAction] = useActionState(createUserAction, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -97,10 +99,10 @@ export default function UserManagement({
             placeholder={translations.placeholders.userName}
           />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 sm:w-40">
           <Label htmlFor="user-role">{translations.labels.role}</Label>
           <Select name="role" defaultValue="treasurer" required>
-            <SelectTrigger id="user-role" className="w-full sm:w-40">
+            <SelectTrigger id="user-role" className="h-9 w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -116,7 +118,7 @@ export default function UserManagement({
             </div>
           )}
         </div>
-        <Button type="submit">
+        <Button type="submit" className="h-9">
           <Plus className="h-4 w-4" />
           {translations.titles.addUser}
         </Button>
@@ -165,25 +167,45 @@ export default function UserManagement({
                     </div>
                   )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDeletingUser(user)}
-                  disabled={isSelf}
-                  className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
-                  title={
-                    isSelf
-                      ? translations.errors.cannotRemoveSelf
-                      : translations.actions.delete
-                  }
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditingUser(user)}
+                    className="hover:bg-muted h-8 w-8 p-0"
+                    title={translations.actions.edit}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDeletingUser(user)}
+                    disabled={isSelf}
+                    className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                    title={
+                      isSelf
+                        ? translations.errors.cannotRemoveSelf
+                        : translations.actions.delete
+                    }
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             );
           })
         )}
       </div>
+
+      {editingUser && (
+        <UserModal
+          user={editingUser}
+          isSelf={editingUser.email === currentUserEmail}
+          onClose={() => setEditingUser(null)}
+          onSuccess={() => setEditingUser(null)}
+        />
+      )}
 
       <ConfirmationModal
         isOpen={!!deletingUser}
