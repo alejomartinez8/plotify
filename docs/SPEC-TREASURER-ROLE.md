@@ -21,17 +21,22 @@ approval workflow on top of the existing cash management CRUD.
 2. The Treasurer reviews every income and expense entry and marks it as
    **Approved** or **Rejected**, optionally (Rejected: mandatorily) leaving
    a note explaining the validation outcome.
-3. Once a record is **Approved**, its financial fields (amount, type, date,
-   lot) become immutable for everyone, including Admin. Only the
-   **description** may still be edited afterward.
+3. Once a record is **Approved**, its `amount`, `type` and `date` become
+   immutable for everyone, including Admin. `description` stays editable,
+   and — income only — `lotId` also stays editable (to fix a payment that
+   was logged against the wrong lot after the fact). An approved record can
+   never be deleted; the Treasurer must **Un-approve** it first.
+4. Every approval, rejection and un-approval is recorded with who did it and
+   when, so the community can audit who validated (or reversed) a given
+   transaction.
 
 ## 3. Out of Scope (this phase)
 
 - Multi-step / multi-approver chains.
 - Email or push notifications on approval/rejection events.
 - Bulk-approve actions.
-- A full audit/history log beyond the single `approvedBy` / `approvedAt` /
-  `approvalNote` snapshot stored on the record itself.
+- A dedicated `/approvals` queue page — v1 ships with inline approve/reject
+  controls in the existing income/expense tables.
 
 ## 4. Roles Recap
 
@@ -113,7 +118,36 @@ model Expense {
 }
 ```
 
-### 5.3 Migration & backfill
+### 5.3 New model: `ApprovalHistory` (audit trail)
+
+`approvedBy`/`approvedAt`/`approvalNote` on the record only capture the
+*current* state, which isn't enough once un-approval is allowed — an item
+can be approved, un-approved, and re-approved by a different Treasurer over
+time, and the community wants to audit that full history, not just the
+latest snapshot. A small append-only log covers both income and expense
+with one table:
+
+```prisma
+model ApprovalHistory {
+  id             String   @id @default(uuid())
+  recordType     String   // "contribution" | "expense"
+  recordId       Int
+  action         String   // "approved" | "rejected" | "unapproved"
+  treasurerEmail String
+  note           String?
+  createdAt      DateTime @default(now())
+
+  @@map("approval_history")
+}
+```
+
+Every approve/reject/unapprove server action writes one row here in
+addition to updating the snapshot fields on the `Contribution`/`Expense`
+record. The UI can show a small "history" icon per row (visible to
+Admin/Treasurer) that lists these entries — who, what action, when, and
+the note — for full transparency.
+
+### 5.4 Migration & backfill
 
 - Add the `treasurers` table and the four new columns via a normal Prisma
   migration.
@@ -144,55 +178,70 @@ model Expense {
 | View all financial data | ✅ | ✅ | ✅ (existing, own lot + shared views) |
 | Create income/expense | ✅ | ❌ | ❌ |
 | Edit income/expense while `pending` or `rejected` (all fields) | ✅ | ❌ | ❌ |
-| Edit income/expense while `approved` (description only) | ✅ | ✅ | ❌ |
-| Delete income/expense | ✅, only while not `approved` (see 7.1) | ❌ | ❌ |
-| Approve / Reject | ❌ | ✅ | ❌ |
+| Edit `description` while `approved` | ✅ | ✅ | ❌ |
+| Edit `lotId` while `approved` (income only) | ✅ | ✅ | ❌ |
+| Delete income/expense (only while `pending` or `rejected`) | ✅ | ❌ | ❌ |
+| Delete an `approved` record | ❌ (must be un-approved first) | ❌ | ❌ |
+| Approve / Reject (`pending` → `approved`/`rejected`) | ❌ | ✅ | ❌ |
+| **Un-approve** (`approved` → `pending`) | ❌ | ✅ | ❌ |
 | Manage Treasurer whitelist | ✅ | ❌ | ❌ |
 
-### 7.1 Deletion of approved records
+### 7.1 Deletion rule
 
-Recommendation: once a record is `approved`, it cannot be deleted either —
-not just value-locked. To delete it, a Treasurer must first **Reject** it
-(which returns it to an editable state for Admin), keeping a single,
-consistent lock mechanic instead of two separate ones for "edit" and
-"delete."
+A record can be deleted only while it is `pending` or `rejected` — i.e.
+never validated, or validated-and-flagged-as-wrong. This covers the stated
+case of removing duplicates or data-entry mistakes before they're
+certified. An `approved` record can **never** be deleted directly, by
+anyone, including Admin: re-doing a validation that already happened is
+exactly the wasted work this rule avoids. If an approval turns out to be a
+mistake (e.g. the Treasurer approved the wrong row), the Treasurer
+un-approves it first — that puts it back in `pending`, where Admin can then
+delete or fix it as usual.
 
-### 7.2 Why Treasurer-only approval (not Admin too)
+### 7.2 Why approve/reject/un-approve are Treasurer-exclusive
 
-Keeping approval exclusive to the Treasurer preserves separation of duties
-(the person entering the transaction is not also the one certifying it).
-Admin retains full override power indirectly: Admin can always edit a
-`rejected` record and the whitelist itself, so Admin is never blocked, just
-not the one clicking "Approve."
+Approval is a trust boundary: the Treasurer is the sole party who certifies
+a transaction, so only the Treasurer can also *reverse* that certification.
+Admin cannot un-approve — this is intentional, not an oversight — because
+letting Admin undo a Treasurer's validation would defeat the purpose of
+having an independent validator. Admin keeps full control everywhere else
+(create, edit while unapproved, delete while unapproved, manage the
+whitelist), so this is a narrow, deliberate carve-out.
 
 ## 8. Approval Workflow (state machine)
 
 ```
-        create (Admin)
-             |
-             v
-        [ pending ] <------------------------+
-             |                                |
-   Treasurer |approve         Treasurer       | Admin edits a
-             |                |reject          | rejected record
-             v                v                | (auto-resubmit)
-       [ approved ]     [ rejected ] ----------+
-             |
-   Admin/Treasurer edit description only
-   (approvalStatus unchanged)
+              create (Admin)
+                   |
+                   v
+              [ pending ] <-----------------------------+
+                   |               ^                     |
+        Treasurer  |approve        | Treasurer            | Admin edits a
+                   |               |unapprove              | rejected record
+                   v               |                       | (auto-resubmit)
+             [ approved ] ---------+                       |
+                   |                                       |
+        Treasurer  |reject (from pending, note required)   |
+                   v                                       |
+             [ rejected ] -----------------------------------+
 ```
 
-- **pending → approved**: Treasurer action. Note is optional.
+- **pending → approved**: Treasurer action. Note is optional. Writes an
+  `ApprovalHistory` row (`action: "approved"`).
 - **pending → rejected**: Treasurer action. Note is **required** — it's the
-  only way Admin knows what to fix.
+  only way Admin knows what to fix. Writes an `ApprovalHistory` row
+  (`action: "rejected"`).
 - **rejected → pending**: automatic, the moment Admin saves an edit to a
-  rejected record. `approvedBy`/`approvedAt` are cleared so it re-enters the
-  Treasurer's review queue.
-- **approved**: `amount`, `type`, `date`, `lotId` become immutable for
-  everyone. `description` remains editable by Admin or Treasurer without
-  changing `approvalStatus`. The Treasurer may also update `approvalNote` at
-  any time regardless of status (e.g., to add a clarifying comment after the
-  fact).
+  rejected record, so it re-enters the Treasurer's review queue.
+- **approved → pending** ("Un-approve"): Treasurer-only action (Admin
+  cannot do this — see 7.2). Clears `approvedBy`/`approvedAt` on the
+  record and writes an `ApprovalHistory` row (`action: "unapproved"`,
+  note recommended). Once back in `pending`, the record can be edited on
+  all fields or deleted like any other pending record.
+- **approved (no status change)**: `amount`, `type` and `date` become
+  immutable for everyone. `description` (and, for income, `lotId`) remain
+  editable by Admin or Treasurer without changing `approvalStatus`. The
+  record also cannot be deleted while in this state (7.1).
 
 ## 9. UI/UX Changes
 
@@ -203,11 +252,19 @@ not the one clicking "Approve."
 - For the Treasurer role, add inline **Approve** (✓) / **Reject** (✗)
   actions per row when status is `pending` or `rejected`. Reject opens a
   small note input (required); Approve allows an optional note.
+- For the Treasurer role only, add an **Un-approve** action (e.g. an "undo"
+  icon) on rows that are `approved`. Not shown to Admin (7.2). Clicking it
+  asks for confirmation (this reopens the record for editing/deletion) and
+  an optional note.
 - A status filter (`All / Pending / Approved / Rejected`) helps the
   Treasurer find their review queue quickly within the existing pages.
 - When Admin/Treasurer opens the edit form for an `approved` record, the
-  amount/type/date/lot fields render as read-only/disabled; only
-  description (and, for Treasurer, the note) stay editable.
+  `amount`/`type`/`date` fields render as read-only/disabled; `description`
+  stays editable, and — income form only — `lotId` also stays editable.
+  Delete is hidden/disabled for `approved` rows.
+- A small **history** icon per row (visible to Admin/Treasurer) opens the
+  `ApprovalHistory` entries for that record: who approved/rejected/
+  un-approved it, when, and their note — the audit trail from 5.3.
 
 ### 9.2 Treasurer whitelist management (Admin panel)
 
@@ -231,55 +288,66 @@ New file `src/lib/actions/approval-actions.ts` (or added to the existing
 
 - `approveContributionAction(id, note?)`
 - `rejectContributionAction(id, note)` — note required by Zod schema
+- `unapproveContributionAction(id, note?)`
 - `approveExpenseAction(id, note?)`
 - `rejectExpenseAction(id, note)`
+- `unapproveExpenseAction(id, note?)`
 
-Each guarded by `requireTreasurer()`.
+Each guarded by `requireTreasurer()`, and each writes one `ApprovalHistory`
+row (5.3) in the same transaction as the status update.
 
 Changes to existing actions:
 
-- `updateContributionAction` / `updateExpenseAction`: load the current
-  record first.
+- `updateContributionAction`: load the current record first.
   - If `approvalStatus === "approved"`: reject the request unless only
-    `description` (and, for Treasurer, `approvalNote`) differs from the
-    stored values — return a validation error otherwise.
+    `description` and/or `lotId` differ from the stored values — return a
+    validation error if `amount`, `type`, or `date` were changed.
   - If the record was `rejected` and the save succeeds: reset
     `approvalStatus` to `"pending"` and clear `approvedBy` / `approvedAt`.
+- `updateExpenseAction`: same as above, except only `description` is
+  allowed to change while `approved` (Expense has no `lotId`).
 - `deleteContributionAction` / `deleteExpenseAction`: return an error if
-  `approvalStatus === "approved"` (see 7.1).
+  `approvalStatus === "approved"` (see 7.1) — deletion is only ever allowed
+  for `pending` or `rejected` records.
 
 ## 11. Translations (`src/lib/translations.ts`)
 
 - `labels`: `status`, `pending`, `approved`, `rejected`, `approvalNote`,
-  `treasurer`
-- `actions`: `approve`, `reject`
-- `messages`: `approvedSuccess`, `rejectedSuccess`
+  `treasurer`, `approvedBy`, `approvalHistory`
+- `actions`: `approve`, `reject`, `unapprove`, `viewHistory`
+- `messages`: `approvedSuccess`, `rejectedSuccess`, `unapprovedSuccess`
 - `errors`: `treasurerAccessRequired`, `rejectionNoteRequired`,
   `cannotEditApprovedField`, `cannotDeleteApproved`
 
-## 12. Open Questions (defaults proposed above, flag if you disagree)
+## 12. Remaining Open Question
 
-1. Should approved records be undeletable, requiring a Reject first?
-   *Default: yes (7.1).*
-2. Is the inline approve/reject in the existing tables enough for v1, or is
-   a dedicated `/approvals` queue page needed immediately? *Default: inline
-   for v1, dedicated queue as fast-follow (9.3).*
-3. Should backfilled historical records show "approved" with no
-   `approvedBy`, or should we attribute them to a synthetic
-   `"system-migration"` value? *Default: leave `approvedBy` null (5.3).*
+Everything from the previous round of open questions is now resolved
+(deletion rule in 7.1, no dedicated approvals page per 3, un-approve is
+Treasurer-only per 7.2, audit trail via `ApprovalHistory` per 5.3). One
+smaller detail is still worth a quick call:
+
+- Should the auto-resubmit (`rejected` → `pending` when Admin fixes and
+  saves) also write an `ApprovalHistory` row (e.g. `action: "resubmitted"`),
+  so the audit trail shows the full back-and-forth, not just the
+  Treasurer's actions? *Default: yes — log it for completeness, since full
+  transparency was explicitly called out as important (Goal 4).*
 
 ## 13. Suggested TODO.md Entry
 
 ```
 ### 🚧 Phase 6: Treasurer Role & Approval Workflow
 
-- [ ] DB: Treasurer model + approval fields migration (with backfill)
+- [ ] DB: Treasurer + ApprovalHistory models, approval fields migration
+      (with backfill)
 - [ ] Auth: treasurer role detection + requireTreasurer() guard
-- [ ] Server actions: approve/reject actions; lock approved records in
-      update/delete actions
-- [ ] UI: status badges + approve/reject controls on income/expense tables
+- [ ] Server actions: approve/reject/unapprove actions (writing
+      ApprovalHistory rows); lock approved records' amount/type/date in
+      update actions; block delete while approved
+- [ ] UI: status badges, approve/reject/unapprove controls, and a history
+      view on income/expense tables
 - [ ] Admin panel: Treasurer whitelist management
 - [ ] Translations for the new labels/actions/messages/errors
-- [ ] End-to-end test: create → pending → approve/reject → locked-field
-      edit attempt is rejected → description-only edit succeeds
+- [ ] End-to-end test: create → pending → approve → locked-field edit
+      rejected, description/lot edit succeeds → unapprove → pending →
+      delete succeeds
 ```
