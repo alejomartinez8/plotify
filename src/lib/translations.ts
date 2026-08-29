@@ -116,6 +116,7 @@ export const translations = {
     initialDebt: "Deuda Inicial",
 
     // Approval workflow labels
+    reconciliation: "Conciliación",
     pending: "Pendiente",
     approved: "Aprobado",
     approvalNote: "Nota de validación",

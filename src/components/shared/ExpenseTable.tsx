@@ -197,7 +197,7 @@ export default function ExpenseTable({
                     </div>
                   </TableHead>
                   <TableHead className="border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
-                    {translations.labels.status}
+                    {translations.labels.reconciliation}
                   </TableHead>
                   {showActionsColumn && (
                     <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
