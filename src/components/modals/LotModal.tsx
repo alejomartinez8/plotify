@@ -47,7 +47,6 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
         owner: formData.get("owner") as string,
         ownerEmail: (formData.get("ownerEmail") as string) || null,
         whatsappPhone: (formData.get("whatsappPhone") as string) || null,
-        notificationsEnabled: formData.get("notificationsEnabled") === "on",
         initialWorksDebt:
           parseInt(formData.get("initialWorksDebt") as string) || 0,
         isExempt: formData.get("isExempt") === "on",
@@ -158,50 +157,25 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
             )}
           </div>
 
-          {/* WhatsApp / Notifications */}
-          <div className="space-y-4 border-t pt-4">
-            <h4 className="text-sm font-semibold text-gray-700">
-              {translations.labels.notifications}
-            </h4>
-
-            <div className="space-y-2">
-              <Label htmlFor="whatsappPhone">
-                {translations.labels.whatsappPhone}
-              </Label>
-              <Input
-                type="text"
-                name="whatsappPhone"
-                id="whatsappPhone"
-                defaultValue={lot?.whatsappPhone || ""}
-                disabled={isPending}
-                placeholder={translations.placeholders.whatsappPhone}
-                inputMode="numeric"
-              />
-              {state.errors?.whatsappPhone && (
-                <div className="text-destructive text-sm">
-                  {state.errors.whatsappPhone}
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                name="notificationsEnabled"
-                id="notificationsEnabled"
-                defaultChecked={lot?.notificationsEnabled || false}
-                disabled={isPending}
-                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="notificationsEnabled" className="text-sm font-medium">
-                  {translations.labels.notificationsEnabled}
-                </Label>
-                <p className="text-xs text-gray-500">
-                  El propietario aceptó recibir notificaciones por WhatsApp
-                </p>
+          {/* WhatsApp contact */}
+          <div className="space-y-2 border-t pt-4">
+            <Label htmlFor="whatsappPhone">
+              {translations.labels.whatsappPhone}
+            </Label>
+            <Input
+              type="text"
+              name="whatsappPhone"
+              id="whatsappPhone"
+              defaultValue={lot?.whatsappPhone || ""}
+              disabled={isPending}
+              placeholder={translations.placeholders.whatsappPhone}
+              inputMode="numeric"
+            />
+            {state.errors?.whatsappPhone && (
+              <div className="text-destructive text-sm">
+                {state.errors.whatsappPhone}
               </div>
-            </div>
+            )}
           </div>
 
           {/* Exemption Fields */}

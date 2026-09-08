@@ -19,6 +19,6 @@ export default async function LoginPage() {
 }
 
 export const metadata = {
-  title: "Iniciar Sesión - Parcela Jaslico",
+  title: "Iniciar Sesión - Parcela Jalisco",
   description: "Ingresa con tu cuenta de Google para acceder al sistema",
 };

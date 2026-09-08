@@ -23,7 +23,6 @@ const LotSchema = z.object({
     .nullable()
     .optional()
     .or(z.literal("")),
-  notificationsEnabled: z.boolean().optional(),
   initialWorksDebt: z
     .number()
     .min(0, translations.errors.amountPositive)
@@ -74,7 +73,6 @@ export async function createLotAction(
     owner: formData.get("owner"),
     ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     whatsappPhone: (formData.get("whatsappPhone") as string)?.trim() || null,
-    notificationsEnabled: formData.get("notificationsEnabled") === "on",
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
@@ -98,7 +96,7 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, ownerEmail, whatsappPhone, notificationsEnabled, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
+  const { lotNumber, owner, ownerEmail, whatsappPhone, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
     validatedFields.data;
 
   try {
@@ -107,7 +105,6 @@ export async function createLotAction(
       owner,
       ownerEmail,
       whatsappPhone: whatsappPhone || null,
-      notificationsEnabled,
       initialWorksDebt,
       isExempt,
       exemptionReason,
@@ -153,7 +150,6 @@ export async function updateLotAction(
     owner: formData.get("owner"),
     ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     whatsappPhone: (formData.get("whatsappPhone") as string)?.trim() || null,
-    notificationsEnabled: formData.get("notificationsEnabled") === "on",
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
@@ -181,7 +177,7 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, ownerEmail, whatsappPhone, notificationsEnabled, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
+  const { id, lotNumber, owner, ownerEmail, whatsappPhone, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
     validatedFields.data;
 
   try {
@@ -190,7 +186,6 @@ export async function updateLotAction(
       owner,
       ownerEmail,
       whatsappPhone: whatsappPhone || null,
-      notificationsEnabled,
       initialWorksDebt,
       isExempt,
       exemptionReason,

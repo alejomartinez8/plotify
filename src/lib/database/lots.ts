@@ -62,7 +62,6 @@ export async function createLot(data: {
   owner: string;
   ownerEmail?: string | null;
   whatsappPhone?: string | null;
-  notificationsEnabled?: boolean;
   initialWorksDebt?: number;
   isExempt?: boolean;
   exemptionReason?: string | null;
@@ -75,7 +74,6 @@ export async function createLot(data: {
         owner: data.owner,
         ownerEmail: data.ownerEmail || null,
         whatsappPhone: data.whatsappPhone || null,
-        notificationsEnabled: data.notificationsEnabled ?? false,
         initialWorksDebt: data.initialWorksDebt || 0,
         isExempt: data.isExempt || false,
         exemptionReason: data.exemptionReason || null,
@@ -108,7 +106,6 @@ export async function updateLot(
     owner?: string;
     ownerEmail?: string | null;
     whatsappPhone?: string | null;
-    notificationsEnabled?: boolean;
     initialWorksDebt?: number;
     isExempt?: boolean;
     exemptionReason?: string | null;
@@ -123,7 +120,6 @@ export async function updateLot(
         ...(data.owner && { owner: data.owner }),
         ...(data.ownerEmail !== undefined && { ownerEmail: data.ownerEmail }),
         ...(data.whatsappPhone !== undefined && { whatsappPhone: data.whatsappPhone }),
-        ...(data.notificationsEnabled !== undefined && { notificationsEnabled: data.notificationsEnabled }),
         ...(data.initialWorksDebt !== undefined && {
           initialWorksDebt: data.initialWorksDebt,
         }),

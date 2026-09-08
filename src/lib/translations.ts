@@ -2,7 +2,7 @@
 export const translations = {
   // App metadata
   app: {
-    title: "Parcela Jaslico",
+    title: "Parcela Jalisco",
     subtitle: "Sistema de Gestión de Aportes",
   },
 
@@ -101,10 +101,8 @@ export const translations = {
     filters: "Filtros",
     goToLot: "Ir a Lote:",
 
-    // WhatsApp / notifications
-    whatsappPhone: "Teléfono WhatsApp",
-    notificationsEnabled: "Notificaciones habilitadas",
-    notifications: "Notificaciones",
+    // WhatsApp contact
+    whatsappPhone: "Teléfono WhatsApp (contacto directo)",
 
     // Quota related labels
     quotas: "Cuotas",
@@ -496,7 +494,7 @@ export const translations = {
     copyReport: "Copiar Informe WhatsApp",
     copied: "¡Copiado!",
     copyError: "Error al copiar",
-    reportTitle: "📊 *INFORME PARCELA JASLICO*",
+    reportTitle: "📊 *INFORME PARCELA JALISCO*",
     reportDate: "📅 Fecha:",
     reportSeparator: "─────────────────────",
     reportLots: "🏘️ *ESTADO POR LOTE*",
@@ -512,7 +510,7 @@ export const translations = {
     summaryOverdue: "En mora:",
     summaryDebt: "Cartera total:",
     summaryCashBalance: "💰 Saldo de caja:",
-    summaryFooter: "_Generado desde Parcela Jaslico_",
+    summaryFooter: "_Generado desde Parcela Jalisco_",
     // Lot-specific report
     lotReportCopy: "Copiar Resumen del Lote",
     lotReportTitle: "📊 *ESTADO DE CUENTA*",
