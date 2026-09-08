@@ -9,27 +9,24 @@ import { checkLotAccess } from "@/lib/check-lot-access";
 export default async function CollaboratorsPage() {
   await checkLotAccess();
 
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
+  let userLotIds: Awaited<ReturnType<typeof getUserLotIds>>;
+  let collaborators: Awaited<ReturnType<typeof getCollaborators>>;
+  let lots: Awaited<ReturnType<typeof getLots>>;
+
   try {
-    const [userRole, userLotIds, collaborators, allLots] = await Promise.all([
+    let allLots: Awaited<ReturnType<typeof getLots>>;
+    [userRole, userLotIds, collaborators, allLots] = await Promise.all([
       getUserRole(),
       getUserLotIds(),
       getCollaborators(),
       getLots(),
     ]);
 
-    const lots =
+    lots =
       userRole === "owner"
         ? allLots.filter((lot) => userLotIds.includes(lot.id))
         : allLots;
-
-    return (
-      <CollaboratorsView
-        collaborators={collaborators}
-        lots={lots}
-        userRole={userRole}
-        userLotIds={userLotIds}
-      />
-    );
   } catch (error) {
     return (
       <ErrorLayout
@@ -41,4 +38,13 @@ export default async function CollaboratorsPage() {
       />
     );
   }
+
+  return (
+    <CollaboratorsView
+      collaborators={collaborators}
+      lots={lots}
+      userRole={userRole}
+      userLotIds={userLotIds}
+    />
+  );
 }

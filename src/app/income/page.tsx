@@ -24,21 +24,16 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       redirect(`/income/${lotParam}`);
     }
   }
+  let allLots: Awaited<ReturnType<typeof getLots>>;
+  let contributions: Awaited<ReturnType<typeof getContributions>>;
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
+
   try {
-    const [allLots, contributions, userRole] = await Promise.all([
+    [allLots, contributions, userRole] = await Promise.all([
       getLots(),
       getContributions(),
       getUserRole(),
     ]);
-
-    return (
-      <IncomeView
-        lots={allLots}
-        contributions={contributions}
-        isAdmin={userRole === "admin"}
-        isTreasurer={userRole === "treasurer"}
-      />
-    );
   } catch (error) {
     return (
       <ErrorLayout
@@ -50,4 +45,13 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
       />
     );
   }
+
+  return (
+    <IncomeView
+      lots={allLots}
+      contributions={contributions}
+      isAdmin={userRole === "admin"}
+      isTreasurer={userRole === "treasurer"}
+    />
+  );
 }

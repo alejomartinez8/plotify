@@ -8,15 +8,14 @@ import { translations } from "@/lib/translations";
 export default async function QuotasPage() {
   await checkLotAccess();
 
+  let quotaConfigs: Awaited<ReturnType<typeof getQuotaConfigs>>;
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
+
   try {
-    const [quotaConfigs, userRole] = await Promise.all([
+    [quotaConfigs, userRole] = await Promise.all([
       getQuotaConfigs(),
       getUserRole(),
     ]);
-
-    return (
-      <QuotaView quotaConfigs={quotaConfigs} isAdmin={userRole === "admin"} />
-    );
   } catch (error) {
     return (
       <ErrorLayout
@@ -28,4 +27,8 @@ export default async function QuotasPage() {
       />
     );
   }
+
+  return (
+    <QuotaView quotaConfigs={quotaConfigs} isAdmin={userRole === "admin"} />
+  );
 }

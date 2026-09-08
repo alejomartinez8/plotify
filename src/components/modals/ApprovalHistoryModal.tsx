@@ -37,15 +37,17 @@ export default function ApprovalHistoryModal({
   onClose,
 }: ApprovalHistoryModalProps) {
   const [entries, setEntries] = useState<ApprovalHistoryEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const currentKey = `${recordType}-${recordId}`;
+  const isLoading = loadedKey !== currentKey;
 
   useEffect(() => {
     let active = true;
-    setIsLoading(true);
+    const key = `${recordType}-${recordId}`;
     getApprovalHistoryAction(recordType, recordId).then((result) => {
       if (active) {
         setEntries(result);
-        setIsLoading(false);
+        setLoadedKey(key);
       }
     });
     return () => {
