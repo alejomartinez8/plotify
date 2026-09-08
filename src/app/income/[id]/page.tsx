@@ -16,42 +16,24 @@ interface LotPageProps {
 export default async function LotPage({ params }: LotPageProps) {
   await checkLotAccess();
 
+  let lotData: Awaited<ReturnType<typeof getLotWithContributions>>;
+  let allLotsData: Awaited<ReturnType<typeof getLots>>;
+  let quotaConfigs: Awaited<ReturnType<typeof getQuotaConfigs>>;
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
+  let debtDetail: ReturnType<typeof calculateLotDebtDetail>;
+
   try {
     const resolvedParams = await params;
     const { id } = resolvedParams;
 
-    const [lotData, allLotsData, quotaConfigs, userRole] = await Promise.all([
+    [lotData, allLotsData, quotaConfigs, userRole] = await Promise.all([
       getLotWithContributions(id),
       getLots(),
       getQuotaConfigs(),
       getUserRole(),
     ]);
 
-    const debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
-
-    if (!lotData) {
-      notFound();
-    }
-
-    const lot = {
-      ...lotData,
-      contributions: lotData.contributions.map((contrib) => ({
-        ...contrib,
-        type: contrib.type as ContributionType,
-        date: contrib.date.toISOString().split("T")[0],
-      })) as Contribution[],
-    };
-
-    return (
-      <LotDetailView
-        lot={lot}
-        contributions={lot.contributions}
-        allLots={allLotsData}
-        isAdmin={userRole === "admin"}
-        debtDetail={debtDetail}
-        quotaConfigs={quotaConfigs}
-      />
-    );
+    debtDetail = calculateLotDebtDetail(lotData, quotaConfigs);
   } catch (error) {
     return (
       <ErrorLayout
@@ -63,6 +45,30 @@ export default async function LotPage({ params }: LotPageProps) {
       />
     );
   }
+
+  if (!lotData) {
+    notFound();
+  }
+
+  const lot = {
+    ...lotData,
+    contributions: lotData.contributions.map((contrib) => ({
+      ...contrib,
+      type: contrib.type as ContributionType,
+      date: contrib.date.toISOString().split("T")[0],
+    })) as Contribution[],
+  };
+
+  return (
+    <LotDetailView
+      lot={lot}
+      contributions={lot.contributions}
+      allLots={allLotsData}
+      isAdmin={userRole === "admin"}
+      debtDetail={debtDetail}
+      quotaConfigs={quotaConfigs}
+    />
+  );
 }
 
 // Generate metadata for the page

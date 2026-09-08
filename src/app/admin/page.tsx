@@ -5,15 +5,16 @@ import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 
 export default async function AdminPage() {
+  let users: Awaited<ReturnType<typeof getUsers>>;
+  let currentUserEmail: Awaited<ReturnType<typeof getUserEmail>>;
+
   try {
     await requireAdmin();
 
-    const [users, currentUserEmail] = await Promise.all([
+    [users, currentUserEmail] = await Promise.all([
       getUsers(),
       getUserEmail(),
     ]);
-
-    return <AdminConfig users={users} currentUserEmail={currentUserEmail} />;
   } catch (error) {
     console.error("Admin page error:", error);
     return (
@@ -24,4 +25,6 @@ export default async function AdminPage() {
       />
     );
   }
+
+  return <AdminConfig users={users} currentUserEmail={currentUserEmail} />;
 }

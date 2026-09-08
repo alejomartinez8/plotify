@@ -49,42 +49,27 @@ export default function IncomeView({
   const [historyTarget, setHistoryTarget] = useState<Contribution | null>(
     null
   );
-  const [incomeFilter, setIncomeFilter] = useState<IncomeType>("all");
-  const [yearFilter, setYearFilter] = useState<string>("all");
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Initialize filters from URL parameters
-  useEffect(() => {
-    const typeParam = searchParams.get("type") as IncomeType;
-    const yearParam = searchParams.get("year");
+  const typeParam = searchParams.get("type") as IncomeType | null;
+  const isValidType =
+    !!typeParam &&
+    ["all", "maintenance", "works", "others"].includes(typeParam);
+  const incomeFilter: IncomeType = isValidType ? typeParam! : "all";
+  const yearFilter = searchParams.get("year") || "all";
 
-    if (
-      typeParam &&
-      ["all", "maintenance", "works", "others"].includes(typeParam)
-    ) {
-      setIncomeFilter(typeParam);
-    } else if (typeParam) {
-      // If type in URL is invalid, clear it
+  // Clear an invalid "type" URL parameter
+  useEffect(() => {
+    if (typeParam && !isValidType) {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("type");
       router.replace(`?${params.toString()}`, { scroll: false });
-      setIncomeFilter("all");
     }
-
-    if (yearParam) {
-      setYearFilter(yearParam);
-    } else {
-      setYearFilter("all");
-    }
-  }, [searchParams, router]);
-
-  // Update URL when filters change
+  }, [typeParam, isValidType, searchParams, router]);
 
   const handleIncomeFilterChange = (incomeType: IncomeType) => {
-    setIncomeFilter(incomeType);
-
     const params = new URLSearchParams(searchParams.toString());
     if (incomeType !== "all") {
       params.set("type", incomeType);
@@ -97,8 +82,6 @@ export default function IncomeView({
   };
 
   const handleYearFilterChange = (year: string) => {
-    setYearFilter(year);
-
     const params = new URLSearchParams(searchParams.toString());
     if (year !== "all") {
       params.set("year", year);

@@ -8,20 +8,11 @@ import { checkLotAccess } from "@/lib/check-lot-access";
 export default async function ExpensesPage() {
   await checkLotAccess();
 
-  try {
-    const [expenses, userRole] = await Promise.all([
-      getExpenses(),
-      getUserRole(),
-    ]);
+  let expenses: Awaited<ReturnType<typeof getExpenses>>;
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
 
-    return (
-      <ExpenseView
-        title={translations.navigation.expenses}
-        expenses={expenses}
-        isAdmin={userRole === "admin"}
-        isTreasurer={userRole === "treasurer"}
-      />
-    );
+  try {
+    [expenses, userRole] = await Promise.all([getExpenses(), getUserRole()]);
   } catch (error) {
     return (
       <ErrorLayout
@@ -33,4 +24,13 @@ export default async function ExpensesPage() {
       />
     );
   }
+
+  return (
+    <ExpenseView
+      title={translations.navigation.expenses}
+      expenses={expenses}
+      isAdmin={userRole === "admin"}
+      isTreasurer={userRole === "treasurer"}
+    />
+  );
 }

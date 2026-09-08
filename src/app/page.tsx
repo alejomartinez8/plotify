@@ -16,8 +16,15 @@ export default async function Home() {
   // Check if user has lot access before loading any data
   await checkLotAccess();
 
+  let fundsData: Awaited<ReturnType<typeof getAllFundsBalances>>;
+  let allLots: Awaited<ReturnType<typeof getLots>>;
+  let contributions: Awaited<ReturnType<typeof getContributions>>;
+  let quotaConfigs: Awaited<ReturnType<typeof getQuotaConfigs>>;
+  let userRole: Awaited<ReturnType<typeof getUserRole>>;
+  let monthlyData: Awaited<ReturnType<typeof getMonthlyTotals>>;
+
   try {
-    const [fundsData, allLots, contributions, quotaConfigs, userRole, monthlyData] =
+    [fundsData, allLots, contributions, quotaConfigs, userRole, monthlyData] =
       await Promise.all([
         getAllFundsBalances(),
         getLots(),
@@ -26,32 +33,6 @@ export default async function Home() {
         getUserRole(),
         getMonthlyTotals(),
       ]);
-
-    const lotBalances = calculateSimpleLotBalances(
-      allLots,
-      contributions,
-      quotaConfigs
-    );
-
-    return (
-      <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
-        <div className="space-y-8">
-          <FundsOverview fundsData={fundsData} monthlyData={monthlyData} />
-          <QuotaSummaryCard lotBalances={lotBalances} />
-          {userRole === "admin" && (
-            <div className="flex justify-end">
-              <WhatsAppReportButton lotBalances={lotBalances} consolidatedBalance={fundsData.consolidated.balance} />
-            </div>
-          )}
-          <LotCards
-            lots={allLots}
-            contributions={contributions}
-            lotBalances={lotBalances}
-            isAdmin={userRole === "admin"}
-          />
-        </div>
-      </div>
-    );
   } catch (error) {
     return (
       <ErrorLayout
@@ -63,4 +44,30 @@ export default async function Home() {
       />
     );
   }
+
+  const lotBalances = calculateSimpleLotBalances(
+    allLots,
+    contributions,
+    quotaConfigs
+  );
+
+  return (
+    <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+      <div className="space-y-8">
+        <FundsOverview fundsData={fundsData} monthlyData={monthlyData} />
+        <QuotaSummaryCard lotBalances={lotBalances} />
+        {userRole === "admin" && (
+          <div className="flex justify-end">
+            <WhatsAppReportButton lotBalances={lotBalances} consolidatedBalance={fundsData.consolidated.balance} />
+          </div>
+        )}
+        <LotCards
+          lots={allLots}
+          contributions={contributions}
+          lotBalances={lotBalances}
+          isAdmin={userRole === "admin"}
+        />
+      </div>
+    </div>
+  );
 }

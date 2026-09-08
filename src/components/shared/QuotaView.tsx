@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { QuotaConfig } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
@@ -25,34 +25,17 @@ export default function QuotaView({
 }: QuotaViewProps) {
   const [editingQuota, setEditingQuota] = useState<QuotaConfig | null>(null);
   const [deletingQuota, setDeletingQuota] = useState<QuotaConfig | null>(null);
-  const [quotaFilter, setQuotaFilter] = useState<QuotaType>("all");
-  const [yearFilter, setYearFilter] = useState<string>("all");
   const [, startTransition] = useTransition();
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Initialize filters from URL parameters
-  useEffect(() => {
-    const typeParam = searchParams.get("type") as QuotaType;
-    const yearParam = searchParams.get("year");
-
-    if (typeParam && (typeParam === "maintenance" || typeParam === "works")) {
-      setQuotaFilter(typeParam);
-    } else {
-      setQuotaFilter("all");
-    }
-
-    if (yearParam) {
-      setYearFilter(yearParam);
-    } else {
-      setYearFilter("all");
-    }
-  }, [searchParams]);
+  const typeParam = searchParams.get("type") as QuotaType | null;
+  const quotaFilter: QuotaType =
+    typeParam === "maintenance" || typeParam === "works" ? typeParam : "all";
+  const yearFilter = searchParams.get("year") || "all";
 
   const handleQuotaFilterChange = (quotaType: QuotaType) => {
-    setQuotaFilter(quotaType);
-
     const url = new URL(window.location.href);
     if (quotaType === "all") {
       url.searchParams.delete("type");
@@ -63,8 +46,6 @@ export default function QuotaView({
   };
 
   const handleYearFilterChange = (year: string) => {
-    setYearFilter(year);
-
     const url = new URL(window.location.href);
     if (year === "all") {
       url.searchParams.delete("year");

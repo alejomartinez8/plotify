@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Expense, ExpenseType } from "@/types/expenses.types";
 import { translations } from "@/lib/translations";
@@ -43,19 +43,13 @@ export default function ExpenseView({
   } | null>(null);
   const [isApprovalLoading, setIsApprovalLoading] = useState(false);
   const [historyTarget, setHistoryTarget] = useState<Expense | null>(null);
-  const [typeFilter, setTypeFilter] = useState<ExpenseFilter>("all");
-  const [yearFilter, setYearFilter] = useState<string>("all");
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  useEffect(() => {
-    const yearParam = searchParams.get("year");
-    const typeParam = searchParams.get("type") as ExpenseFilter | null;
-
-    setYearFilter(yearParam || "all");
-    setTypeFilter(typeParam || "all");
-  }, [searchParams]);
+  const typeFilter: ExpenseFilter =
+    (searchParams.get("type") as ExpenseFilter | null) || "all";
+  const yearFilter = searchParams.get("year") || "all";
 
   const updateURL = (params: Record<string, string>) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -70,12 +64,10 @@ export default function ExpenseView({
   };
 
   const handleTypeFilterChange = (type: string) => {
-    setTypeFilter(type as ExpenseFilter);
     updateURL({ type });
   };
 
   const handleYearFilterChange = (year: string) => {
-    setYearFilter(year);
     updateURL({ year });
   };
 
