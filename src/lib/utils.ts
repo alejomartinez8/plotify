@@ -141,7 +141,9 @@ export function calculateSimpleLotBalances(
   const lotBalances: SimpleLotBalance[] = lots
     .filter((lot) => !lot.isExempt || lot.exemptionEndDate) // Exclude fully exempt lots (no end date)
     .map((lot) => {
-      const activeFrom = lot.exemptionEndDate ? parseLocalDate(lot.exemptionEndDate) : null;
+      const activeFrom = lot.exemptionEndDate
+        ? parseLocalDate(lot.exemptionEndDate)
+        : null;
 
       const lotContributions = contributions.filter(
         (contribution) => contribution.lotId === lot.id
@@ -153,14 +155,17 @@ export function calculateSimpleLotBalances(
 
       const lotQuotas = activeFrom
         ? applicableQuotas.filter(
-            (quota) => quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
+            (quota) =>
+              quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
           )
         : applicableQuotas;
 
       // For debt calculations, only count contributions from activeFrom onwards.
       // Pre-activation contributions remain in payment history but don't offset obligations.
       const activeContributions = activeFrom
-        ? lotContributions.filter((c: any) => parseLocalDate(c.date) >= activeFrom)
+        ? lotContributions.filter(
+            (c: any) => parseLocalDate(c.date) >= activeFrom
+          )
         : lotContributions;
 
       // Calculate per-type quotas and contributions
@@ -179,11 +184,18 @@ export function calculateSimpleLotBalances(
         .reduce((total: number, c: any) => total + c.amount, 0);
 
       // Calculate total quotas applicable to this lot
-      const totalQuotas = maintenanceQuotas + worksQuotas + lot.initialWorksDebt;
+      const totalQuotas =
+        maintenanceQuotas + worksQuotas + lot.initialWorksDebt;
 
       // Each type is a separate obligation: overpayment in one type does not offset debt in another
-      const maintenanceDebt = Math.max(0, maintenanceQuotas - maintenanceContributions);
-      const worksDebt = Math.max(0, worksQuotas + lot.initialWorksDebt - worksContributions);
+      const maintenanceDebt = Math.max(
+        0,
+        maintenanceQuotas - maintenanceContributions
+      );
+      const worksDebt = Math.max(
+        0,
+        worksQuotas + lot.initialWorksDebt - worksContributions
+      );
       const outstandingBalance = maintenanceDebt + worksDebt;
 
       // Determine status: only "current" (paid up) or "overdue" (owes money)
@@ -221,7 +233,8 @@ export function calculateLotDebtDetail(
   if (!lotWithContributions) return null;
 
   // Return null for fully exempt lots (no exemptionEndDate means completely excluded)
-  if (lotWithContributions.isExempt && !lotWithContributions.exemptionEndDate) return null;
+  if (lotWithContributions.isExempt && !lotWithContributions.exemptionEndDate)
+    return null;
 
   const currentDate = parseLocalDate(new Date());
 
@@ -248,21 +261,29 @@ export function calculateLotDebtDetail(
   // For debt calculations, only count contributions from activeFrom onwards.
   // Pre-activation contributions remain in payment history but don't offset obligations.
   const activeContributions = activeFrom
-    ? lotContributions.filter((c: any) => new Date(c.date) >= activeFrom)
+    ? lotContributions.filter((c: any) => parseLocalDate(c.date) >= activeFrom)
     : lotContributions;
 
   // Calculate contributions by type (using only active-period contributions for debt)
   const maintenanceContributions = activeContributions
     .filter((contribution: any) => contribution.type === "maintenance")
-    .reduce((total: number, contribution: any) => total + contribution.amount, 0);
+    .reduce(
+      (total: number, contribution: any) => total + contribution.amount,
+      0
+    );
 
   const worksContributions = activeContributions
     .filter((contribution: any) => contribution.type === "works")
-    .reduce((total: number, contribution: any) => total + contribution.amount, 0);
+    .reduce(
+      (total: number, contribution: any) => total + contribution.amount,
+      0
+    );
 
   // totalContributions reflects all payments ever made (for display in payment history)
-  const totalContributions = lotContributions
-    .reduce((total: number, contribution: any) => total + contribution.amount, 0);
+  const totalContributions = lotContributions.reduce(
+    (total: number, contribution: any) => total + contribution.amount,
+    0
+  );
 
   // Calculate quotas by type
   const maintenanceQuotas = lotQuotas
@@ -338,12 +359,20 @@ export interface QuotaLineStatus {
  * quotas first. Works quotas include an optional initial-debt entry at the top.
  */
 export function buildQuotaBreakdown(
-  quotaConfigs: { id: string; quotaType: string; amount: number; description: string | null; dueDate: Date | null }[],
+  quotaConfigs: {
+    id: string;
+    quotaType: string;
+    amount: number;
+    description: string | null;
+    dueDate: string | null;
+  }[],
   contributions: { type: string; amount: number; date: Date | string }[],
-  lot: { initialWorksDebt: number; exemptionEndDate?: Date | string | null }
+  lot: { initialWorksDebt: number; exemptionEndDate?: string | null }
 ): QuotaLineStatus[] {
   const today = parseLocalDate(new Date());
-  const activeFrom = lot.exemptionEndDate ? parseLocalDate(lot.exemptionEndDate) : null;
+  const activeFrom = lot.exemptionEndDate
+    ? parseLocalDate(lot.exemptionEndDate)
+    : null;
 
   // Include all quotas (past and future) so advance payments are allocated correctly.
   // Future unpaid quotas are filtered out at the end.
@@ -356,16 +385,24 @@ export function buildQuotaBreakdown(
 
   const maintenanceQuotas = applicable
     .filter((q) => q.quotaType === "maintenance")
-    .sort((a, b) => parseLocalDate(a.dueDate!).getTime() - parseLocalDate(b.dueDate!).getTime());
+    .sort(
+      (a, b) =>
+        parseLocalDate(a.dueDate!).getTime() -
+        parseLocalDate(b.dueDate!).getTime()
+    );
 
   const worksQuotas = applicable
     .filter((q) => q.quotaType === "works")
-    .sort((a, b) => parseLocalDate(a.dueDate!).getTime() - parseLocalDate(b.dueDate!).getTime());
+    .sort(
+      (a, b) =>
+        parseLocalDate(a.dueDate!).getTime() -
+        parseLocalDate(b.dueDate!).getTime()
+    );
 
   // Only count contributions from activeFrom onwards — pre-activation contributions
   // are recorded historically but don't offset current obligations.
   const activeContributions = activeFrom
-    ? contributions.filter((c) => new Date(c.date) >= activeFrom)
+    ? contributions.filter((c) => parseLocalDate(c.date) >= activeFrom)
     : contributions;
 
   const maintenancePaid = activeContributions
@@ -384,13 +421,37 @@ export function buildQuotaBreakdown(
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
     const year = parseLocalDate(q.dueDate!).getFullYear();
     if (remaining >= q.amount) {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: q.amount, status: "paid", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "maintenance",
+        amount: q.amount,
+        paidAmount: q.amount,
+        status: "paid",
+        year,
+      });
       remaining -= q.amount;
     } else if (remaining > 0) {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: remaining, status: "partial", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "maintenance",
+        amount: q.amount,
+        paidAmount: remaining,
+        status: "partial",
+        year,
+      });
       remaining = 0;
     } else {
-      result.push({ id: q.id, label, quotaType: "maintenance", amount: q.amount, paidAmount: 0, status: "owed", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "maintenance",
+        amount: q.amount,
+        paidAmount: 0,
+        status: "owed",
+        year,
+      });
     }
   }
 
@@ -399,26 +460,71 @@ export function buildQuotaBreakdown(
   if (lot.initialWorksDebt > 0) {
     const debt = lot.initialWorksDebt;
     if (remainingWorks >= debt) {
-      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: debt, status: "paid" });
+      result.push({
+        id: "initial",
+        label: "Saldo inicial",
+        quotaType: "initial",
+        amount: debt,
+        paidAmount: debt,
+        status: "paid",
+      });
       remainingWorks -= debt;
     } else if (remainingWorks > 0) {
-      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: remainingWorks, status: "partial" });
+      result.push({
+        id: "initial",
+        label: "Saldo inicial",
+        quotaType: "initial",
+        amount: debt,
+        paidAmount: remainingWorks,
+        status: "partial",
+      });
       remainingWorks = 0;
     } else {
-      result.push({ id: "initial", label: "Saldo inicial", quotaType: "initial", amount: debt, paidAmount: 0, status: "owed" });
+      result.push({
+        id: "initial",
+        label: "Saldo inicial",
+        quotaType: "initial",
+        amount: debt,
+        paidAmount: 0,
+        status: "owed",
+      });
     }
   }
   for (const q of worksQuotas) {
     const label = q.description || formatQuotaDateLabel(q.dueDate!);
     const year = parseLocalDate(q.dueDate!).getFullYear();
     if (remainingWorks >= q.amount) {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: q.amount, status: "paid", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "works",
+        amount: q.amount,
+        paidAmount: q.amount,
+        status: "paid",
+        year,
+      });
       remainingWorks -= q.amount;
     } else if (remainingWorks > 0) {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: remainingWorks, status: "partial", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "works",
+        amount: q.amount,
+        paidAmount: remainingWorks,
+        status: "partial",
+        year,
+      });
       remainingWorks = 0;
     } else {
-      result.push({ id: q.id, label, quotaType: "works", amount: q.amount, paidAmount: 0, status: "owed", year });
+      result.push({
+        id: q.id,
+        label,
+        quotaType: "works",
+        amount: q.amount,
+        paidAmount: 0,
+        status: "owed",
+        year,
+      });
     }
   }
 
@@ -437,7 +543,19 @@ export function buildQuotaBreakdown(
 
 function formatQuotaDateLabel(dueDate: Date | string): string {
   const d = parseLocalDate(dueDate);
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const months = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
   return `${months[d.getMonth()]} ${d.getFullYear()}`;
 }
-

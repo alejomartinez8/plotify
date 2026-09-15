@@ -1,11 +1,20 @@
+import type { QuotaConfig as PrismaQuotaConfig } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { formatDateForStorage } from "@/lib/utils";
 
 export interface QuotaConfig {
   id: string;
   quotaType: string;
   amount: number;
   description: string | null;
-  dueDate: Date | null;
+  dueDate: string | null;
+}
+
+export function toQuotaConfig(quota: PrismaQuotaConfig): QuotaConfig {
+  return {
+    ...quota,
+    dueDate: quota.dueDate ? formatDateForStorage(quota.dueDate) : null,
+  };
 }
 
 /**
@@ -21,7 +30,7 @@ export async function getQuotaConfigs(): Promise<QuotaConfig[]> {
     const quotas = await prisma.quotaConfig.findMany({
       orderBy: [{ dueDate: "asc" }, { quotaType: "asc" }],
     });
-    return quotas;
+    return quotas.map(toQuotaConfig);
   } catch (error) {
     console.error("Error fetching quota configs:", error);
     return [];
@@ -58,7 +67,7 @@ export async function createQuotaConfig(data: {
         year: new Date().getFullYear(),
       },
     });
-    return quota;
+    return toQuotaConfig(quota);
   } catch (error) {
     console.error("Error creating quota config:", error);
     return null;
@@ -98,7 +107,7 @@ export async function updateQuotaConfig(
         ...(data.dueDate !== undefined && { dueDate: data.dueDate }),
       },
     });
-    return quota;
+    return toQuotaConfig(quota);
   } catch (error) {
     console.error("Error updating quota config:", error);
     return null;
@@ -150,7 +159,7 @@ export async function getQuotasByYearAndType(
       },
       orderBy: { dueDate: "asc" },
     });
-    return quotas;
+    return quotas.map(toQuotaConfig);
   } catch (error) {
     console.error("Error fetching quotas by year and type:", error);
     return [];

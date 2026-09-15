@@ -4,7 +4,7 @@ import { Contribution, ContributionType } from "@/types/contributions.types";
 import { ApprovalStatus } from "@/types/approvals.types";
 import { formatDateForStorage } from "@/lib/utils";
 
-function toContribution(contribution: PrismaContribution): Contribution {
+export function toContribution(contribution: PrismaContribution): Contribution {
   return {
     ...contribution,
     type: contribution.type as ContributionType,

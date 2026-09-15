@@ -50,7 +50,7 @@ interface QuotaConfig {
   quotaType: string;
   amount: number;
   description: string | null;
-  dueDate: Date | null;
+  dueDate: string | null;
 }
 
 interface LotDetailViewProps {
@@ -444,9 +444,17 @@ export default function LotDetailView({
                           index % 2 === 0 ? "bg-background" : "bg-muted/20"
                         }`}
                       >
-                        <TableCell className="px-6 py-3 font-medium">{line.label}</TableCell>
+                        <TableCell className="px-6 py-3 font-medium">
+                          {line.label}
+                        </TableCell>
                         <TableCell className="px-6 py-3">
-                          <TypeBadge type={line.quotaType === "initial" ? "works" : line.quotaType as "maintenance" | "works"} />
+                          <TypeBadge
+                            type={
+                              line.quotaType === "initial"
+                                ? "works"
+                                : (line.quotaType as "maintenance" | "works")
+                            }
+                          />
                         </TableCell>
                         <TableCell className="px-6 py-3 text-right font-semibold">
                           {formatCurrency(line.amount)}
@@ -459,7 +467,8 @@ export default function LotDetailView({
                           )}
                           {line.status === "partial" && (
                             <span className="inline-flex flex-col rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
-                              ⚠️ Parcial ({formatCurrency(line.paidAmount)} / {formatCurrency(line.amount)})
+                              ⚠️ Parcial ({formatCurrency(line.paidAmount)} /{" "}
+                              {formatCurrency(line.amount)})
                             </span>
                           )}
                           {line.status === "owed" && (
