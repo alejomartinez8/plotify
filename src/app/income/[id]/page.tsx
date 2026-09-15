@@ -4,7 +4,6 @@ import { getQuotaConfigs } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
 import { checkLotAccess } from "@/lib/check-lot-access";
-import { Contribution, ContributionType } from "@/types/contributions.types";
 import { calculateLotDebtDetail } from "@/lib/utils";
 import LotDetailView from "@/components/shared/LotDetailView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
@@ -50,14 +49,7 @@ export default async function LotPage({ params }: LotPageProps) {
     notFound();
   }
 
-  const lot = {
-    ...lotData,
-    contributions: lotData.contributions.map((contrib) => ({
-      ...contrib,
-      type: contrib.type as ContributionType,
-      date: contrib.date.toISOString().split("T")[0],
-    })) as Contribution[],
-  };
+  const lot = lotData;
 
   return (
     <LotDetailView

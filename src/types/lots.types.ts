@@ -7,5 +7,5 @@ export interface Lot {
   initialWorksDebt: number;
   isExempt: boolean;
   exemptionReason: string | null;
-  exemptionEndDate: Date | string | null;
+  exemptionEndDate: string | null;
 }

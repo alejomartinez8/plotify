@@ -1,6 +1,18 @@
+import type { Lot as PrismaLot } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { Lot } from "@/types/lots.types";
-import { parseLocalDate } from "@/lib/utils";
+import { Contribution } from "@/types/contributions.types";
+import { parseLocalDate, formatDateForStorage } from "@/lib/utils";
+import { toContribution } from "@/lib/database/contributions";
+
+export function toLot(lot: PrismaLot): Lot {
+  return {
+    ...lot,
+    exemptionEndDate: lot.exemptionEndDate
+      ? formatDateForStorage(lot.exemptionEndDate)
+      : null,
+  };
+}
 
 /**
  * Retrieves all lots from the database.
@@ -16,7 +28,7 @@ export async function getLots(): Promise<Lot[]> {
         lotNumber: "asc",
       },
     });
-    return lots;
+    return lots.map(toLot);
   } catch (error) {
     console.error("Error fetching lots:", error);
     return [];
@@ -36,7 +48,7 @@ export async function getLotById(id: string): Promise<Lot | null> {
     const lot = await prisma.lot.findUnique({
       where: { id },
     });
-    return lot;
+    return lot ? toLot(lot) : null;
   } catch (error) {
     console.error("Error fetching lot by id:", error);
     return null;
@@ -77,10 +89,12 @@ export async function createLot(data: {
         initialWorksDebt: data.initialWorksDebt || 0,
         isExempt: data.isExempt || false,
         exemptionReason: data.exemptionReason || null,
-        exemptionEndDate: data.exemptionEndDate ? parseLocalDate(data.exemptionEndDate) : null,
+        exemptionEndDate: data.exemptionEndDate
+          ? parseLocalDate(data.exemptionEndDate)
+          : null,
       },
     });
-    return lot;
+    return toLot(lot);
   } catch (error) {
     console.error("Error creating lot:", error);
     return null;
@@ -119,7 +133,9 @@ export async function updateLot(
         ...(data.lotNumber && { lotNumber: data.lotNumber }),
         ...(data.owner && { owner: data.owner }),
         ...(data.ownerEmail !== undefined && { ownerEmail: data.ownerEmail }),
-        ...(data.whatsappPhone !== undefined && { whatsappPhone: data.whatsappPhone }),
+        ...(data.whatsappPhone !== undefined && {
+          whatsappPhone: data.whatsappPhone,
+        }),
         ...(data.initialWorksDebt !== undefined && {
           initialWorksDebt: data.initialWorksDebt,
         }),
@@ -128,11 +144,13 @@ export async function updateLot(
           exemptionReason: data.exemptionReason,
         }),
         ...(data.exemptionEndDate !== undefined && {
-          exemptionEndDate: data.exemptionEndDate ? parseLocalDate(data.exemptionEndDate) : null,
+          exemptionEndDate: data.exemptionEndDate
+            ? parseLocalDate(data.exemptionEndDate)
+            : null,
         }),
       },
     });
-    return lot;
+    return toLot(lot);
   } catch (error) {
     console.error("Error updating lot:", error);
     return null;
@@ -168,7 +186,9 @@ export async function deleteLot(id: string): Promise<boolean> {
  * const lotWithData = await getLotWithContributions("abc123");
  * // Returns: { id: "abc123", lotNumber: "001", ..., contributions: [...] }
  */
-export async function getLotWithContributions(id: string) {
+export async function getLotWithContributions(
+  id: string
+): Promise<(Lot & { contributions: Contribution[] }) | null> {
   try {
     const lot = await prisma.lot.findUnique({
       where: { id },
@@ -180,7 +200,11 @@ export async function getLotWithContributions(id: string) {
         },
       },
     });
-    return lot;
+    if (!lot) return null;
+    return {
+      ...toLot(lot),
+      contributions: lot.contributions.map(toContribution),
+    };
   } catch (error) {
     console.error("Error fetching lot with contributions:", error);
     return null;
@@ -195,7 +219,9 @@ export async function getLotWithContributions(id: string) {
  * @example
  * const lotWithData = await getLotWithContributionsByNumber("LOT-001");
  */
-export async function getLotWithContributionsByNumber(lotNumber: string) {
+export async function getLotWithContributionsByNumber(
+  lotNumber: string
+): Promise<(Lot & { contributions: Contribution[] }) | null> {
   try {
     const lot = await prisma.lot.findUnique({
       where: { lotNumber },
@@ -207,7 +233,11 @@ export async function getLotWithContributionsByNumber(lotNumber: string) {
         },
       },
     });
-    return lot;
+    if (!lot) return null;
+    return {
+      ...toLot(lot),
+      contributions: lot.contributions.map(toContribution),
+    };
   } catch (error) {
     console.error("Error fetching lot with contributions by number:", error);
     return null;
