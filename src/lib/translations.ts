@@ -401,6 +401,7 @@ export const translations = {
     categoryRequired: "La categoría es requerida",
     ownerRequired: "El nombre del propietario es requerido",
     whatsappPhoneInvalid: "El teléfono debe contener solo dígitos (10-15 caracteres, incluye código de país)",
+    lotNumberExists: "Ya existe un lote con ese número",
     collaboratorNameRequired: "El nombre del colaborador es requerido",
     uploadPhoto: "Error al subir la fotografía",
     collaboratorNotFound: "Colaborador no encontrado",
