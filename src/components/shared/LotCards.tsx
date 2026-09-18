@@ -11,6 +11,8 @@ import {
   Phone,
   LayoutGrid,
   List as ListIcon,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
@@ -72,7 +74,7 @@ export default function LotCards({
 }: LotCardsProps) {
   const [sortField, setSortField] = useState<SortField>("lot");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingLot, setEditingLot] = useState<Lot | null>(null);
   const [deletingLot, setDeletingLot] = useState<Lot | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -165,6 +167,24 @@ export default function LotCards({
       return 0;
     });
   }, [lotsWithSummary, sortField, sortDirection]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return null;
+    return sortDirection === "asc" ? (
+      <ChevronUp className="ml-1 h-3.5 w-3.5" />
+    ) : (
+      <ChevronDown className="ml-1 h-3.5 w-3.5" />
+    );
+  };
 
   const handleDeleteConfirm = () => {
     if (!deletingLot) return;
@@ -412,20 +432,52 @@ export default function LotCards({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead>
-              {translations.labels.lot} / {translations.labels.owner}
+            <TableHead
+              className="hover:bg-muted/70 cursor-pointer transition-colors select-none"
+              onClick={() => handleSort("lot")}
+            >
+              <div className="flex items-center">
+                {translations.labels.lot} / {translations.labels.owner}
+                {getSortIcon("lot")}
+              </div>
             </TableHead>
-            <TableHead>{translations.labels.status}</TableHead>
-            <TableHead className="text-right">
-              {translations.labels.totalContributions}
+            <TableHead
+              className="hover:bg-muted/70 cursor-pointer transition-colors select-none"
+              onClick={() => handleSort("status")}
+            >
+              <div className="flex items-center">
+                {translations.labels.status}
+                {getSortIcon("status")}
+              </div>
+            </TableHead>
+            <TableHead
+              className="hover:bg-muted/70 cursor-pointer text-right transition-colors select-none"
+              onClick={() => handleSort("total")}
+            >
+              <div className="flex items-center justify-end">
+                {translations.labels.totalContributions}
+                {getSortIcon("total")}
+              </div>
             </TableHead>
             {isAdmin && (
-              <TableHead className="text-right">
-                {translations.labels.initialDebt}
+              <TableHead
+                className="hover:bg-muted/70 cursor-pointer text-right transition-colors select-none"
+                onClick={() => handleSort("initialDebt")}
+              >
+                <div className="flex items-center justify-end">
+                  {translations.labels.initialDebt}
+                  {getSortIcon("initialDebt")}
+                </div>
               </TableHead>
             )}
-            <TableHead className="text-right">
-              {translations.labels.totalOutstandingDebt}
+            <TableHead
+              className="hover:bg-muted/70 cursor-pointer text-right transition-colors select-none"
+              onClick={() => handleSort("balance")}
+            >
+              <div className="flex items-center justify-end">
+                {translations.labels.totalOutstandingDebt}
+                {getSortIcon("balance")}
+              </div>
             </TableHead>
             <TableHead className="text-right">
               {translations.actions.viewDetail}
@@ -554,8 +606,8 @@ export default function LotCards({
             </p>
           </div>
 
-          <div className="flex w-full flex-col gap-3">
-            <div className="w-full">
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="w-full sm:max-w-xs">
               <span className="text-muted-foreground mb-2 block text-xs font-medium sm:text-sm">
                 {translations.labels.sortBy}:
               </span>
@@ -570,7 +622,7 @@ export default function LotCards({
                   setSortDirection(direction);
                 }}
               >
-                <SelectTrigger className="w-full text-xs sm:w-64 sm:text-sm">
+                <SelectTrigger className="w-full text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -607,44 +659,49 @@ export default function LotCards({
               </Select>
             </div>
 
-            <div className="hidden items-center gap-1 rounded-md border p-0.5 lg:inline-flex">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setViewMode("cards")}
-                aria-pressed={viewMode === "cards"}
-                title={translations.labels.viewAsCards}
-                className={cn(
-                  "h-8 px-2.5",
-                  viewMode === "cards" && "bg-muted"
-                )}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setViewMode("list")}
-                aria-pressed={viewMode === "list"}
-                title={translations.labels.viewAsList}
-                className={cn("h-8 px-2.5", viewMode === "list" && "bg-muted")}
-              >
-                <ListIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <div className="flex items-center justify-end gap-2">
+              <div className="hidden items-center gap-1 rounded-md border p-0.5 lg:inline-flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("cards")}
+                  aria-pressed={viewMode === "cards"}
+                  title={translations.labels.viewAsCards}
+                  className={cn(
+                    "h-7 w-7 p-0",
+                    viewMode === "cards" && "bg-muted"
+                  )}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  aria-pressed={viewMode === "list"}
+                  title={translations.labels.viewAsList}
+                  className={cn(
+                    "h-7 w-7 p-0",
+                    viewMode === "list" && "bg-muted"
+                  )}
+                >
+                  <ListIcon className="h-3.5 w-3.5" />
+                </Button>
+              </div>
 
-            {isAdmin && (
-              <Button
-                onClick={() => setIsCreating(true)}
-                size="sm"
-                className="w-full text-xs sm:w-auto sm:text-sm"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {translations.actions.new} {translations.labels.lot}
-              </Button>
-            )}
+              {isAdmin && (
+                <Button
+                  onClick={() => setIsCreating(true)}
+                  size="sm"
+                  className="h-8 text-xs sm:text-sm"
+                >
+                  <Plus className="mr-1 h-4 w-4" />
+                  {translations.actions.new} {translations.labels.lot}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </CardHeader>
