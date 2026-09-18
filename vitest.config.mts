@@ -9,6 +9,10 @@ export default defineConfig({
   css: { postcss: { plugins: [] } },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
+    // Component tests render with Testing Library and need a DOM; pure
+    // logic tests stay on the lighter "node" environment above.
+    environmentMatchGlobs: [["src/**/*.test.tsx", "jsdom"]],
+    setupFiles: ["src/test/setup.ts"],
   },
 });
