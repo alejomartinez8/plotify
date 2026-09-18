@@ -660,7 +660,7 @@ export default function LotCards({
             </div>
 
             <div className="flex items-center justify-end gap-2">
-              <div className="hidden items-center gap-1 rounded-md border p-0.5 lg:inline-flex">
+              <div className="inline-flex items-center gap-1 rounded-md border p-0.5">
                 <Button
                   type="button"
                   variant="ghost"
@@ -719,10 +719,7 @@ export default function LotCards({
         ) : viewMode === "cards" ? (
           cardsGrid
         ) : (
-          <>
-            <div className="lg:hidden">{cardsGrid}</div>
-            <div className="hidden lg:block">{listTable}</div>
-          </>
+          listTable
         )}
       </CardContent>
 
