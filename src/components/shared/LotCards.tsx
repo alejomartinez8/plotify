@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Plus,
   Edit,
@@ -74,18 +74,12 @@ export default function LotCards({
 }: LotCardsProps) {
   const [sortField, setSortField] = useState<SortField>("lot");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [editingLot, setEditingLot] = useState<Lot | null>(null);
   const [deletingLot, setDeletingLot] = useState<Lot | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  useEffect(() => {
-    if (window.innerWidth < 640) {
-      setViewMode("cards");
-    }
-  }, []);
 
   // Calculate lot summaries
   const lotsWithSummary = useMemo((): LotWithSummary[] => {
