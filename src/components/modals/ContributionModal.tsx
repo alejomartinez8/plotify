@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useActionState, useTransition, useState } from "react";
+import {
+  useEffect,
+  useActionState,
+  useTransition,
+  useState,
+  useRef,
+} from "react";
+import { Loader2 } from "lucide-react";
 import { useReceiptUpload } from "@/hooks/useReceiptUpload";
 import { Lot } from "@/types/lots.types";
 import { Contribution, ContributionType } from "@/types/contributions.types";
@@ -52,13 +59,15 @@ export default function ContributionModal({
     ? updateContributionAction
     : createContributionAction;
   const [state, formAction] = useActionState(action, initialState);
-  const [, startTransition] = useTransition();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isPending, startTransition] = useTransition();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewFileName, setPreviewFileName] = useState<string | undefined>(
     contribution?.receiptFileName || undefined
   );
   const { uploadReceipt, isUploading } = useReceiptUpload();
+  const isLoading = isUploading || isPending || isSubmitting;
   const isLocked = contribution?.approvalStatus === "approved";
 
   useEffect(() => {
@@ -68,6 +77,8 @@ export default function ContributionModal({
   }, [state, onClose]);
 
   const handleSubmit = async (formData: FormData) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
 
     try {
@@ -108,13 +119,13 @@ export default function ContributionModal({
         formAction(formData);
       });
     } catch (error) {
+      submittingRef.current = false;
+      setIsSubmitting(false);
       const errorInstance =
         error instanceof Error ? error : new Error(String(error));
 
       // Show error to user
       alert(`Error: ${errorInstance.message}`);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -165,7 +176,7 @@ export default function ContributionModal({
                 contribution?.lotId?.toString() || defaultLotId || ""
               }
               required
-              disabled={lotsLoading || isSubmitting}
+              disabled={lotsLoading || isLoading}
             >
               <SelectTrigger>
                 <SelectValue
@@ -205,7 +216,7 @@ export default function ContributionModal({
                 name="type"
                 defaultValue={contribution?.type || "maintenance"}
                 required
-                disabled={isSubmitting}
+                disabled={isLoading}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -240,7 +251,7 @@ export default function ContributionModal({
               required
               min="0"
               step="1"
-              disabled={isSubmitting}
+              disabled={isLoading}
               readOnly={isLocked}
               className={isLocked ? "bg-muted" : undefined}
             />
@@ -263,7 +274,7 @@ export default function ContributionModal({
                   : ""
               }
               required
-              disabled={isSubmitting}
+              disabled={isLoading}
               readOnly={isLocked}
               className={isLocked ? "bg-muted" : undefined}
             />
@@ -284,7 +295,7 @@ export default function ContributionModal({
               id="description"
               defaultValue={contribution?.description || ""}
               placeholder={translations.placeholders.optionalDescription}
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.description && (
               <div className="text-destructive text-sm">
@@ -303,7 +314,7 @@ export default function ContributionModal({
               id="receiptNumber"
               defaultValue={contribution?.receiptNumber || ""}
               placeholder={translations.placeholders.receiptNumber}
-              disabled={isSubmitting}
+              disabled={isLoading}
             />
             {state.errors?.receiptNumber && (
               <div className="text-destructive text-sm">
@@ -315,7 +326,7 @@ export default function ContributionModal({
           <FileUpload
             onFileSelect={setSelectedFile}
             value={selectedFile}
-            disabled={isSubmitting || isUploading}
+            disabled={isLoading}
             showPreview={true}
             previewFileName={previewFileName}
             onRemovePreview={() => setPreviewFileName(undefined)}
@@ -326,20 +337,25 @@ export default function ContributionModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            disabled={isSubmitting || isUploading}
+            disabled={isLoading}
           >
             {translations.actions.cancel}
           </Button>
           <Button
             type="submit"
             form="contribution-form"
-            disabled={isSubmitting || isUploading}
+            disabled={isLoading}
           >
-            {isSubmitting || isUploading
-              ? translations.status.processing
-              : contribution
-                ? translations.actions.update
-                : translations.actions.save}
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                {translations.status.processing}
+              </>
+            ) : contribution ? (
+              translations.actions.update
+            ) : (
+              translations.actions.save
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
