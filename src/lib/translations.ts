@@ -144,6 +144,8 @@ export const translations = {
     outstandingBalance: "Saldo Adeudado",
     totalOutstandingDebt: "Total Deuda",
     sortBy: "Ordenar por",
+    viewAsCards: "Ver como tarjetas",
+    viewAsList: "Ver como lista",
     evolutionChart: "Evolución de Ingresos y Egresos",
     noChartData: "No hay datos suficientes para mostrar la gráfica",
   },
