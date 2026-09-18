@@ -59,7 +59,8 @@ export async function getLotById(id: string): Promise<Lot | null> {
  * Creates a new lot record.
  *
  * @param data - Lot data including lot number, owner, optional email, initial debt, and exemption info
- * @returns Created lot or null on error
+ * @returns Created lot
+ * @throws if the database operation fails (e.g. duplicate lot number)
  * @example
  * const lot = await createLot({
  *   lotNumber: "LOT-001",
@@ -78,27 +79,22 @@ export async function createLot(data: {
   isExempt?: boolean;
   exemptionReason?: string | null;
   exemptionEndDate?: Date | string | null;
-}): Promise<Lot | null> {
-  try {
-    const lot = await prisma.lot.create({
-      data: {
-        lotNumber: data.lotNumber,
-        owner: data.owner,
-        ownerEmail: data.ownerEmail || null,
-        whatsappPhone: data.whatsappPhone || null,
-        initialWorksDebt: data.initialWorksDebt || 0,
-        isExempt: data.isExempt || false,
-        exemptionReason: data.exemptionReason || null,
-        exemptionEndDate: data.exemptionEndDate
-          ? parseLocalDate(data.exemptionEndDate)
-          : null,
-      },
-    });
-    return toLot(lot);
-  } catch (error) {
-    console.error("Error creating lot:", error);
-    return null;
-  }
+}): Promise<Lot> {
+  const lot = await prisma.lot.create({
+    data: {
+      lotNumber: data.lotNumber,
+      owner: data.owner,
+      ownerEmail: data.ownerEmail || null,
+      whatsappPhone: data.whatsappPhone || null,
+      initialWorksDebt: data.initialWorksDebt || 0,
+      isExempt: data.isExempt || false,
+      exemptionReason: data.exemptionReason || null,
+      exemptionEndDate: data.exemptionEndDate
+        ? parseLocalDate(data.exemptionEndDate)
+        : null,
+    },
+  });
+  return toLot(lot);
 }
 
 /**
@@ -106,7 +102,8 @@ export async function createLot(data: {
  *
  * @param id - The unique identifier of the lot to update
  * @param data - Updated lot data (all fields optional)
- * @returns Updated lot or null on error
+ * @returns Updated lot
+ * @throws if the database operation fails (e.g. duplicate lot number)
  * @example
  * const updated = await updateLot("abc123", {
  *   owner: "Jane Doe",
@@ -125,36 +122,31 @@ export async function updateLot(
     exemptionReason?: string | null;
     exemptionEndDate?: Date | string | null;
   }
-): Promise<Lot | null> {
-  try {
-    const lot = await prisma.lot.update({
-      where: { id },
-      data: {
-        ...(data.lotNumber && { lotNumber: data.lotNumber }),
-        ...(data.owner && { owner: data.owner }),
-        ...(data.ownerEmail !== undefined && { ownerEmail: data.ownerEmail }),
-        ...(data.whatsappPhone !== undefined && {
-          whatsappPhone: data.whatsappPhone,
-        }),
-        ...(data.initialWorksDebt !== undefined && {
-          initialWorksDebt: data.initialWorksDebt,
-        }),
-        ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
-        ...(data.exemptionReason !== undefined && {
-          exemptionReason: data.exemptionReason,
-        }),
-        ...(data.exemptionEndDate !== undefined && {
-          exemptionEndDate: data.exemptionEndDate
-            ? parseLocalDate(data.exemptionEndDate)
-            : null,
-        }),
-      },
-    });
-    return toLot(lot);
-  } catch (error) {
-    console.error("Error updating lot:", error);
-    return null;
-  }
+): Promise<Lot> {
+  const lot = await prisma.lot.update({
+    where: { id },
+    data: {
+      ...(data.lotNumber && { lotNumber: data.lotNumber }),
+      ...(data.owner && { owner: data.owner }),
+      ...(data.ownerEmail !== undefined && { ownerEmail: data.ownerEmail }),
+      ...(data.whatsappPhone !== undefined && {
+        whatsappPhone: data.whatsappPhone,
+      }),
+      ...(data.initialWorksDebt !== undefined && {
+        initialWorksDebt: data.initialWorksDebt,
+      }),
+      ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
+      ...(data.exemptionReason !== undefined && {
+        exemptionReason: data.exemptionReason,
+      }),
+      ...(data.exemptionEndDate !== undefined && {
+        exemptionEndDate: data.exemptionEndDate
+          ? parseLocalDate(data.exemptionEndDate)
+          : null,
+      }),
+    },
+  });
+  return toLot(lot);
 }
 
 /**

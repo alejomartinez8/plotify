@@ -1,11 +1,19 @@
 "use server";
 
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 import { checkAdminAccess } from "./helpers";
+
+function isDuplicateLotNumberError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  );
+}
 
 // Zod schema for validation
 const LotSchema = z.object({
@@ -119,6 +127,14 @@ export async function createLotAction(
     });
     actionTimer.end();
 
+    if (isDuplicateLotNumberError(error)) {
+      return {
+        errors: { lotNumber: [translations.errors.lotNumberExists] },
+        message: translations.errors.lotNumberExists,
+        success: false,
+      };
+    }
+
     return {
       message: `${translations.errors.database}: Failed to create lot.`,
       success: false,
@@ -200,6 +216,14 @@ export async function updateLotAction(
       lotNumber,
     });
     actionTimer.end();
+
+    if (isDuplicateLotNumberError(error)) {
+      return {
+        errors: { lotNumber: [translations.errors.lotNumberExists] },
+        message: translations.errors.lotNumberExists,
+        success: false,
+      };
+    }
 
     return {
       message: `${translations.errors.database}: Failed to update lot.`,
