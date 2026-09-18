@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Edit,
@@ -80,6 +80,12 @@ export default function LotCards({
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  useEffect(() => {
+    if (window.innerWidth < 640) {
+      setViewMode("cards");
+    }
+  }, []);
 
   // Calculate lot summaries
   const lotsWithSummary = useMemo((): LotWithSummary[] => {

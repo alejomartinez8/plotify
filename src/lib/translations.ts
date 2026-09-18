@@ -110,7 +110,7 @@ export const translations = {
     dueDate: "Vencimiento",
     status: "Estado",
     current: "Al día",
-    overdue: "Atrasado",
+    overdue: "Debe",
     initialDebt: "Deuda Inicial",
 
     // Approval workflow labels
