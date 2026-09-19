@@ -5,7 +5,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  Info,
   Eye,
   Mail,
   Phone,
@@ -500,14 +499,14 @@ export default function LotCards({
               <TableCell>
                 <div className="flex items-center gap-1.5">
                   <span className="font-medium">{lot.lotNumber}</span>
-                  {lot.maintenanceActiveFrom && (
-                    <Info
-                      className="h-3.5 w-3.5 flex-shrink-0 text-amber-600"
-                      aria-label={`${translations.labels.maintenanceActiveFrom}: ${formatDateForDisplay(lot.maintenanceActiveFrom)}`}
-                    />
-                  )}
                 </div>
                 <div className="text-muted-foreground text-sm">{lot.owner}</div>
+                {lot.maintenanceActiveFrom && (
+                  <div className="text-muted-foreground text-xs">
+                    {translations.labels.activeSince}:{" "}
+                    {formatDateForDisplay(lot.maintenanceActiveFrom)}
+                  </div>
+                )}
               </TableCell>
               <TableCell>
                 {lot.balance ? (
