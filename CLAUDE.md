@@ -148,6 +148,15 @@ export async function createItemAction(
 - Database migrations: `npm run db:migrate`
 - Generate Prisma client: `npm run db:generate`
 
+## Git & PR Workflow
+
+- If a session resumes work on a branch whose pull request was already merged, do not push new commits onto that merged history. Restart the branch from the latest `main` (keeping the same branch name if reused) and open a **new** pull request for the follow-up work.
+
+## Testing Standards
+
+- Every new feature, bug fix, or refactor must come with accompanying tests (unit and/or component tests as appropriate) covering the new behavior.
+- Run `npm test` before pushing to confirm existing and new tests pass.
+
 ## Security
 
 - Never commit .env files or secrets
