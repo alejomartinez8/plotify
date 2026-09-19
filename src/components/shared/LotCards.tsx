@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Edit,
@@ -66,6 +66,8 @@ type SortField = "lot" | "total" | "balance" | "status" | "initialDebt";
 type SortDirection = "asc" | "desc";
 type ViewMode = "cards" | "list";
 
+const VIEW_MODE_STORAGE_KEY = "lotCards.viewMode";
+
 export default function LotCards({
   lots,
   contributions,
@@ -80,6 +82,13 @@ export default function LotCards({
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+    if (stored === "list" || stored === "cards") {
+      setViewMode(stored);
+    }
+  }, []);
 
   // Calculate lot summaries
   const lotsWithSummary = useMemo((): LotWithSummary[] => {
@@ -196,6 +205,11 @@ export default function LotCards({
       }
       setDeletingLot(null);
     });
+  };
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   };
 
   const handleLotSuccess = () => {
@@ -665,7 +679,7 @@ export default function LotCards({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setViewMode("cards")}
+                  onClick={() => handleViewModeChange("cards")}
                   aria-pressed={viewMode === "cards"}
                   title={translations.labels.viewAsCards}
                   className={cn(
@@ -679,7 +693,7 @@ export default function LotCards({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setViewMode("list")}
+                  onClick={() => handleViewModeChange("list")}
                   aria-pressed={viewMode === "list"}
                   title={translations.labels.viewAsList}
                   className={cn(
