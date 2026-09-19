@@ -6,8 +6,15 @@ import {
   unapproveContribution,
 } from "@/lib/database/contributions";
 import { approveExpense, unapproveExpense } from "@/lib/database/expenses";
+import {
+  approveOtherIncome,
+  unapproveOtherIncome,
+} from "@/lib/database/other-income";
 import { getApprovalHistory } from "@/lib/database/approval-history";
-import { ApprovalHistoryEntry, ApprovalRecordType } from "@/types/approvals.types";
+import {
+  ApprovalHistoryEntry,
+  ApprovalRecordType,
+} from "@/types/approvals.types";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 import { getUserEmail, isAdmin, isTreasurer } from "@/lib/auth";
@@ -114,6 +121,32 @@ export async function unapproveExpenseAction(
     translations.messages.unapprovedSuccess,
     `${translations.errors.database}: Failed to unapprove expense.`,
     (treasurerEmail) => unapproveExpense(id, treasurerEmail, note || null)
+  );
+}
+
+export async function approveOtherIncomeAction(
+  id: number,
+  note?: string
+): Promise<ApprovalActionState> {
+  return runApprovalAction(
+    "Approve Other Income Action",
+    ["/other-income", "/"],
+    translations.messages.approvedSuccess,
+    `${translations.errors.database}: Failed to approve other income.`,
+    (treasurerEmail) => approveOtherIncome(id, treasurerEmail, note || null)
+  );
+}
+
+export async function unapproveOtherIncomeAction(
+  id: number,
+  note?: string
+): Promise<ApprovalActionState> {
+  return runApprovalAction(
+    "Unapprove Other Income Action",
+    ["/other-income", "/"],
+    translations.messages.unapprovedSuccess,
+    `${translations.errors.database}: Failed to unapprove other income.`,
+    (treasurerEmail) => unapproveOtherIncome(id, treasurerEmail, note || null)
   );
 }
 

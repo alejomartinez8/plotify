@@ -1,6 +1,7 @@
 import { ContributionType } from "@/types/contributions.types";
 import { getIncomeByType } from "./contributions";
 import { getTotalExpenses, getTotalExpensesByType } from "./expenses";
+import { getTotalOtherIncomeByType } from "./other-income";
 import prisma from "@/lib/prisma";
 import { parseLocalDate } from "@/lib/utils";
 
@@ -12,8 +13,9 @@ export interface MonthlyDataPoint {
 
 export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
   try {
-    const [contributions, expenses] = await Promise.all([
+    const [contributions, otherIncomes, expenses] = await Promise.all([
       prisma.contribution.findMany({ select: { date: true, amount: true } }),
+      prisma.otherIncome.findMany({ select: { date: true, amount: true } }),
       prisma.expense.findMany({ select: { date: true, amount: true } }),
     ]);
 
@@ -24,7 +26,7 @@ export async function getMonthlyTotals(): Promise<MonthlyDataPoint[]> {
       return map.get(key)!;
     };
 
-    for (const c of contributions) {
+    for (const c of [...contributions, ...otherIncomes]) {
       const d = parseLocalDate(c.date);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       getOrCreate(key).income += c.amount;
@@ -48,10 +50,12 @@ export async function getFundBalance(
   type: ContributionType
 ): Promise<{ income: number; expenses: number; balance: number }> {
   try {
-    const [income, expenses] = await Promise.all([
+    const [contributionsIncome, otherIncome, expenses] = await Promise.all([
       getIncomeByType(type),
+      getTotalOtherIncomeByType(type),
       getTotalExpensesByType(type),
     ]);
+    const income = contributionsIncome + otherIncome;
 
     return {
       income,

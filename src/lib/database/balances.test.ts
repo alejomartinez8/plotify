@@ -3,6 +3,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 vi.mock("@/lib/prisma", () => ({
   default: {
     contribution: { findMany: vi.fn() },
+    otherIncome: { findMany: vi.fn() },
     expense: { findMany: vi.fn() },
   },
 }));
@@ -20,6 +21,12 @@ vi.mock("./expenses", () => ({
     mockGetTotalExpensesByType(...args),
 }));
 
+const mockGetTotalOtherIncomeByType = vi.fn();
+vi.mock("./other-income", () => ({
+  getTotalOtherIncomeByType: (...args: unknown[]) =>
+    mockGetTotalOtherIncomeByType(...args),
+}));
+
 import prisma from "@/lib/prisma";
 import {
   getMonthlyTotals,
@@ -28,6 +35,7 @@ import {
 } from "./balances";
 
 const mockedContributionFindMany = vi.mocked(prisma.contribution.findMany);
+const mockedOtherIncomeFindMany = vi.mocked(prisma.otherIncome.findMany);
 const mockedExpenseFindMany = vi.mocked(prisma.expense.findMany);
 
 describe("getMonthlyTotals", () => {
@@ -40,6 +48,9 @@ describe("getMonthlyTotals", () => {
       { date: "2026-02-10", amount: 1000 },
       { date: "2026-01-05", amount: 500 },
     ] as never);
+    mockedOtherIncomeFindMany.mockResolvedValue([
+      { date: "2026-01-08", amount: 300 },
+    ] as never);
     mockedExpenseFindMany.mockResolvedValue([
       { date: "2026-01-20", amount: 200 },
     ] as never);
@@ -47,7 +58,7 @@ describe("getMonthlyTotals", () => {
     const result = await getMonthlyTotals();
 
     expect(result).toEqual([
-      { month: "2026-01", income: 500, expenses: 200 },
+      { month: "2026-01", income: 800, expenses: 200 },
       { month: "2026-02", income: 1000, expenses: 0 },
     ]);
   });
@@ -66,13 +77,14 @@ describe("getFundBalance", () => {
     vi.clearAllMocks();
   });
 
-  it("computes balance as income minus expenses for the given type", async () => {
+  it("computes balance as income (contributions + other income) minus expenses for the given type", async () => {
     mockGetIncomeByType.mockResolvedValue(1000);
+    mockGetTotalOtherIncomeByType.mockResolvedValue(250);
     mockGetTotalExpensesByType.mockResolvedValue(400);
 
     const result = await getFundBalance("maintenance");
 
-    expect(result).toEqual({ income: 1000, expenses: 400, balance: 600 });
+    expect(result).toEqual({ income: 1250, expenses: 400, balance: 850 });
   });
 
   it("falls back to zeroed totals when a query fails", async () => {
@@ -94,6 +106,7 @@ describe("getAllFundsBalances", () => {
       async (type: string) =>
         ({ maintenance: 1000, works: 500, others: 200 })[type] ?? 0
     );
+    mockGetTotalOtherIncomeByType.mockResolvedValue(0);
     mockGetTotalExpensesByType.mockResolvedValue(0);
     mockGetTotalExpenses.mockResolvedValue(300);
 

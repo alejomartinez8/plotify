@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { getExpenses } from "@/lib/database/expenses";
+import { getOtherIncomes } from "@/lib/database/other-income";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
 import { parseLocalDate } from "@/lib/utils";
@@ -89,6 +90,72 @@ export async function exportIncomesAction(): Promise<{
     return {
       success: false,
       error: translations.errors.export.incomes,
+    };
+  }
+}
+
+export async function exportOtherIncomeAction(): Promise<{
+  success: boolean;
+  data?: string;
+  filename?: string;
+  error?: string;
+}> {
+  const actionTimer = logger.timer("Export Other Income Action");
+
+  try {
+    const otherIncomes = await getOtherIncomes();
+
+    const headers = [
+      "ID",
+      "Fecha",
+      "Tipo",
+      "Descripción",
+      "Número de Recibo",
+      "Monto",
+    ];
+
+    const typeLabels: Record<string, string> = {
+      maintenance: "Mantenimiento",
+      works: "Obras",
+      others: "Otros",
+    };
+
+    const csvData = otherIncomes.map((otherIncome) => [
+      otherIncome.id.toString(),
+      formatDate(otherIncome.date),
+      typeLabels[otherIncome.type] || otherIncome.type,
+      otherIncome.description,
+      otherIncome.receiptNumber || "",
+      otherIncome.amount.toString(),
+    ]);
+
+    const allRows = [headers, ...csvData];
+
+    const csvContent = allRows
+      .map((row) => row.map((field) => `"${field}"`).join(","))
+      .join("\n");
+
+    const csvWithBOM = "﻿" + csvContent;
+
+    const filename = `otros_ingresos_${generateTimestamp()}.csv`;
+
+    actionTimer.end();
+    return {
+      success: true,
+      data: csvWithBOM,
+      filename,
+    };
+  } catch (error) {
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
+    logger.error("Error exporting other income", errorInstance, {
+      component: "exportOtherIncomeAction",
+    });
+    actionTimer.end();
+
+    return {
+      success: false,
+      error: translations.errors.export.otherIncome,
     };
   }
 }

@@ -8,6 +8,7 @@ import {
   TrendingDown,
   Settings,
   Calculator,
+  Landmark,
 } from "lucide-react";
 import { translations } from "@/lib/translations";
 
@@ -21,6 +22,11 @@ const navigationItems = [
     href: "/income",
     label: translations.navigation.income,
     icon: DollarSign,
+  },
+  {
+    href: "/other-income",
+    label: translations.navigation.otherIncome,
+    icon: Landmark,
   },
   {
     href: "/expenses",
