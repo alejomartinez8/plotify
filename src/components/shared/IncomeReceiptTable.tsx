@@ -201,7 +201,7 @@ export default function IncomeReceiptTable({
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("date")}
                   >
                     <div className="flex items-center gap-1">
@@ -210,7 +210,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("type")}
                   >
                     <div className="flex items-center gap-1">
@@ -219,7 +219,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("lotId")}
                   >
                     <div className="flex items-center gap-1">
@@ -228,7 +228,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("description")}
                   >
                     <div className="flex items-center gap-1">
@@ -237,7 +237,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-right font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("amount")}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -246,7 +246,7 @@ export default function IncomeReceiptTable({
                     </div>
                   </TableHead>
                   <TableHead
-                    className="hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
+                    className="bg-muted/50 hover:bg-muted/70 border-border cursor-pointer border-b-2 px-6 py-4 text-left font-semibold tracking-wide transition-colors select-none"
                     onClick={() => handleSort("receiptNumber")}
                   >
                     <div className="flex flex-col">
@@ -267,11 +267,11 @@ export default function IncomeReceiptTable({
                       })()}
                     </div>
                   </TableHead>
-                  <TableHead className="border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
+                  <TableHead className="bg-muted/50 border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
                     {translations.labels.reconciliation}
                   </TableHead>
                   {showActionsColumn && (
-                    <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
+                    <TableHead className="bg-muted/50 border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                       {translations.labels.actions}
                     </TableHead>
                   )}
