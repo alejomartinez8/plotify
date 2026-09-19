@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LotCards from "@/components/shared/LotCards";
@@ -69,28 +69,45 @@ function renderLotCards(isAdmin = false) {
 }
 
 describe("LotCards", () => {
-  it("shows the sortable table view by default", () => {
-    renderLotCards();
-
-    expect(screen.getByRole("table")).toBeInTheDocument();
+  beforeEach(() => {
+    window.localStorage.clear();
   });
 
-  it("switches to the cards view and back through the toggle buttons", async () => {
+  it("shows the cards view by default", () => {
+    renderLotCards();
+
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("switches to the list view and back through the toggle buttons", async () => {
     const user = userEvent.setup();
     renderLotCards();
+
+    await user.click(screen.getByTitle(translations.labels.viewAsList));
+    expect(screen.getByRole("table")).toBeInTheDocument();
 
     await user.click(
       screen.getByTitle(translations.labels.viewAsCards)
     );
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("remembers the view mode across remounts via localStorage", async () => {
+    const user = userEvent.setup();
+    const { unmount } = renderLotCards();
 
     await user.click(screen.getByTitle(translations.labels.viewAsList));
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    unmount();
+
+    renderLotCards();
     expect(screen.getByRole("table")).toBeInTheDocument();
   });
 
   it("sorts rows by lot when the column header is clicked, toggling direction", async () => {
     const user = userEvent.setup();
     renderLotCards();
+    await user.click(screen.getByTitle(translations.labels.viewAsList));
 
     const rowsAsc = screen.getAllByRole("row").slice(1);
     expect(rowsAsc[0]).toHaveTextContent("Ana");

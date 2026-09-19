@@ -10,6 +10,9 @@ export function useLocalStorage<T extends string>(
   useEffect(() => {
     const stored = window.localStorage.getItem(key);
     if (stored !== null && isValid(stored)) {
+      // Reading localStorage during render would mismatch the server-rendered
+      // default, so the client-only value is adopted after mount instead.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue(stored);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
