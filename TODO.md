@@ -107,9 +107,9 @@
 ### 🚧 Phase 9: Test Coverage (In Progress)
 
 > **Business Context**: The project had Vitest configured but only 8 test
-> files, none covering money-handling logic, the permission system, or
-> CSV import/export. Rolled out as one PR per phase to keep each review
-> small.
+> files, none covering money-handling logic, the permission system, CSV
+> import/export, or most modals/hooks. Rolled out as one PR per phase to
+> keep each review small.
 
 - ✅ **Phase 1 — Financial logic** _(2026-09-19, [#114](https://github.com/alejomartinez8/plotify/pull/114))_:
   `balances.ts` (fund/monthly totals), `contribution-actions.ts`,
@@ -120,12 +120,14 @@
   `auth.ts` role precedence (`ADMIN_EMAILS` safety net, DB role, derived
   Owner), `check-lot-access.ts`, `actions/helpers.ts`, `user-actions.ts`
   (self-lockout guards)
-- ✅ **Phase 3 — Secondary data & import/export** _(2026-09-19)_:
+- ✅ **Phase 3 — Secondary data & import/export** _(2026-09-19, [#117](https://github.com/alejomartinez8/plotify/pull/117))_:
   `import-actions.ts` (CSV parsing, header validation, per-row errors),
   `export-actions.ts` (CSV formatting), `collaborators.ts`, `users.ts`,
   `approval-history.ts`
-- [ ] **Phase 4 — Remaining components/hooks**: `QuotaModal`,
-  `CollaboratorModal`, `UserModal`, `useReceiptUpload`
+- ✅ **Phase 4 — Remaining components/hooks** _(2026-09-19)_: `QuotaModal`,
+  `UserModal`, `CollaboratorModal`, `useReceiptUpload`; added a
+  `ResizeObserver` stub to the shared test setup (needed by Radix
+  `Checkbox`, used in `CollaboratorModal`)
 - [ ] **Tooling**: add `@vitest/coverage-v8` with a minimum threshold and a
   GitHub Actions workflow running `npm test` on every PR
 
