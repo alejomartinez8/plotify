@@ -15,9 +15,7 @@ model Lot {
   whatsappPhone           String?
   initialWorksDebt        Int                      @default(0)
   stage                   Int                      @default(1)
-  isExempt                Boolean                  @default(false)
-  exemptionReason         String?
-  exemptionEndDate        DateTime?
+  maintenanceActiveFrom   DateTime?
   contributions           Contribution[]
 
   @@map("lots")

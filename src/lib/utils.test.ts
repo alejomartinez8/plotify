@@ -7,7 +7,7 @@ import {
 } from "./utils";
 
 // Regression tests for the "Activo desde" timezone bug: 2026-01-01 was
-// displayed as 2025-12-31. Root cause: Lot.exemptionEndDate (and
+// displayed as 2025-12-31. Root cause: Lot.maintenanceActiveFrom (and
 // QuotaConfig.dueDate) used to reach "use client" components as a raw
 // Prisma Date object; formatDateForDisplay/formatDateForStorage then ran
 // getFullYear()/getMonth()/getDate() using the BROWSER's local timezone,
@@ -76,8 +76,7 @@ describe("calculateSimpleLotBalances — debt breakdown by category", () => {
       owner: "Ana",
       initialWorksDebt: 0,
       stage: 1,
-      isExempt: false,
-      exemptionEndDate: null,
+      maintenanceActiveFrom: null,
     },
     {
       id: "2",
@@ -85,8 +84,7 @@ describe("calculateSimpleLotBalances — debt breakdown by category", () => {
       owner: "Beto",
       initialWorksDebt: 10000,
       stage: 1,
-      isExempt: false,
-      exemptionEndDate: null,
+      maintenanceActiveFrom: null,
     },
   ];
 
@@ -161,8 +159,7 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
     owner: "Ana",
     initialWorksDebt: 0,
     stage: 1,
-    isExempt: false,
-    exemptionEndDate: null,
+    maintenanceActiveFrom: null,
   };
   const stage2Lot = {
     id: "2",
@@ -170,8 +167,7 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
     owner: "Beto",
     initialWorksDebt: 0,
     stage: 2,
-    isExempt: false,
-    exemptionEndDate: null,
+    maintenanceActiveFrom: null,
   };
 
   it("only charges a stage-1-only works quota (e.g. vías) to stage 1 lots", () => {
@@ -221,14 +217,14 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
         stages: [1, 2],
       },
     ];
-    // A lot that only became active later (activeFrom in the future) would
-    // exclude date-gated maintenance quotas, but works quotas are only
-    // gated by their own due date and the lot's stage — not by when the
-    // lot itself became active — so it should still owe the full amount.
+    // A lot that only became active later (maintenanceActiveFrom in the
+    // future) would exclude date-gated maintenance quotas, but works
+    // quotas are only gated by their own due date and the lot's stage —
+    // not by when the lot itself became active — so it should still owe
+    // the full amount.
     const lateJoiningStage2Lot = {
       ...stage2Lot,
-      isExempt: true,
-      exemptionEndDate: "2099-01-01",
+      maintenanceActiveFrom: "2099-01-01",
     };
 
     const [lot] = calculateSimpleLotBalances(
@@ -238,5 +234,48 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
     );
 
     expect(lot.debtByCategory.works).toBe(300000);
+  });
+});
+
+// Regression test for the Lote 48 bug: a lot with a negotiated
+// maintenanceActiveFrom date must not be charged for maintenance quotas
+// due before that date, and contributions made before it don't offset
+// later quotas either.
+describe("calculateSimpleLotBalances — maintenanceActiveFrom gates maintenance debt only", () => {
+  it("excludes maintenance quotas due before maintenanceActiveFrom from the debt", () => {
+    const lot = {
+      id: "1",
+      lotNumber: "48",
+      owner: "Camila Maya",
+      initialWorksDebt: 0,
+      stage: 2,
+      maintenanceActiveFrom: "2026-03-01",
+    };
+    const quotaConfigs = [
+      {
+        id: "q1",
+        quotaType: "maintenance",
+        amount: 60000,
+        dueDate: "2026-01-01",
+      },
+      {
+        id: "q2",
+        quotaType: "maintenance",
+        amount: 60000,
+        dueDate: "2026-02-01",
+      },
+      {
+        id: "q3",
+        quotaType: "maintenance",
+        amount: 60000,
+        dueDate: "2026-03-01",
+      },
+    ];
+
+    const [balance] = calculateSimpleLotBalances([lot], [], quotaConfigs);
+
+    // Only the March quota (>= activeFrom) applies; January and February
+    // are excluded even though contributions is empty.
+    expect(balance.debtByCategory.maintenance).toBe(60000);
   });
 });

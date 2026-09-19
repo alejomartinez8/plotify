@@ -6,7 +6,5 @@ export interface Lot {
   whatsappPhone: string | null;
   initialWorksDebt: number;
   stage: number;
-  isExempt: boolean;
-  exemptionReason: string | null;
-  exemptionEndDate: string | null;
+  maintenanceActiveFrom: string | null;
 }

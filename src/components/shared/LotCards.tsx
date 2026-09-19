@@ -281,13 +281,12 @@ export default function LotCards({
                       <span className="text-primary flex-shrink-0 text-sm font-bold sm:text-base">
                         {lot.lotNumber}
                       </span>
-                      {lot.isExempt && (
+                      {lot.maintenanceActiveFrom && (
                         <div className="group relative">
                           <Info className="h-3 w-3 flex-shrink-0 text-amber-600 sm:h-3.5 sm:w-3.5" />
                           <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
-                            {lot.exemptionReason || translations.labels.exempt}
-                            {lot.exemptionEndDate &&
-                              ` (activo desde ${formatDateForDisplay(lot.exemptionEndDate)})`}
+                            {translations.labels.maintenanceActiveFrom}:{" "}
+                            {formatDateForDisplay(lot.maintenanceActiveFrom)}
                             <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
                           </div>
                         </div>
@@ -302,9 +301,7 @@ export default function LotCards({
                         </span>
                       ) : (
                         <span className="inline-flex rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 sm:px-2 sm:font-semibold">
-                          {lot.isExempt
-                            ? translations.labels.notApplicable
-                            : translations.labels.noData}
+                          {translations.labels.noData}
                         </span>
                       )}
                       <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 sm:px-2">
@@ -403,19 +400,15 @@ export default function LotCards({
                       </span>
                       <span
                         className={`text-xs font-medium sm:text-sm sm:font-semibold ${
-                          lot.isExempt && !lot.exemptionEndDate
-                            ? "text-gray-500"
-                            : lot.balance?.outstandingBalance &&
-                                lot.balance.outstandingBalance > 0
-                              ? "text-red-600"
-                              : "text-green-600"
+                          lot.balance?.outstandingBalance &&
+                          lot.balance.outstandingBalance > 0
+                            ? "text-red-600"
+                            : "text-green-600"
                         }`}
                       >
-                        {lot.isExempt && !lot.exemptionEndDate
-                          ? "-"
-                          : lot.balance
-                            ? formatCurrency(lot.balance.outstandingBalance)
-                            : formatCurrency(0)}
+                        {lot.balance
+                          ? formatCurrency(lot.balance.outstandingBalance)
+                          : formatCurrency(0)}
                       </span>
                     </div>
                   </div>
@@ -513,12 +506,10 @@ export default function LotCards({
               <TableCell>
                 <div className="flex items-center gap-1.5">
                   <span className="font-medium">{lot.lotNumber}</span>
-                  {lot.isExempt && (
+                  {lot.maintenanceActiveFrom && (
                     <Info
                       className="h-3.5 w-3.5 flex-shrink-0 text-amber-600"
-                      aria-label={
-                        lot.exemptionReason || translations.labels.exempt
-                      }
+                      aria-label={`${translations.labels.maintenanceActiveFrom}: ${formatDateForDisplay(lot.maintenanceActiveFrom)}`}
                     />
                   )}
                   <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
@@ -538,9 +529,7 @@ export default function LotCards({
                   </span>
                 ) : (
                   <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-800">
-                    {lot.isExempt
-                      ? translations.labels.notApplicable
-                      : translations.labels.noData}
+                    {translations.labels.noData}
                   </span>
                 )}
               </TableCell>
@@ -575,19 +564,15 @@ export default function LotCards({
               <TableCell className="text-right">
                 <span
                   className={`font-semibold ${
-                    lot.isExempt && !lot.exemptionEndDate
-                      ? "text-gray-500"
-                      : lot.balance?.outstandingBalance &&
-                          lot.balance.outstandingBalance > 0
-                        ? "text-red-600"
-                        : "text-green-600"
+                    lot.balance?.outstandingBalance &&
+                    lot.balance.outstandingBalance > 0
+                      ? "text-red-600"
+                      : "text-green-600"
                   }`}
                 >
-                  {lot.isExempt && !lot.exemptionEndDate
-                    ? "-"
-                    : lot.balance
-                      ? formatCurrency(lot.balance.outstandingBalance)
-                      : formatCurrency(0)}
+                  {lot.balance
+                    ? formatCurrency(lot.balance.outstandingBalance)
+                    : formatCurrency(0)}
                 </span>
               </TableCell>
               <TableCell className="text-right">
