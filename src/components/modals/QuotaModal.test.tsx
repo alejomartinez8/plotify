@@ -72,7 +72,7 @@ describe("QuotaModal", () => {
     });
   });
 
-  it("shows a stage selector instead of a due date for works quotas, and submits the checked stages", async () => {
+  it("shows a stage selector in addition to the due date for works quotas, and submits the checked stages", async () => {
     vi.mocked(updateQuotaConfigAction).mockReset();
     vi.mocked(updateQuotaConfigAction).mockResolvedValue({
       message: "Updated successfully.",
@@ -86,15 +86,15 @@ describe("QuotaModal", () => {
       quotaType: "works",
       amount: 300000,
       description: "Portón",
-      dueDate: null,
+      dueDate: "2025-06-01",
       stages: [1],
     };
 
     render(<QuotaModal quota={quota} onClose={vi.fn()} onSuccess={vi.fn()} />);
 
-    expect(
-      screen.queryByLabelText(/Fecha de vencimiento/)
-    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Fecha de vencimiento/)).toHaveValue(
+      "2025-06-01"
+    );
     expect(
       screen.getByLabelText(translations.titles.quotaStage1)
     ).toBeChecked();

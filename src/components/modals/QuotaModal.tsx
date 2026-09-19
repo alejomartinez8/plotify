@@ -147,26 +147,26 @@ export default function QuotaModal({
             )}
           </div>
 
-          {quotaType === "maintenance" ? (
-            <div className="space-y-2">
-              <Label htmlFor="dueDate">Fecha de vencimiento *</Label>
-              <Input
-                type="date"
-                name="dueDate"
-                id="dueDate"
-                defaultValue={
-                  quota?.dueDate ? formatDateForStorage(quota.dueDate) : ""
-                }
-                required
-                disabled={isPending}
-              />
-              {state.errors?.dueDate && (
-                <div className="text-destructive text-sm">
-                  {state.errors.dueDate}
-                </div>
-              )}
-            </div>
-          ) : (
+          <div className="space-y-2">
+            <Label htmlFor="dueDate">Fecha de vencimiento *</Label>
+            <Input
+              type="date"
+              name="dueDate"
+              id="dueDate"
+              defaultValue={
+                quota?.dueDate ? formatDateForStorage(quota.dueDate) : ""
+              }
+              required
+              disabled={isPending}
+            />
+            {state.errors?.dueDate && (
+              <div className="text-destructive text-sm">
+                {state.errors.dueDate}
+              </div>
+            )}
+          </div>
+
+          {quotaType === "works" && (
             <div className="space-y-2">
               <Label>{translations.titles.quotaStages}</Label>
               <div className="flex gap-4">

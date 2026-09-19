@@ -28,15 +28,15 @@ function validateStageAndDueDate(
   },
   ctx: z.RefinementCtx
 ) {
-  // Maintenance quotas are tied to a due date, not to a stage.
-  if (data.quotaType === "maintenance" && !data.dueDate) {
+  // Every quota is tied to a due date, which decides when it starts being owed.
+  if (!data.dueDate) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["dueDate"],
       message: "La fecha de vencimiento es requerida",
     });
   }
-  // Works quotas are tied to one or more stages, not to a date.
+  // Works quotas are additionally scoped to one or more stages.
   if (data.quotaType === "works" && !data.stages?.length) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
