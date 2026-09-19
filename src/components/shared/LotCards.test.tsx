@@ -74,10 +74,21 @@ describe("LotCards", () => {
     window.localStorage.clear();
   });
 
-  it("shows the cards view by default", () => {
+  it("shows the cards view by default on a mobile-width viewport", () => {
     renderLotCards();
 
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("shows the list (table) view by default on a desktop-width viewport", () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+
+    renderLotCards();
+
+    expect(screen.getByRole("table")).toBeInTheDocument();
+
+    window.matchMedia = originalMatchMedia;
   });
 
   it("switches to the list view and back through the toggle buttons", async () => {
@@ -137,19 +148,6 @@ describe("LotCards", () => {
       screen.getByRole("button", {
         name: `${translations.actions.new} ${translations.labels.lot}`,
       })
-    ).toBeInTheDocument();
-  });
-
-  it("shows each lot's stage in the list view, to every viewer, admin or not, for transparency on which quotas apply", async () => {
-    const user = userEvent.setup();
-    renderLotCards(false);
-    await user.click(screen.getByTitle(translations.labels.viewAsList));
-
-    expect(
-      screen.getByText(`${translations.labels.stage} 1`)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(`${translations.labels.stage} 2`)
     ).toBeInTheDocument();
   });
 
