@@ -7,16 +7,16 @@ import {
 } from "./utils";
 
 // Regression tests for the "Activo desde" timezone bug: 2026-01-01 was
-// displayed as 2025-12-31. Root cause: QuotaConfig.dueDate used to reach
-// "use client" components as a raw Prisma Date object;
-// formatDateForDisplay/formatDateForStorage then ran
+// displayed as 2025-12-31. Root cause: Lot.exemptionEndDate (and
+// QuotaConfig.dueDate) used to reach "use client" components as a raw
+// Prisma Date object; formatDateForDisplay/formatDateForStorage then ran
 // getFullYear()/getMonth()/getDate() using the BROWSER's local timezone,
 // shifting the day for any viewer behind UTC (e.g. Colombia, UTC-5).
 //
 // The fix converts these fields to a "YYYY-MM-DD" string on the server
-// (see toContribution/toQuotaConfig in src/lib/database), so the browser
-// only ever calls these helpers with a string — the branch tested below
-// across every timezone.
+// (see toLot/toContribution/toQuotaConfig in src/lib/database), so the
+// browser only ever calls these helpers with a string — the branch tested
+// below across every timezone.
 describe.each(["UTC", "America/Bogota", "Pacific/Auckland"])(
   "date helpers with string input (TZ=%s) — the browser-safe contract",
   (tz) => {
@@ -76,6 +76,8 @@ describe("calculateSimpleLotBalances — debt breakdown by category", () => {
       owner: "Ana",
       initialWorksDebt: 0,
       stage: 1,
+      isExempt: false,
+      exemptionEndDate: null,
     },
     {
       id: "2",
@@ -83,6 +85,8 @@ describe("calculateSimpleLotBalances — debt breakdown by category", () => {
       owner: "Beto",
       initialWorksDebt: 10000,
       stage: 1,
+      isExempt: false,
+      exemptionEndDate: null,
     },
   ];
 
@@ -157,6 +161,8 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
     owner: "Ana",
     initialWorksDebt: 0,
     stage: 1,
+    isExempt: false,
+    exemptionEndDate: null,
   };
   const stage2Lot = {
     id: "2",
@@ -164,6 +170,8 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
     owner: "Beto",
     initialWorksDebt: 0,
     stage: 2,
+    isExempt: false,
+    exemptionEndDate: null,
   };
 
   it("only charges a stage-1-only works quota (e.g. vías) to stage 1 lots", () => {
@@ -213,7 +221,21 @@ describe("calculateSimpleLotBalances — works quotas are scoped by stage and by
         stages: [1, 2],
       },
     ];
-    const [lot] = calculateSimpleLotBalances([stage2Lot], [], quotaConfigs);
+    // A lot that only became active later (activeFrom in the future) would
+    // exclude date-gated maintenance quotas, but works quotas are only
+    // gated by their own due date and the lot's stage — not by when the
+    // lot itself became active — so it should still owe the full amount.
+    const lateJoiningStage2Lot = {
+      ...stage2Lot,
+      isExempt: true,
+      exemptionEndDate: "2099-01-01",
+    };
+
+    const [lot] = calculateSimpleLotBalances(
+      [lateJoiningStage2Lot],
+      [],
+      quotaConfigs
+    );
 
     expect(lot.debtByCategory.works).toBe(300000);
   });

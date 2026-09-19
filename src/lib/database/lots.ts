@@ -2,10 +2,16 @@ import type { Lot as PrismaLot } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
+import { parseLocalDate, formatDateForStorage } from "@/lib/utils";
 import { toContribution } from "@/lib/database/contributions";
 
 export function toLot(lot: PrismaLot): Lot {
-  return { ...lot };
+  return {
+    ...lot,
+    exemptionEndDate: lot.exemptionEndDate
+      ? formatDateForStorage(lot.exemptionEndDate)
+      : null,
+  };
 }
 
 /**
@@ -52,7 +58,7 @@ export async function getLotById(id: string): Promise<Lot | null> {
 /**
  * Creates a new lot record.
  *
- * @param data - Lot data including lot number, owner, optional email, and initial debt
+ * @param data - Lot data including lot number, owner, optional email, initial debt, and exemption info
  * @returns Created lot
  * @throws if the database operation fails (e.g. duplicate lot number)
  * @example
@@ -61,6 +67,7 @@ export async function getLotById(id: string): Promise<Lot | null> {
  *   owner: "John Doe",
  *   ownerEmail: "john@example.com",
  *   initialWorksDebt: 5000,
+ *   isExempt: false
  * });
  */
 export async function createLot(data: {
@@ -70,6 +77,9 @@ export async function createLot(data: {
   whatsappPhone?: string | null;
   initialWorksDebt?: number;
   stage?: number;
+  isExempt?: boolean;
+  exemptionReason?: string | null;
+  exemptionEndDate?: Date | string | null;
 }): Promise<Lot> {
   const lot = await prisma.lot.create({
     data: {
@@ -79,6 +89,11 @@ export async function createLot(data: {
       whatsappPhone: data.whatsappPhone || null,
       initialWorksDebt: data.initialWorksDebt || 0,
       stage: data.stage || 1,
+      isExempt: data.isExempt || false,
+      exemptionReason: data.exemptionReason || null,
+      exemptionEndDate: data.exemptionEndDate
+        ? parseLocalDate(data.exemptionEndDate)
+        : null,
     },
   });
   return toLot(lot);
@@ -106,6 +121,9 @@ export async function updateLot(
     whatsappPhone?: string | null;
     initialWorksDebt?: number;
     stage?: number;
+    isExempt?: boolean;
+    exemptionReason?: string | null;
+    exemptionEndDate?: Date | string | null;
   }
 ): Promise<Lot> {
   const lot = await prisma.lot.update({
@@ -121,6 +139,15 @@ export async function updateLot(
         initialWorksDebt: data.initialWorksDebt,
       }),
       ...(data.stage !== undefined && { stage: data.stage }),
+      ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
+      ...(data.exemptionReason !== undefined && {
+        exemptionReason: data.exemptionReason,
+      }),
+      ...(data.exemptionEndDate !== undefined && {
+        exemptionEndDate: data.exemptionEndDate
+          ? parseLocalDate(data.exemptionEndDate)
+          : null,
+      }),
     },
   });
   return toLot(lot);
