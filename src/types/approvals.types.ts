@@ -1,6 +1,6 @@
 export type ApprovalStatus = "pending" | "approved";
 
-export type ApprovalRecordType = "contribution" | "expense";
+export type ApprovalRecordType = "contribution" | "expense" | "otherIncome";
 
 export type ApprovalAction = "approved" | "unapproved";
 

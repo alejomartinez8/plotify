@@ -7,6 +7,7 @@ import { ExportButton } from "@/components/shared/ExportButton";
 import { ImportButton } from "@/components/shared/ImportButton";
 import {
   exportIncomesAction,
+  exportOtherIncomeAction,
   exportExpensesAction,
   exportLotsAction,
 } from "@/lib/actions/export-actions";
@@ -70,7 +71,7 @@ export default function AdminConfig({
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-4">
                 {/* Incomes Export */}
                 <div className="space-y-2">
                   <h3 className="font-medium">
@@ -85,6 +86,24 @@ export default function AdminConfig({
                     size="default"
                   >
                     {translations.actions.export} {translations.labels.income}
+                  </ExportButton>
+                </div>
+
+                {/* Other Income Export */}
+                <div className="space-y-2">
+                  <h3 className="font-medium">
+                    🏦 {translations.navigation.otherIncome}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {translations.admin.exportDescriptions.otherIncome}
+                  </p>
+                  <ExportButton
+                    onExport={exportOtherIncomeAction}
+                    variant="outline"
+                    size="default"
+                  >
+                    {translations.actions.export}{" "}
+                    {translations.navigation.otherIncome}
                   </ExportButton>
                 </div>
 
@@ -244,7 +263,10 @@ export default function AdminConfig({
               </p>
             </CardHeader>
             <CardContent>
-              <UserManagement users={users} currentUserEmail={currentUserEmail} />
+              <UserManagement
+                users={users}
+                currentUserEmail={currentUserEmail}
+              />
             </CardContent>
           </Card>
         </TabsContent>

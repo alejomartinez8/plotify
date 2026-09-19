@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface ReceiptUploadParams {
-  type: "income" | "expense";
+  type: "income" | "expense" | "otherIncome";
   formData: FormData;
   selectedFile: File | null;
   existingRecord?: {

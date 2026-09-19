@@ -12,8 +12,7 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import prisma from "@/lib/prisma";
-import { toLot, createLot, updateLot } from "./lots";
-import { parseLocalDate } from "@/lib/utils";
+import { createLot, updateLot } from "./lots";
 
 const mockedLotCreate = vi.mocked(prisma.lot.create);
 const mockedLotUpdate = vi.mocked(prisma.lot.update);
@@ -27,38 +26,9 @@ function makePrismaLot(overrides: Partial<PrismaLot> = {}): PrismaLot {
     whatsappPhone: null,
     initialWorksDebt: 0,
     stage: 1,
-    isExempt: false,
-    exemptionReason: null,
-    exemptionEndDate: null,
     ...overrides,
   } as PrismaLot;
 }
-
-// Regression tests for the "Activo desde" bug: getLots()/getLotById() used
-// to return exemptionEndDate as a raw Date, which shifted a day once
-// formatted in the browser's timezone. toLot() converts it to a
-// "YYYY-MM-DD" string on the server so that never happens again.
-describe.each(["UTC", "America/Bogota"])("toLot (TZ=%s)", (tz) => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it("converts exemptionEndDate to a YYYY-MM-DD string that round-trips what was written", () => {
-    vi.stubEnv("TZ", tz);
-    // parseLocalDate("2026-01-01") is exactly what createLot/updateLot
-    // stores server-side for this input.
-    const raw = makePrismaLot({
-      exemptionEndDate: parseLocalDate("2026-01-01"),
-    });
-    expect(toLot(raw).exemptionEndDate).toBe("2026-01-01");
-  });
-
-  it("passes through a null exemptionEndDate unchanged", () => {
-    vi.stubEnv("TZ", tz);
-    const raw = makePrismaLot({ exemptionEndDate: null });
-    expect(toLot(raw).exemptionEndDate).toBeNull();
-  });
-});
 
 // Regression tests for the "no se pueden crear nuevos lotes" bug:
 // createLot()/updateLot() used to catch their own Prisma errors and return

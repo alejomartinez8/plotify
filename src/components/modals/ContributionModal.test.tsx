@@ -23,9 +23,6 @@ const lots: Lot[] = [
     whatsappPhone: null,
     initialWorksDebt: 0,
     stage: 1,
-    isExempt: false,
-    exemptionReason: null,
-    exemptionEndDate: null,
   },
 ];
 

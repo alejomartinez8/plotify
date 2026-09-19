@@ -116,8 +116,8 @@ export function formatDateForDisplay(dateInput: string | Date): string {
 }
 
 /**
- * Calculates simplified balance information for all lots
- * Excludes exempt lots from debt calculations and sorts by outstanding balance
+ * Calculates simplified balance information for all lots, sorted by
+ * outstanding balance
  * @param lots - Array of all lots in the system
  * @param contributions - Array of all contributions made
  * @param quotaConfigs - Array of quota configurations
@@ -147,93 +147,71 @@ export function calculateSimpleLotBalances(
       parseLocalDate(quota.dueDate) <= currentDate
   );
 
-  const lotBalances: SimpleLotBalance[] = lots
-    .filter((lot) => !lot.isExempt || lot.exemptionEndDate) // Exclude fully exempt lots (no end date)
-    .map((lot) => {
-      const activeFrom = lot.exemptionEndDate
-        ? parseLocalDate(lot.exemptionEndDate)
-        : null;
+  const lotBalances: SimpleLotBalance[] = lots.map((lot) => {
+    const lotContributions = contributions.filter(
+      (contribution) => contribution.lotId === lot.id
+    );
+    const totalContributions = lotContributions.reduce(
+      (total, contribution) => total + contribution.amount,
+      0
+    );
 
-      const lotContributions = contributions.filter(
-        (contribution) => contribution.lotId === lot.id
-      );
-      const totalContributions = lotContributions.reduce(
-        (total, contribution) => total + contribution.amount,
-        0
-      );
+    const lotMaintenanceQuotas = applicableMaintenanceQuotas;
 
-      const lotMaintenanceQuotas = activeFrom
-        ? applicableMaintenanceQuotas.filter(
-            (quota) =>
-              quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
-          )
-        : applicableMaintenanceQuotas;
+    const lotWorksQuotas = applicableWorksQuotas.filter((quota) =>
+      (quota.stages || []).includes(lot.stage)
+    );
 
-      const lotWorksQuotas = applicableWorksQuotas.filter((quota) =>
-        (quota.stages || []).includes(lot.stage)
-      );
+    const maintenanceQuotas = lotMaintenanceQuotas.reduce(
+      (total, quota) => total + quota.amount,
+      0
+    );
+    const worksQuotas = lotWorksQuotas.reduce(
+      (total, quota) => total + quota.amount,
+      0
+    );
 
-      // Maintenance debt only counts contributions from activeFrom onwards.
-      // Pre-activation contributions remain in payment history but don't offset obligations.
-      // Works is tied to the lot's stage and the quota's due date, not to
-      // when the lot itself became active.
-      const activeContributions = activeFrom
-        ? lotContributions.filter(
-            (c: any) => parseLocalDate(c.date) >= activeFrom
-          )
-        : lotContributions;
+    const maintenanceContributions = lotContributions
+      .filter((c: any) => c.type === "maintenance")
+      .reduce((total: number, c: any) => total + c.amount, 0);
+    const worksContributions = lotContributions
+      .filter((c: any) => c.type === "works")
+      .reduce((total: number, c: any) => total + c.amount, 0);
 
-      const maintenanceQuotas = lotMaintenanceQuotas.reduce(
-        (total, quota) => total + quota.amount,
-        0
-      );
-      const worksQuotas = lotWorksQuotas.reduce(
-        (total, quota) => total + quota.amount,
-        0
-      );
+    // Calculate total quotas applicable to this lot
+    const totalQuotas = maintenanceQuotas + worksQuotas + lot.initialWorksDebt;
 
-      const maintenanceContributions = activeContributions
-        .filter((c: any) => c.type === "maintenance")
-        .reduce((total: number, c: any) => total + c.amount, 0);
-      const worksContributions = lotContributions
-        .filter((c: any) => c.type === "works")
-        .reduce((total: number, c: any) => total + c.amount, 0);
+    // Each type is a separate obligation: overpayment in one type does not offset debt in another
+    const maintenanceDebt = Math.max(
+      0,
+      maintenanceQuotas - maintenanceContributions
+    );
+    const worksDebt = Math.max(
+      0,
+      worksQuotas + lot.initialWorksDebt - worksContributions
+    );
+    const outstandingBalance = maintenanceDebt + worksDebt;
 
-      // Calculate total quotas applicable to this lot
-      const totalQuotas =
-        maintenanceQuotas + worksQuotas + lot.initialWorksDebt;
+    // Determine status: only "current" (paid up) or "overdue" (owes money)
+    const status: "current" | "overdue" =
+      outstandingBalance <= 0 ? "current" : "overdue";
 
-      // Each type is a separate obligation: overpayment in one type does not offset debt in another
-      const maintenanceDebt = Math.max(
-        0,
-        maintenanceQuotas - maintenanceContributions
-      );
-      const worksDebt = Math.max(
-        0,
-        worksQuotas + lot.initialWorksDebt - worksContributions
-      );
-      const outstandingBalance = maintenanceDebt + worksDebt;
-
-      // Determine status: only "current" (paid up) or "overdue" (owes money)
-      const status: "current" | "overdue" =
-        outstandingBalance <= 0 ? "current" : "overdue";
-
-      return {
-        lotId: lot.id,
-        lotNumber: lot.lotNumber,
-        owner: lot.owner,
-        totalContributions,
-        totalQuotas: totalQuotas + lot.initialWorksDebt,
-        initialWorksDebt: lot.initialWorksDebt,
-        outstandingBalance,
-        debtByCategory: {
-          maintenance: maintenanceDebt,
-          works: worksDebt,
-          others: 0,
-        },
-        status,
-      };
-    });
+    return {
+      lotId: lot.id,
+      lotNumber: lot.lotNumber,
+      owner: lot.owner,
+      totalContributions,
+      totalQuotas: totalQuotas + lot.initialWorksDebt,
+      initialWorksDebt: lot.initialWorksDebt,
+      outstandingBalance,
+      debtByCategory: {
+        maintenance: maintenanceDebt,
+        works: worksDebt,
+        others: 0,
+      },
+      status,
+    };
+  });
 
   return lotBalances.sort(
     (first, second) => second.outstandingBalance - first.outstandingBalance
@@ -245,7 +223,7 @@ export function calculateSimpleLotBalances(
  * Provides separate calculations for maintenance and works debt types
  * @param lotWithContributions - Lot object including its contributions array
  * @param quotaConfigs - Array of quota configurations
- * @returns Detailed debt information or null if lot is exempt/not found
+ * @returns Detailed debt information, or null if the lot was not found
  */
 export function calculateLotDebtDetail(
   lotWithContributions: any,
@@ -253,29 +231,15 @@ export function calculateLotDebtDetail(
 ): LotDebtDetail | null {
   if (!lotWithContributions) return null;
 
-  // Return null for fully exempt lots (no exemptionEndDate means completely excluded)
-  if (lotWithContributions.isExempt && !lotWithContributions.exemptionEndDate)
-    return null;
-
   const currentDate = parseLocalDate(new Date());
 
   // Maintenance quotas apply once their due date has passed.
-  const applicableMaintenanceQuotas = quotaConfigs.filter(
+  const lotMaintenanceQuotas = quotaConfigs.filter(
     (quota) =>
       quota.quotaType === "maintenance" &&
       quota.dueDate &&
       parseLocalDate(quota.dueDate) <= currentDate
   );
-
-  const activeFrom = lotWithContributions.exemptionEndDate
-    ? parseLocalDate(lotWithContributions.exemptionEndDate)
-    : null;
-
-  const lotMaintenanceQuotas = activeFrom
-    ? applicableMaintenanceQuotas.filter(
-        (quota) => quota.dueDate && parseLocalDate(quota.dueDate) >= activeFrom
-      )
-    : applicableMaintenanceQuotas;
 
   // Works quotas (e.g. portón, vías) also apply once their due date has
   // passed; they're additionally scoped to the lot's stage.
@@ -289,16 +253,8 @@ export function calculateLotDebtDetail(
 
   const lotContributions = lotWithContributions.contributions || [];
 
-  // Maintenance debt only counts contributions from activeFrom onwards.
-  // Pre-activation contributions remain in payment history but don't offset obligations.
-  // Works is tied to the lot's stage and the quota's due date, not to
-  // when the lot itself became active.
-  const activeContributions = activeFrom
-    ? lotContributions.filter((c: any) => parseLocalDate(c.date) >= activeFrom)
-    : lotContributions;
-
-  // Calculate contributions by type (using only active-period contributions for maintenance debt)
-  const maintenanceContributions = activeContributions
+  // Calculate contributions by type
+  const maintenanceContributions = lotContributions
     .filter((contribution: any) => contribution.type === "maintenance")
     .reduce(
       (total: number, contribution: any) => total + contribution.amount,
@@ -406,20 +362,15 @@ export function buildQuotaBreakdown(
   lot: {
     initialWorksDebt: number;
     stage: number;
-    exemptionEndDate?: string | null;
   }
 ): QuotaLineStatus[] {
   const today = parseLocalDate(new Date());
-  const activeFrom = lot.exemptionEndDate
-    ? parseLocalDate(lot.exemptionEndDate)
-    : null;
 
-  // Maintenance quotas are tied to a due date (and to when the lot became
-  // active). Include past and future ones so advance payments are
-  // allocated correctly; future unpaid quotas are filtered out at the end.
+  // Maintenance quotas are tied to a due date. Include past and future ones
+  // so advance payments are allocated correctly; future unpaid quotas are
+  // filtered out at the end.
   const maintenanceQuotas = quotaConfigs
     .filter((q) => q.quotaType === "maintenance" && q.dueDate)
-    .filter((q) => !activeFrom || parseLocalDate(q.dueDate!) >= activeFrom)
     .sort(
       (a, b) =>
         parseLocalDate(a.dueDate!).getTime() -
@@ -443,17 +394,11 @@ export function buildQuotaBreakdown(
         parseLocalDate(b.dueDate!).getTime()
     );
 
-  // Maintenance obligations only count contributions from activeFrom onwards —
-  // pre-activation contributions are recorded historically but don't offset them.
-  const maintenancePaid = (
-    activeFrom
-      ? contributions.filter((c) => parseLocalDate(c.date) >= activeFrom)
-      : contributions
-  )
+  const maintenancePaid = contributions
     .filter((c) => c.type === "maintenance")
     .reduce((s, c) => s + c.amount, 0);
 
-  // Works obligations apply from the lot's stage, regardless of when it joined.
+  // Works obligations apply from the lot's stage.
   const worksPaid = contributions
     .filter((c) => c.type === "works")
     .reduce((s, c) => s + c.amount, 0);

@@ -15,9 +15,6 @@ model Lot {
   whatsappPhone           String?
   initialWorksDebt        Int                      @default(0)
   stage                   Int                      @default(1)
-  isExempt                Boolean                  @default(false)
-  exemptionReason         String?
-  exemptionEndDate        DateTime?
   contributions           Contribution[]
 
   @@map("lots")
@@ -60,6 +57,24 @@ model Expense {
   approvedAt      DateTime?
 
   @@map("expenses")
+}
+
+model OtherIncome {
+  id              Int       @id @default(autoincrement())
+  type            String
+  amount          Int
+  description     String
+  date            DateTime  @default(now())
+  receiptNumber   String?
+  receiptFileId   String?
+  receiptFileName String?
+  receiptFileUrl  String?
+  approvalStatus  String    @default("pending")
+  approvalNote    String?
+  approvedBy      String?
+  approvedAt      DateTime?
+
+  @@map("other_incomes")
 }
 
 model User {

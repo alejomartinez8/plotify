@@ -49,7 +49,9 @@ class GoogleOAuthService {
       }
     } catch (error) {
       console.error("Error loading Google credentials:", error);
-      throw new Error("Google Drive authentication required. Please sign in again.");
+      throw new Error(
+        "Google Drive authentication required. Please sign in again."
+      );
     }
   }
 
@@ -86,7 +88,7 @@ class GoogleOAuthService {
   async generateFileName(
     data: {
       date?: string;
-      type: "income" | "expense";
+      type: "income" | "expense" | "otherIncome";
       lotNumber?: string;
       category?: string;
       amount?: number;
@@ -105,6 +107,8 @@ class GoogleOAuthService {
     if (type === "income") {
       const lot = lotNumber ? `lote-${lotNumber.padStart(2, "0")}` : "lote-XX";
       baseFileName = `${formattedDate}_${lot}`;
+    } else if (type === "otherIncome") {
+      baseFileName = `${formattedDate}_otro-ingreso`;
     } else {
       const cat = category || "general";
       baseFileName = `${formattedDate}_gasto-${cat}`;
@@ -183,7 +187,7 @@ class GoogleOAuthService {
    */
   private async createFolderStructure(
     date: string | undefined,
-    type: "income" | "expense"
+    type: "income" | "expense" | "otherIncome"
   ): Promise<string> {
     const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
     if (!rootFolderId) {
@@ -198,7 +202,12 @@ class GoogleOAuthService {
 
       // Extract year from date
       const year = new Date(date).getFullYear().toString();
-      const typeFolderName = type === "income" ? "Ingresos" : "Gastos";
+      const typeFolderName =
+        type === "income"
+          ? "Ingresos"
+          : type === "otherIncome"
+            ? "Otros Ingresos"
+            : "Gastos";
 
       console.log(`Creating folder structure: ${year}/${typeFolderName}`);
 
@@ -426,7 +435,7 @@ class GoogleOAuthService {
     originalName: string;
     mimeType: string;
     date?: string;
-    type: "income" | "expense";
+    type: "income" | "expense" | "otherIncome";
     lotNumber?: string;
     category?: string;
     amount?: number;
@@ -523,13 +532,11 @@ class GoogleOAuthService {
 
       // Then, update the database record to clear receipt fields
       if (recordType === "contribution") {
-        const { updateContribution } = await import(
-          "@/lib/database/contributions"
-        );
+        const { updateContribution } =
+          await import("@/lib/database/contributions");
         // Get current contribution data first
-        const { getContributionById } = await import(
-          "@/lib/database/contributions"
-        );
+        const { getContributionById } =
+          await import("@/lib/database/contributions");
         const contribution = await getContributionById(recordId);
 
         if (contribution) {

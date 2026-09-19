@@ -10,6 +10,7 @@ export const translations = {
   navigation: {
     home: "Inicio",
     income: "Aportes",
+    otherIncome: "Otros Ingresos",
     expenses: "Gastos",
     lots: "Lotes",
     quotas: "Cuotas",
@@ -124,13 +125,6 @@ export const translations = {
     totalLots: "Total Lotes",
     totalDebt: "Cartera",
     overdueLots: "atrasados",
-    exempt: "Exento",
-    exemption: "Exención",
-    exemptionReason: "Razón de exención",
-    exemptionEndDate: "Activo desde",
-    exemptLot: "Exentar lote",
-    activateLot: "Activar lote",
-    notApplicable: "N/A",
     noData: "Sin datos",
     contributions: "Aportes",
     outstandingBalance: "Saldo Adeudado",
@@ -170,6 +164,7 @@ export const translations = {
     allIncome: "Todos los Aportes",
     allLots: "Todos los Lotes",
     allExpenses: "Todos los Gastos",
+    allOtherIncome: "Todos los Otros Ingresos",
     allYears: "Todos los Años",
   },
 
@@ -184,6 +179,11 @@ export const translations = {
     newExpense: "Nuevo Gasto",
     editExpense: "Editar Gasto",
     registerExpense: "Registrar Nuevo Gasto",
+
+    // Other income
+    newOtherIncome: "Nuevo Ingreso",
+    editOtherIncome: "Editar Ingreso",
+    registerOtherIncome: "Registrar Otro Ingreso",
 
     // Lots
     newLot: "Nuevo Lote",
@@ -273,6 +273,8 @@ export const translations = {
     // Export descriptions
     exportDescriptions: {
       income: "Exporta todas las contribuciones de mantenimiento y obras",
+      otherIncome:
+        "Exporta ingresos sin lote asociado (histórico previo a la app, ventas de controles, etc.)",
       expenses: "Exporta todos los gastos registrados por categoría y tipo",
       lots: "Exporta información de lotes con resúmenes de contribuciones",
     },
@@ -335,6 +337,7 @@ export const translations = {
     noContributions: "No hay contribuciones registradas",
     noContributionsForLot: "No hay contribuciones registradas para este lote",
     noExpenses: "No hay gastos registrados",
+    noOtherIncome: "No hay otros ingresos registrados",
     noLots: "No hay lotes",
     noResults: "No se encontraron resultados",
 
@@ -418,6 +421,7 @@ export const translations = {
       defaultError: "Error al exportar los datos",
       unexpectedError: "Error inesperado al exportar",
       incomes: "Error al exportar los ingresos",
+      otherIncome: "Error al exportar otros ingresos",
       expenses: "Error al exportar los gastos",
       lots: "Error al exportar los lotes",
     },
@@ -457,6 +461,8 @@ export const translations = {
       "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
     deleteContribution:
       "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
+    deleteOtherIncome:
+      "¿Estás seguro de que quieres eliminar este ingreso? Esta acción no se puede deshacer.",
 
     // Generic
     unsavedChanges:

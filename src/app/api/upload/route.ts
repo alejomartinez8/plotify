@@ -36,10 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if Google OAuth is configured (client credentials only)
-    if (
-      !process.env.GOOGLE_CLIENT_ID ||
-      !process.env.GOOGLE_CLIENT_SECRET
-    ) {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       logger.error("Google OAuth configuration missing", undefined, {
         hasClientId: !!process.env.GOOGLE_CLIENT_ID,
         hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
@@ -57,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const type = formData.get("type") as "income" | "expense";
+    const type = formData.get("type") as "income" | "expense" | "otherIncome";
     const date = formData.get("date") as string;
     const amount = formData.get("amount") as string;
     const receiptNumber = formData.get("receiptNumber") as string;
