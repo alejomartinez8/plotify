@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # --ignore-scripts skips postinstall's `prisma migrate deploy`, which
+      # needs a live database this job doesn't have. The test suite mocks
+      # Prisma entirely, so only the generated client (no DB) is needed.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Generate Prisma client
+        run: npx prisma generate --no-engine
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test with coverage
+        run: npm run test:coverage

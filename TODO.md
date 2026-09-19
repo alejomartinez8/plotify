@@ -120,7 +120,7 @@
   `/api/upload` and `google-oauth-service.ts`, the nav link, and all
   collaborator-related translation keys
 
-### 🚧 Phase 9: Test Coverage (In Progress)
+### ✅ Phase 9: Test Coverage - COMPLETED _(2026-09-19)_
 
 > **Business Context**: The project had Vitest configured but only 8 test
 > files, none covering money-handling logic, the permission system, CSV
@@ -144,8 +144,11 @@
   `UserModal`, `CollaboratorModal`, `useReceiptUpload`; added a
   `ResizeObserver` stub to the shared test setup (needed by Radix
   `Checkbox`, used in `CollaboratorModal`)
-- [ ] **Tooling**: add `@vitest/coverage-v8` with a minimum threshold and a
-  GitHub Actions workflow running `npm test` on every PR
+- ✅ **Tooling** _(2026-09-19)_: added `@vitest/coverage-v8` with a minimum
+  threshold (50% statements/lines, 65% branches, 60% functions over
+  `src/lib/**`) and a GitHub Actions workflow
+  (`.github/workflows/test.yml`) running lint + `npm run test:coverage`
+  on every PR and push to `main`
 
 ---
 

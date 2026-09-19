@@ -1,5 +1,5 @@
 import nextConfig from "eslint-config-next";
 
-const eslintConfig = [...nextConfig];
+const eslintConfig = [{ ignores: ["coverage/**"] }, ...nextConfig];
 
 export default eslintConfig;
