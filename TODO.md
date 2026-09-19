@@ -131,22 +131,6 @@
 - [ ] **Tooling**: add `@vitest/coverage-v8` with a minimum threshold and a
   GitHub Actions workflow running `npm test` on every PR
 
-### 🚧 Phase 8: Browser Notifications (Future Enhancement)
-
-> **Note**: Browser notifications feature has been deprioritized. Current authentication system via Google OAuth meets business needs.
->
-> **Reason**: The implemented role-based access control with Google OAuth provides:
-> - ✅ Secure authentication without password management
-> - ✅ Easy user onboarding (just add email to database)
-> - ✅ Professional authentication flow
-> - ✅ No need for custom notification infrastructure yet
-
-**If needed in future:**
-
-- [ ] **Browser Notification Infrastructure** - Service worker for payment reminders
-- [ ] **Contact Management** - WhatsApp, email fields for multi-channel communication
-- [ ] **Notification Preferences** - User settings for reminder frequency
-
 ---
 
 ## ⚡ **System Status**
