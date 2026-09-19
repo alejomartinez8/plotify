@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const type = formData.get("type") as "income" | "expense" | "collaborator";
+    const type = formData.get("type") as "income" | "expense";
     const date = formData.get("date") as string;
     const amount = formData.get("amount") as string;
     const receiptNumber = formData.get("receiptNumber") as string;
@@ -65,7 +65,6 @@ export async function POST(req: NextRequest) {
     // Optional fields based on type
     const lotNumber = formData.get("lotNumber") as string;
     const category = formData.get("category") as string;
-    const collaboratorName = formData.get("collaboratorName") as string;
 
     logger.debug("Upload API received form data", {
       hasFile: !!file,
@@ -78,7 +77,6 @@ export async function POST(req: NextRequest) {
       receiptNumber: receiptNumber || "[empty]",
       lotNumber: lotNumber || "[empty]",
       category: category || "[empty]",
-      collaboratorName: collaboratorName || "[empty]",
     });
 
     // Validate required fields based on type
@@ -99,7 +97,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Type-specific validation
-    if (type !== "collaborator" && (!date || !amount)) {
+    if (!date || !amount) {
       logger.validation(
         "error",
         "required_fields",
@@ -163,7 +161,6 @@ export async function POST(req: NextRequest) {
       category,
       amount: amount ? parseFloat(amount) : undefined,
       receiptNumber,
-      collaboratorName,
     });
     const uploadDuration = uploadTimer.end();
 

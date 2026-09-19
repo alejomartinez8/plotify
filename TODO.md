@@ -104,6 +104,22 @@
 - ✅ **Owner stays derived, not stored** - `role` only ever holds `"admin"` or `"treasurer"`; Owner status keeps coming from `Lot.ownerEmail`, avoiding a second place that could drift out of sync
 - ✅ **Self-removal guard** - an Admin can't delete their own `User` row from the UI or the server action; another admin has to
 
+### ✅ Removed: Collaborator Management - COMPLETED _(2026-09-19)_
+
+> **Business Context**: The Collaborator module (tracking workers assigned to
+> lots with photo management) is no longer needed and has been removed
+> entirely from the app.
+
+- ✅ **Code removed** - `Collaborator`/`CollaboratorAssignment` Prisma models
+  and DB migration, `/collaborators` page, `CollaboratorsView`,
+  `CollaboratorCard`, `CollaboratorModal`, `PhotoViewModal`,
+  `collaborator-actions.ts`, `database/collaborators.ts`,
+  `types/collaborators.types.ts`, and their tests
+- ✅ **Related cleanup** - Removed the now-unused `requireAnyLotAccess()` /
+  `requireAllLotsAccess()` auth helpers, the `collaborator` upload type in
+  `/api/upload` and `google-oauth-service.ts`, the nav link, and all
+  collaborator-related translation keys
+
 ### 🚧 Phase 9: Test Coverage (In Progress)
 
 > **Business Context**: The project had Vitest configured but only 8 test
@@ -144,13 +160,12 @@
 - ✅ **Responsive design** - Mobile-first approach with excellent UX
 - ✅ **Real-time calculations** - Dynamic balance and debt tracking
 - ✅ **Role-based access control** - Admin and Owner roles with Google OAuth
-- ✅ **Collaborator management** - Track workers with photo management
 - ✅ **Multi-user authentication** - Secure NextAuth v5 integration
 
 ### 🎯 **Current System Capabilities**
 
 **For Admins:**
-- Full CRUD operations on all resources (lots, contributions, expenses, collaborators)
+- Full CRUD operations on all resources (lots, contributions, expenses)
 - CSV import/export for bulk operations
 - Quota configuration and debt management
 - User access control via ADMIN_EMAILS environment variable
@@ -158,8 +173,6 @@
 **For Owners:**
 - View all financial data (dashboard, contributions, expenses)
 - View all lots and their details (read-only)
-- View all collaborators
-- Edit/delete collaborators assigned to their lots only
 - No ability to modify financial data or create new records
 
 **For Treasurers:**
@@ -188,4 +201,4 @@
 
 ---
 
-_Last updated: 2026-08-28 - Treasurer role, approval workflow, and Admin/Treasurer user-table consolidation completed. Phases 6-7 finished._
+_Last updated: 2026-09-19 - Collaborator management feature removed entirely._

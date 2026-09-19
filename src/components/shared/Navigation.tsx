@@ -8,7 +8,6 @@ import {
   TrendingDown,
   Settings,
   Calculator,
-  Users,
 } from "lucide-react";
 import { translations } from "@/lib/translations";
 
@@ -32,11 +31,6 @@ const navigationItems = [
     href: "/quotas",
     label: translations.navigation.quotas,
     icon: Calculator,
-  },
-  {
-    href: "/collaborators",
-    label: translations.navigation.collaborators,
-    icon: Users,
   },
 ];
 

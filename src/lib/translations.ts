@@ -13,7 +13,6 @@ export const translations = {
     expenses: "Gastos",
     lots: "Lotes",
     quotas: "Cuotas",
-    collaborators: "Colaboradores",
     admin: "Admin",
   },
 
@@ -66,15 +65,7 @@ export const translations = {
     actions: "Acciones",
     receiptNumber: "Comprobante",
     receiptFile: "Comprobante",
-
-    // Collaborator fields
-    collaborator: "Colaborador",
-    collaborators: "Colaboradores",
     name: "Nombre",
-    photo: "Fotografía",
-    assignedLots: "Lotes asignados",
-    noLots: "Sin lotes asignados",
-    clickToEnlarge: "Clic para ampliar",
 
     // Financial terms
     income: "Aportes",
@@ -165,9 +156,7 @@ export const translations = {
     lotIdExample: "ej. 22, E2-1, 18 y 19",
     ownerName: "Ingrese el nombre del propietario",
     whatsappPhone: "573001234567 (código de país + número, sin +)",
-    collaboratorName: "Ingrese el nombre del colaborador",
     search: "Buscar...",
-    searchCollaborators: "Buscar colaboradores...",
     receiptNumber: "ej. 001234, FV-001",
     approvalNoteOptional: "Nota opcional",
     userEmail: "correo@ejemplo.com",
@@ -181,7 +170,6 @@ export const translations = {
     allLots: "Todos los Lotes",
     allExpenses: "Todos los Gastos",
     allYears: "Todos los Años",
-    allCollaborators: "Todos los Colaboradores",
   },
 
   // Modal and form titles
@@ -199,13 +187,6 @@ export const translations = {
     // Lots
     newLot: "Nuevo Lote",
     editLot: "Editar Lote",
-
-    // Collaborators
-    collaborators: "Colaboradores",
-    newCollaborator: "Nuevo Colaborador",
-    editCollaborator: "Editar Colaborador",
-    registerCollaborator: "Registrar Nuevo Colaborador",
-    collaboratorsList: "Lista de Colaboradores",
 
     // Quotas
     quotasSystem: "Sistema de Cuotas",
@@ -351,7 +332,6 @@ export const translations = {
     noContributionsForLot: "No hay contribuciones registradas para este lote",
     noExpenses: "No hay gastos registrados",
     noLots: "No hay lotes",
-    noCollaborators: "No hay colaboradores registrados",
     noResults: "No se encontraron resultados",
 
     // Instructions
@@ -371,7 +351,6 @@ export const translations = {
     changeFilter: "Intenta cambiar el filtro de tipo de ingreso",
     selectLot: "Selecciona un lote para ver el resumen",
     tryChangingFilters: "Intenta cambiar tu búsqueda o filtros",
-    getStartedCollaborators: "Comienza registrando un nuevo colaborador",
 
     // Options
     notDefined: "No definida",
@@ -404,9 +383,6 @@ export const translations = {
     ownerRequired: "El nombre del propietario es requerido",
     whatsappPhoneInvalid: "El teléfono debe contener solo dígitos (10-15 caracteres, incluye código de país)",
     lotNumberExists: "Ya existe un lote con ese número",
-    collaboratorNameRequired: "El nombre del colaborador es requerido",
-    uploadPhoto: "Error al subir la fotografía",
-    collaboratorNotFound: "Colaborador no encontrado",
     missingFields: "Campos faltantes",
 
     // Approval workflow errors
@@ -475,8 +451,6 @@ export const translations = {
       "¿Estás seguro de que quieres eliminar el gasto? Esta acción no se puede deshacer.",
     deleteContribution:
       "¿Estás seguro de que quieres eliminar la contribución? Esta acción no se puede deshacer.",
-    deleteCollaborator:
-      "¿Estás seguro de que quieres eliminar el colaborador? Esta acción no se puede deshacer.",
 
     // Generic
     unsavedChanges:

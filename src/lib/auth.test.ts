@@ -39,8 +39,6 @@ import {
   requireAdmin,
   requireTreasurer,
   requireLotAccess,
-  requireAnyLotAccess,
-  requireAllLotsAccess,
 } from "./auth";
 
 const mockedLotCount = vi.mocked(prisma.lot.count);
@@ -245,72 +243,5 @@ describe("requireLotAccess", () => {
     await expect(requireLotAccess("lot-1")).rejects.toThrow(
       "You don't have permission to access this lot"
     );
-  });
-});
-
-describe("requireAnyLotAccess / requireAllLotsAccess", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("requireAnyLotAccess throws when no lot ids are given", async () => {
-    await expect(requireAnyLotAccess([])).rejects.toThrow("No lots specified");
-  });
-
-  it("requireAnyLotAccess passes when the user owns at least one of the lots", async () => {
-    mockSession("owner@example.com");
-    mockGetUserByEmail.mockResolvedValue(null);
-    mockedLotCount.mockResolvedValue(1);
-    mockedLotFindMany.mockResolvedValue([{ id: "lot-2" }] as never);
-
-    await expect(
-      requireAnyLotAccess(["lot-1", "lot-2"])
-    ).resolves.toBeUndefined();
-  });
-
-  it("requireAnyLotAccess throws when the user owns none of the lots", async () => {
-    mockSession("owner@example.com");
-    mockGetUserByEmail.mockResolvedValue(null);
-    mockedLotCount.mockResolvedValue(1);
-    mockedLotFindMany.mockResolvedValue([{ id: "lot-3" }] as never);
-
-    await expect(requireAnyLotAccess(["lot-1", "lot-2"])).rejects.toThrow(
-      /permission to manage collaborators/
-    );
-  });
-
-  it("requireAllLotsAccess throws unless the user owns every lot", async () => {
-    mockSession("owner@example.com");
-    mockGetUserByEmail.mockResolvedValue(null);
-    mockedLotCount.mockResolvedValue(1);
-    mockedLotFindMany.mockResolvedValue([{ id: "lot-1" }] as never);
-
-    await expect(requireAllLotsAccess(["lot-1", "lot-2"])).rejects.toThrow(
-      /permission to manage collaborators for all/
-    );
-  });
-
-  it("requireAllLotsAccess passes when the user owns every lot", async () => {
-    mockSession("owner@example.com");
-    mockGetUserByEmail.mockResolvedValue(null);
-    mockedLotCount.mockResolvedValue(1);
-    mockedLotFindMany.mockResolvedValue([
-      { id: "lot-1" },
-      { id: "lot-2" },
-    ] as never);
-
-    await expect(
-      requireAllLotsAccess(["lot-1", "lot-2"])
-    ).resolves.toBeUndefined();
-  });
-
-  it("lets an admin through without checking ownership", async () => {
-    mockSession("admin@example.com");
-    mockGetUserByEmail.mockResolvedValue({ role: "admin" });
-
-    await expect(
-      requireAllLotsAccess(["lot-1", "lot-2"])
-    ).resolves.toBeUndefined();
-    expect(mockedLotFindMany).not.toHaveBeenCalled();
   });
 });
