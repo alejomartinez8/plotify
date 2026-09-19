@@ -170,7 +170,6 @@
 
 ### 🚀 **Future Enhancements** (Not Prioritized)
 
-- **Browser Notifications** - Payment reminders via web push
 - **Contact Management** - WhatsApp/email fields for communications
 - **Bulk Operations** - Enhanced admin workflows
 - **Analytics Dashboard** - Advanced reporting and insights
