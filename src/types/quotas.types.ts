@@ -1,4 +1,16 @@
 /**
+ * Outstanding debt broken down by contribution category.
+ * "others" has no quota system yet, so it is always 0 for now, but the
+ * field exists so a future "others" quota (e.g. a gas project) needs no
+ * shape change here.
+ */
+export interface DebtByCategory {
+  maintenance: number;
+  works: number;
+  others: number;
+}
+
+/**
  * Represents a simplified lot balance calculation for quota tracking
  */
 export interface SimpleLotBalance {
@@ -16,6 +28,8 @@ export interface SimpleLotBalance {
   initialWorksDebt: number;
   /** Outstanding balance owed (0 if paid in advance) */
   outstandingBalance: number;
+  /** Outstanding debt broken down by contribution category */
+  debtByCategory: DebtByCategory;
   /** Payment status of the lot */
   status: "current" | "overdue";
 }

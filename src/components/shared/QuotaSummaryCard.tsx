@@ -1,14 +1,27 @@
 import Link from "next/link";
 import { SimpleLotBalance } from "@/types/quotas.types";
+import { ContributionType } from "@/types/contributions.types";
 import { translations } from "@/lib/translations";
+import { formatCurrency } from "@/lib/utils";
+import TypeBadge from "@/components/shared/TypeBadge";
 
 interface QuotaSummaryCardProps {
   lotBalances: SimpleLotBalance[];
 }
 
+const DEBT_CATEGORIES: ContributionType[] = ["maintenance", "works", "others"];
+
 export default function QuotaSummaryCard({
   lotBalances,
 }: QuotaSummaryCardProps) {
+  const debtByCategory = DEBT_CATEGORIES.map((category) => ({
+    category,
+    amount: lotBalances.reduce(
+      (sum, lot) => sum + lot.debtByCategory[category],
+      0
+    ),
+  }));
+
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow">
       <div className="border-b border-gray-200 px-6 py-4">
@@ -67,6 +80,26 @@ export default function QuotaSummaryCard({
             <div className="text-sm text-gray-600">
               {translations.labels.current}
             </div>
+          </div>
+        </div>
+
+        <div className="mt-4 border-t border-gray-200 pt-4">
+          <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            {translations.labels.breakdownOf} {translations.labels.totalDebt}:
+          </h3>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {debtByCategory.map(({ category, amount }) => (
+              <div
+                key={category}
+                data-testid={`debt-by-category-${category}`}
+                className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-2"
+              >
+                <TypeBadge type={category} />
+                <span className="text-sm font-semibold text-red-600">
+                  {formatCurrency(amount)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

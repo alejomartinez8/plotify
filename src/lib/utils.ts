@@ -210,6 +210,11 @@ export function calculateSimpleLotBalances(
         totalQuotas: totalQuotas + lot.initialWorksDebt,
         initialWorksDebt: lot.initialWorksDebt,
         outstandingBalance,
+        debtByCategory: {
+          maintenance: maintenanceDebt,
+          works: worksDebt,
+          others: 0,
+        },
         status,
       };
     });

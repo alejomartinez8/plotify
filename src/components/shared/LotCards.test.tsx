@@ -43,6 +43,7 @@ const lotBalances: SimpleLotBalance[] = [
     totalQuotas: 0,
     initialWorksDebt: 0,
     outstandingBalance: 50000,
+    debtByCategory: { maintenance: 50000, works: 0, others: 0 },
     status: "overdue",
   },
   {
@@ -53,6 +54,7 @@ const lotBalances: SimpleLotBalance[] = [
     totalQuotas: 0,
     initialWorksDebt: 0,
     outstandingBalance: 0,
+    debtByCategory: { maintenance: 0, works: 0, others: 0 },
     status: "current",
   },
 ];
