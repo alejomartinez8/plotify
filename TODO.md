@@ -104,6 +104,26 @@
 - ✅ **Owner stays derived, not stored** - `role` only ever holds `"admin"` or `"treasurer"`; Owner status keeps coming from `Lot.ownerEmail`, avoiding a second place that could drift out of sync
 - ✅ **Self-removal guard** - an Admin can't delete their own `User` row from the UI or the server action; another admin has to
 
+### 🚧 Phase 9: Test Coverage (In Progress)
+
+> **Business Context**: The project had Vitest configured but only 8 test
+> files, none covering money-handling logic. Rolled out as one PR per phase
+> to keep each review small.
+
+- ✅ **Phase 1 — Financial logic** _(2026-09-19)_: `balances.ts` (fund/monthly
+  totals), `contribution-actions.ts`, `expense-actions.ts`, `quota-actions.ts`,
+  `approval-actions.ts`, plus the untested CRUD/approval paths in
+  `contributions.ts`, `expenses.ts`, `quotas.ts`
+- [ ] **Phase 2 — Security & permissions**: `check-lot-access.ts`, `auth.ts`
+  role logic, `actions/helpers.ts`, `user-actions.ts`
+- [ ] **Phase 3 — Secondary data & import/export**: `import-actions.ts`,
+  `export-actions.ts` (CSV parsing), `collaborators.ts`, `users.ts`,
+  `approval-history.ts`
+- [ ] **Phase 4 — Remaining components/hooks**: `QuotaModal`,
+  `CollaboratorModal`, `UserModal`, `useReceiptUpload`
+- [ ] **Tooling**: add `@vitest/coverage-v8` with a minimum threshold and a
+  GitHub Actions workflow running `npm test` on every PR
+
 ### 🚧 Phase 8: Browser Notifications (Future Enhancement)
 
 > **Note**: Browser notifications feature has been deprioritized. Current authentication system via Google OAuth meets business needs.
