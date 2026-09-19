@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Plus,
   Edit,
@@ -43,6 +43,7 @@ import { deleteLotAction } from "@/lib/actions/lot-actions";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 interface LotWithSummary extends Lot {
   contributions: Contribution[];
@@ -67,6 +68,8 @@ type SortDirection = "asc" | "desc";
 type ViewMode = "cards" | "list";
 
 const VIEW_MODE_STORAGE_KEY = "lotCards.viewMode";
+const isViewMode = (value: string): value is ViewMode =>
+  value === "cards" || value === "list";
 
 export default function LotCards({
   lots,
@@ -76,19 +79,16 @@ export default function LotCards({
 }: LotCardsProps) {
   const [sortField, setSortField] = useState<SortField>("lot");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
+  const [viewMode, setViewMode] = useLocalStorage<ViewMode>(
+    VIEW_MODE_STORAGE_KEY,
+    "cards",
+    isViewMode
+  );
   const [editingLot, setEditingLot] = useState<Lot | null>(null);
   const [deletingLot, setDeletingLot] = useState<Lot | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-    if (stored === "list" || stored === "cards") {
-      setViewMode(stored);
-    }
-  }, []);
 
   // Calculate lot summaries
   const lotsWithSummary = useMemo((): LotWithSummary[] => {
@@ -205,11 +205,6 @@ export default function LotCards({
       }
       setDeletingLot(null);
     });
-  };
-
-  const handleViewModeChange = (mode: ViewMode) => {
-    setViewMode(mode);
-    window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   };
 
   const handleLotSuccess = () => {
@@ -679,7 +674,7 @@ export default function LotCards({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleViewModeChange("cards")}
+                  onClick={() => setViewMode("cards")}
                   aria-pressed={viewMode === "cards"}
                   title={translations.labels.viewAsCards}
                   className={cn(
@@ -693,7 +688,7 @@ export default function LotCards({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleViewModeChange("list")}
+                  onClick={() => setViewMode("list")}
                   aria-pressed={viewMode === "list"}
                   title={translations.labels.viewAsList}
                   className={cn(
