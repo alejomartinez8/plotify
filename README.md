@@ -8,7 +8,6 @@ This project serves as both a practical application and an exploration laborator
 
 1. **AI Development Tools Research**  
    As a senior developer, I'm actively experimenting with cutting-edge AI coding assistants to understand their capabilities, limitations, and impact on development workflows:
-   - **Cline**: AI software engineer assistant for autonomous coding
    - **Claude Code**: Anthropic's official CLI for development assistance
    - **AI-Driven Development**: Exploring how AI can accelerate development, improve code quality, and handle complex refactoring
 
@@ -50,8 +49,6 @@ This project serves as both a practical application and an exploration laborator
 ### AI Development Tools
 
 - **Claude Code**: Anthropic's CLI for AI-assisted development
-- **Cline**: VSCode extension for autonomous AI coding
-- **Claude Sonnet 4**: Latest AI model for advanced code generation and refactoring
 - **AI Workflow**: Prompt engineering, iterative development, and AI-human collaboration patterns
 
 ## 🚀 Quick Start
@@ -137,12 +134,6 @@ If you find a bug or have a suggestion:
 
 This project serves as a real-world case study for AI-assisted development. Key learnings include:
 
-### Tools Comparison
-
-- **Cline**: Excellent for autonomous feature development and complex refactoring tasks
-- **Claude Code**: Superior for interactive development, code review, and iterative improvements
-- **Combined Approach**: Using multiple AI tools in different phases yields optimal results
-
 ### AI Development Benefits
 
 - ⚡ **Speed**: Rapid prototyping and feature implementation
@@ -162,7 +153,7 @@ This project serves as a real-world case study for AI-assisted development. Key 
 - **Status**: Active development with AI tools exploration
 - **Last Update**: July 2025
 - **Location**: Medellín, Colombia
-- **AI Tools Used**: Cline, Claude Code, Claude Sonnet 4
+- **AI Tools Used**: Claude Code
 
 For development roadmap and current tasks, see [TODO.md](./TODO.md).
 
@@ -181,8 +172,7 @@ This project is licensed under the MIT License. See `LICENSE` for more details.
 ## 🙏 Acknowledgments
 
 - Residential community administrators and beta testers
-- **Anthropic** for Claude Code and Claude Sonnet 4 model
-- **Cline** development team for the autonomous coding assistant
+- **Anthropic** for Claude Code
 - Open source community contributors
 - Early AI development pioneers sharing insights and best practices
 
