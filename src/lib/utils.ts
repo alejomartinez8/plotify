@@ -138,9 +138,13 @@ export function calculateSimpleLotBalances(
       parseLocalDate(quota.dueDate) <= currentDate
   );
 
-  // Works quotas (e.g. portón, vías) apply by stage, not by date.
-  const worksQuotasConfig = quotaConfigs.filter(
-    (quota) => quota.quotaType === "works"
+  // Works quotas (e.g. portón, vías) also apply once their due date has
+  // passed; they're additionally scoped to the lot's stage.
+  const applicableWorksQuotas = quotaConfigs.filter(
+    (quota) =>
+      quota.quotaType === "works" &&
+      quota.dueDate &&
+      parseLocalDate(quota.dueDate) <= currentDate
   );
 
   const lotBalances: SimpleLotBalance[] = lots
@@ -165,13 +169,14 @@ export function calculateSimpleLotBalances(
           )
         : applicableMaintenanceQuotas;
 
-      const lotWorksQuotas = worksQuotasConfig.filter((quota) =>
+      const lotWorksQuotas = applicableWorksQuotas.filter((quota) =>
         (quota.stages || []).includes(lot.stage)
       );
 
       // Maintenance debt only counts contributions from activeFrom onwards.
       // Pre-activation contributions remain in payment history but don't offset obligations.
-      // Works is tied to the lot's stage, not to when it became active.
+      // Works is tied to the lot's stage and the quota's due date, not to
+      // when the lot itself became active.
       const activeContributions = activeFrom
         ? lotContributions.filter(
             (c: any) => parseLocalDate(c.date) >= activeFrom
@@ -272,10 +277,13 @@ export function calculateLotDebtDetail(
       )
     : applicableMaintenanceQuotas;
 
-  // Works quotas (e.g. portón, vías) apply by stage, not by date.
+  // Works quotas (e.g. portón, vías) also apply once their due date has
+  // passed; they're additionally scoped to the lot's stage.
   const lotWorksQuotas = quotaConfigs.filter(
     (quota) =>
       quota.quotaType === "works" &&
+      quota.dueDate &&
+      parseLocalDate(quota.dueDate) <= currentDate &&
       (quota.stages || []).includes(lotWithContributions.stage)
   );
 
@@ -283,7 +291,8 @@ export function calculateLotDebtDetail(
 
   // Maintenance debt only counts contributions from activeFrom onwards.
   // Pre-activation contributions remain in payment history but don't offset obligations.
-  // Works is tied to the lot's stage, not to when it became active.
+  // Works is tied to the lot's stage and the quota's due date, not to
+  // when the lot itself became active.
   const activeContributions = activeFrom
     ? lotContributions.filter((c: any) => parseLocalDate(c.date) >= activeFrom)
     : lotContributions;
@@ -417,12 +426,22 @@ export function buildQuotaBreakdown(
         parseLocalDate(b.dueDate!).getTime()
     );
 
-  // Works quotas (e.g. portón, vías) are tied to the lot's stage, not to a date.
+  // Works quotas (e.g. portón, vías) are tied to a due date (like
+  // maintenance) and additionally scoped to the lot's stage. Include past
+  // and future ones so advance payments are allocated correctly; future
+  // unpaid quotas are filtered out at the end.
   const worksQuotas = quotaConfigs
     .filter(
-      (q) => q.quotaType === "works" && (q.stages || []).includes(lot.stage)
+      (q) =>
+        q.quotaType === "works" &&
+        q.dueDate &&
+        (q.stages || []).includes(lot.stage)
     )
-    .sort((a, b) => (a.description || "").localeCompare(b.description || ""));
+    .sort(
+      (a, b) =>
+        parseLocalDate(a.dueDate!).getTime() -
+        parseLocalDate(b.dueDate!).getTime()
+    );
 
   // Maintenance obligations only count contributions from activeFrom onwards —
   // pre-activation contributions are recorded historically but don't offset them.
@@ -517,10 +536,8 @@ export function buildQuotaBreakdown(
     }
   }
   for (const q of worksQuotas) {
-    const label = q.description || "Obras";
-    const year = q.dueDate
-      ? parseLocalDate(q.dueDate).getFullYear()
-      : undefined;
+    const label = q.description || formatQuotaDateLabel(q.dueDate!);
+    const year = parseLocalDate(q.dueDate!).getFullYear();
     if (remainingWorks >= q.amount) {
       result.push({
         id: q.id,
