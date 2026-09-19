@@ -1,55 +1,42 @@
-# Plotify - AI-Powered Community Management System
+# Plotify - Community Cash Management System
 
-A comprehensive cash management system for residential plot communities, built as an exploration of cutting-edge AI development tools. This project focuses on solving real-world financial tracking challenges through advanced AI-assisted development.
+A cash management system for residential plot communities, built to track contributions, expenses, and debt across multiple fund types with full transparency and accountability.
 
-## 🎯 Project Goals
-
-This project serves as both a practical application and an exploration laboratory for AI-powered development:
-
-1. **AI Development Tools Research**  
-   As a senior developer, I'm actively experimenting with cutting-edge AI coding assistants to understand their capabilities, limitations, and impact on development workflows:
-   - **Claude Code**: Anthropic's official CLI for development assistance
-   - **AI-Driven Development**: Exploring how AI can accelerate development, improve code quality, and handle complex refactoring
-
-2. **Production-Grade Implementation**  
-   While serving as an AI tools testbed, this application maintains enterprise-level standards with real functionality for community management. Every feature is built to production quality, demonstrating how AI assistance can create valuable, maintainable software.
-
-3. **Learning & Documentation**  
-   Documenting the experience of building with AI tools, comparing different approaches, and sharing insights about the future of AI-assisted development.
+**Live**: [jalisco-travesias.vercel.app](https://jalisco-travesias.vercel.app/)
 
 ## 🚀 Key Features
 
-### 🏦 Cash Management System
+### 🏦 Cash Management
 
-- **Multi-Fund Architecture**: Separate tracking for maintenance, works, and activities funds
-- **Real-time Balances**: Live view of available funds by type and total cash position
-- **Payment Allocation**: Intelligent distribution of payments across fund types
-- **Debt Tracking**: Complete owner debt management with partial payment support
-- **Receipt Management**: Multi-type receipt system with Google Drive integration
-- **Cash Flow Reports**: Historical and projected financial analysis
+- **Multi-Fund Categories**: Maintenance, Works, and Others, applied consistently to both income and expenses
+- **Real-time Balances**: Dashboard with income, expenses, and balance per fund category
+- **Quota & Debt Tracking**: Configurable maintenance/works quotas with automatic debt calculation per lot
+- **Receipt Storage**: Receipts and supporting files stored via Google Drive integration
+- **CSV Import/Export**: Bulk operations for contributions and expenses
 
-### 💰 Financial Operations
+### ✅ Approval Workflow
 
-- **Income Classification**: Maintenance (monthly), Works (projects), Activities (events)
-- **Initial Balance Setup**: Configure starting balances for each fund type
-- **Payment Status Dashboard**: Visual indicators for paid/pending lots
-- **Expense Tracking**: Detailed expenditure control by category and fund
-- **Audit Trail**: Complete transaction history for compliance
+- **Treasurer Role**: Validates every income/expense entry, similar to reconciling a bank statement
+- **Two-State Records**: Entries move between `pending` and `approved`
+- **Field Locking**: Once approved, amount/type/date become immutable (deletion requires un-approving first)
+- **Audit Trail**: Every approve/un-approve action is logged with who, when, and an optional note
+
+### 🔐 Roles & Access Control
+
+- **Admin**: Full CRUD on lots, contributions, and expenses; manages users and quotas
+- **Treasurer**: Approves/un-approves records; read-only otherwise
+- **Owner**: Read-only access to all financial data, derived from the lot's registered email
+- **Authentication**: Google OAuth via NextAuth v5
 
 ## 🛠️ Tech Stack
 
-### Core Technologies
-
-- **Frontend**: React 19, TypeScript, Tailwind CSS 4
-- **Backend**: Next.js 15 with App Router
+- **Frontend**: Next.js (App Router), React 19, TypeScript, Tailwind CSS 4, Shadcn/ui, Recharts
+- **Backend**: Next.js Server Actions, Zod validation
 - **Database**: PostgreSQL with Prisma ORM
+- **Auth**: NextAuth v5 (Google OAuth)
+- **Storage**: Google Drive API for receipts
+- **Testing**: Vitest + Testing Library
 - **Deployment**: Vercel
-- **Authentication**: NextAuth.js or Clerk
-
-### AI Development Tools
-
-- **Claude Code**: Anthropic's CLI for AI-assisted development
-- **AI Workflow**: Prompt engineering, iterative development, and AI-human collaboration patterns
 
 ## 🚀 Quick Start
 
@@ -62,12 +49,12 @@ cd plotify
 npm install
 
 # Setup environment variables
-cp .env.example .env
+cp .env.example .env.local
 
 # Setup database
-npm run bd:generate
-npm run bd:migrate
-npm run bd:seed
+npm run db:generate
+npm run db:migrate
+npm run db:seed
 
 # Start development server
 npm run dev
@@ -77,19 +64,12 @@ For detailed technical documentation, see [TECHNICAL.md](./TECHNICAL.md).
 
 ## 📱 Usage
 
-### System Access
-
-- **Users**: Community administrators, treasurers
-- **Roles**: Admin, Treasurer, Read-only
-
-### Workflow
-
-1. **Setup Initial Balances**: Configure starting cash balances for each fund type
-2. **Record Income**: Track payments by type (maintenance/works/activities) and lot
-3. **Manage Expenses**: Document outflows with proper fund allocation
-4. **Monitor Cash Flow**: Real-time dashboard showing available funds by type
-5. **Track Debt**: Manage outstanding payments and partial payment plans
-6. **Generate Reports**: Comprehensive financial reports and audit trails
+1. **Setup Quotas**: Configure maintenance and works quotas per period
+2. **Record Contributions**: Track payments by fund type and lot
+3. **Record Expenses**: Document outflows with proper fund allocation
+4. **Approve Records**: Treasurer reviews and approves pending entries
+5. **Monitor Balances**: Dashboard shows real-time balance and debt per fund
+6. **Import/Export**: Use CSV tools for bulk data operations
 
 ## 🏘️ Community Configuration
 
@@ -100,7 +80,7 @@ The system is flexible and can be configured for various types of communities:
 - **Urban Complexes**: Apartment complexes, condominiums
 - **Mixed-Use**: Commercial and residential combinations
 
-Configurable elements include community name, plot numbering systems, fund types, payment periods, and currency support.
+Configurable elements include community name, lot numbering, fund types, and currency (Colombian Peso by default).
 
 ## 🤝 Contributing
 
@@ -117,7 +97,7 @@ We welcome contributions! Here's how to get started:
 - All code, comments, and documentation must be in English
 - Use TypeScript for type safety
 - Follow ESLint and Prettier configurations
-- Maintain test coverage for new features
+- Every new feature, fix, or refactor must come with tests (`npm test`)
 
 ## 🐛 Reporting Issues
 
@@ -130,30 +110,10 @@ If you find a bug or have a suggestion:
    - Expected behavior
    - Screenshots if applicable
 
-## 🤖 AI Development Insights
-
-This project serves as a real-world case study for AI-assisted development. Key learnings include:
-
-### AI Development Benefits
-
-- ⚡ **Speed**: Rapid prototyping and feature implementation
-- 🔍 **Code Quality**: AI-assisted refactoring and best practices application
-- 📚 **Learning**: Discovering new patterns and modern development techniques
-- 🔄 **Iteration**: Quick pivots and architectural changes
-
-### Challenges & Limitations
-
-- Context management for large codebases
-- Balancing AI suggestions with domain expertise
-- Maintaining code consistency across AI-generated sections
-
 ## 📈 Project Status
 
-- **Version**: 1.0.0
-- **Status**: Active development with AI tools exploration
-- **Last Update**: July 2025
+- **Status**: Active development, in production use
 - **Location**: Medellín, Colombia
-- **AI Tools Used**: Claude Code
 
 For development roadmap and current tasks, see [TODO.md](./TODO.md).
 
@@ -167,15 +127,10 @@ For development roadmap and current tasks, see [TODO.md](./TODO.md).
 
 ## 📄 License
 
-This project is licensed under the MIT License. See `LICENSE` for more details.
+This project is licensed under the Apache License 2.0. See `LICENSE` for more details.
 
 ## 🙏 Acknowledgments
 
 - Residential community administrators and beta testers
 - **Anthropic** for Claude Code
 - Open source community contributors
-- Early AI development pioneers sharing insights and best practices
-
----
-
-_Exploring the future of AI-powered software development_
