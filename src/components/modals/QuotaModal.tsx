@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState, useTransition } from "react";
+import { useEffect, useState, useActionState, useTransition } from "react";
 import { QuotaConfig } from "@/lib/database/quotas";
 import {
   createQuotaConfigAction,
@@ -43,6 +43,7 @@ export default function QuotaModal({
   const action = quota ? updateQuotaConfigAction : createQuotaConfigAction;
   const [state, formAction] = useActionState(action, initialState);
   const [isPending, startTransition] = useTransition();
+  const [quotaType, setQuotaType] = useState(quota?.quotaType || "maintenance");
 
   useEffect(() => {
     if (state?.success) {
@@ -88,6 +89,7 @@ export default function QuotaModal({
             <Select
               name="quotaType"
               defaultValue={quota?.quotaType || "maintenance"}
+              onValueChange={setQuotaType}
               required
             >
               <SelectTrigger>
@@ -145,24 +147,59 @@ export default function QuotaModal({
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="dueDate">Fecha de vencimiento *</Label>
-            <Input
-              type="date"
-              name="dueDate"
-              id="dueDate"
-              defaultValue={
-                quota?.dueDate ? formatDateForStorage(quota.dueDate) : ""
-              }
-              required
-              disabled={isPending}
-            />
-            {state.errors?.dueDate && (
-              <div className="text-destructive text-sm">
-                {state.errors.dueDate}
+          {quotaType === "maintenance" ? (
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">Fecha de vencimiento *</Label>
+              <Input
+                type="date"
+                name="dueDate"
+                id="dueDate"
+                defaultValue={
+                  quota?.dueDate ? formatDateForStorage(quota.dueDate) : ""
+                }
+                required
+                disabled={isPending}
+              />
+              {state.errors?.dueDate && (
+                <div className="text-destructive text-sm">
+                  {state.errors.dueDate}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>{translations.titles.quotaStages}</Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="stages"
+                    value="1"
+                    defaultChecked={quota?.stages?.includes(1) ?? false}
+                    disabled={isPending}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  {translations.titles.quotaStage1}
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="stages"
+                    value="2"
+                    defaultChecked={quota?.stages?.includes(2) ?? false}
+                    disabled={isPending}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  {translations.titles.quotaStage2}
+                </label>
               </div>
-            )}
-          </div>
+              {state.errors?.stages && (
+                <div className="text-destructive text-sm">
+                  {state.errors.stages}
+                </div>
+              )}
+            </div>
+          )}
         </form>
 
         <DialogFooter>

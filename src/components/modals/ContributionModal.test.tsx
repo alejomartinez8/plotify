@@ -22,6 +22,7 @@ const lots: Lot[] = [
     ownerEmail: null,
     whatsappPhone: null,
     initialWorksDebt: 0,
+    stage: 1,
     isExempt: false,
     exemptionReason: null,
     exemptionEndDate: null,
@@ -30,7 +31,10 @@ const lots: Lot[] = [
 
 async function fillRequiredFields(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText(translations.labels.amount), "100");
-  await user.type(screen.getByLabelText(translations.labels.date), "2026-01-01");
+  await user.type(
+    screen.getByLabelText(translations.labels.date),
+    "2026-01-01"
+  );
 }
 
 describe("ContributionModal", () => {

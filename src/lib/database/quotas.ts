@@ -8,6 +8,7 @@ export interface QuotaConfig {
   amount: number;
   description: string | null;
   dueDate: string | null;
+  stages: number[];
 }
 
 export function toQuotaConfig(quota: PrismaQuotaConfig): QuotaConfig {
@@ -56,6 +57,7 @@ export async function createQuotaConfig(data: {
   amount: number;
   description?: string | null;
   dueDate?: Date | null;
+  stages?: number[];
 }): Promise<QuotaConfig | null> {
   try {
     const quota = await prisma.quotaConfig.create({
@@ -64,6 +66,7 @@ export async function createQuotaConfig(data: {
         amount: data.amount,
         description: data.description || null,
         dueDate: data.dueDate || null,
+        stages: data.stages || [],
         year: new Date().getFullYear(),
       },
     });
@@ -93,6 +96,7 @@ export async function updateQuotaConfig(
     amount?: number;
     description?: string | null;
     dueDate?: Date | null;
+    stages?: number[];
   }
 ): Promise<QuotaConfig | null> {
   try {
@@ -105,6 +109,7 @@ export async function updateQuotaConfig(
           description: data.description,
         }),
         ...(data.dueDate !== undefined && { dueDate: data.dueDate }),
+        ...(data.stages !== undefined && { stages: data.stages }),
       },
     });
     return toQuotaConfig(quota);

@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import QuotaModal from "@/components/modals/QuotaModal";
 import {
   createQuotaConfigAction,
+  updateQuotaConfigAction,
   QuotaState,
 } from "@/lib/actions/quota-actions";
 import { translations } from "@/lib/translations";
@@ -68,6 +69,46 @@ describe("QuotaModal", () => {
       message: "Created successfully.",
       success: true,
       errors: {},
+    });
+  });
+
+  it("shows a stage selector instead of a due date for works quotas, and submits the checked stages", async () => {
+    vi.mocked(updateQuotaConfigAction).mockReset();
+    vi.mocked(updateQuotaConfigAction).mockResolvedValue({
+      message: "Updated successfully.",
+      success: true,
+      errors: {},
+    } satisfies QuotaState);
+
+    const user = userEvent.setup();
+    const quota = {
+      id: "quota-1",
+      quotaType: "works",
+      amount: 300000,
+      description: "Portón",
+      dueDate: null,
+      stages: [1],
+    };
+
+    render(<QuotaModal quota={quota} onClose={vi.fn()} onSuccess={vi.fn()} />);
+
+    expect(
+      screen.queryByLabelText(/Fecha de vencimiento/)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText(translations.titles.quotaStage1)
+    ).toBeChecked();
+    expect(
+      screen.getByLabelText(translations.titles.quotaStage2)
+    ).not.toBeChecked();
+
+    await user.click(screen.getByLabelText(translations.titles.quotaStage2));
+    await user.click(
+      screen.getByRole("button", { name: translations.actions.update })
+    );
+
+    await waitFor(() => {
+      expect(updateQuotaConfigAction).toHaveBeenCalledTimes(1);
     });
   });
 });
