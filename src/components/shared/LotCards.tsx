@@ -86,7 +86,8 @@ export default function LotCards({
   const [viewMode, setViewMode] = useLocalStorage<ViewMode>(
     VIEW_MODE_STORAGE_KEY,
     "cards",
-    isViewMode
+    isViewMode,
+    () => (window.matchMedia("(min-width: 1024px)").matches ? "list" : "cards")
   );
   const [editingLot, setEditingLot] = useState<Lot | null>(null);
   const [deletingLot, setDeletingLot] = useState<Lot | null>(null);
@@ -505,9 +506,6 @@ export default function LotCards({
                       aria-label={`${translations.labels.maintenanceActiveFrom}: ${formatDateForDisplay(lot.maintenanceActiveFrom)}`}
                     />
                   )}
-                  <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
-                    {translations.labels.stage} {lot.stage}
-                  </span>
                 </div>
                 <div className="text-muted-foreground text-sm">{lot.owner}</div>
               </TableCell>

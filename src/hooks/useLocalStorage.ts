@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 export function useLocalStorage<T extends string>(
   key: string,
   defaultValue: T,
-  isValid: (value: string) => value is T
+  isValid: (value: string) => value is T,
+  getFallback?: () => T
 ) {
   const [value, setValue] = useState<T>(defaultValue);
 
@@ -14,6 +15,12 @@ export function useLocalStorage<T extends string>(
       // default, so the client-only value is adopted after mount instead.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue(stored);
+    } else if (getFallback) {
+      // No explicit preference saved yet — use a client-only computed
+      // default (e.g. based on viewport) instead of the static one, without
+      // persisting it, so it keeps following the fallback until the user
+      // makes an explicit choice.
+      setValue(getFallback());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);

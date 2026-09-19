@@ -61,4 +61,30 @@ describe("useLocalStorage", () => {
 
     expect(result.current[0]).toBe("cards");
   });
+
+  it("uses the fallback instead of the static default when nothing is stored", () => {
+    const { result } = renderHook(() =>
+      useLocalStorage("view-mode", "cards" as Mode, isMode, () => "list")
+    );
+
+    expect(result.current[0]).toBe("list");
+  });
+
+  it("prefers a stored value over the fallback", () => {
+    window.localStorage.setItem("view-mode", "cards");
+
+    const { result } = renderHook(() =>
+      useLocalStorage("view-mode", "cards" as Mode, isMode, () => "list")
+    );
+
+    expect(result.current[0]).toBe("cards");
+  });
+
+  it("does not persist the fallback value to localStorage", () => {
+    renderHook(() =>
+      useLocalStorage("view-mode", "cards" as Mode, isMode, () => "list")
+    );
+
+    expect(window.localStorage.getItem("view-mode")).toBeNull();
+  });
 });
