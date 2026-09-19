@@ -107,15 +107,18 @@
 ### 🚧 Phase 9: Test Coverage (In Progress)
 
 > **Business Context**: The project had Vitest configured but only 8 test
-> files, none covering money-handling logic. Rolled out as one PR per phase
-> to keep each review small.
+> files, none covering money-handling logic or the permission system.
+> Rolled out as one PR per phase to keep each review small.
 
-- ✅ **Phase 1 — Financial logic** _(2026-09-19)_: `balances.ts` (fund/monthly
-  totals), `contribution-actions.ts`, `expense-actions.ts`, `quota-actions.ts`,
-  `approval-actions.ts`, plus the untested CRUD/approval paths in
-  `contributions.ts`, `expenses.ts`, `quotas.ts`
-- [ ] **Phase 2 — Security & permissions**: `check-lot-access.ts`, `auth.ts`
-  role logic, `actions/helpers.ts`, `user-actions.ts`
+- ✅ **Phase 1 — Financial logic** _(2026-09-19, [#114](https://github.com/alejomartinez8/plotify/pull/114))_:
+  `balances.ts` (fund/monthly totals), `contribution-actions.ts`,
+  `expense-actions.ts`, `quota-actions.ts`, `approval-actions.ts`, plus the
+  untested CRUD/approval paths in `contributions.ts`, `expenses.ts`,
+  `quotas.ts`
+- ✅ **Phase 2 — Security & permissions** _(2026-09-19)_: `auth.ts` role
+  precedence (`ADMIN_EMAILS` safety net, DB role, derived Owner),
+  `check-lot-access.ts`, `actions/helpers.ts`, `user-actions.ts`
+  (self-lockout guards)
 - [ ] **Phase 3 — Secondary data & import/export**: `import-actions.ts`,
   `export-actions.ts` (CSV parsing), `collaborators.ts`, `users.ts`,
   `approval-history.ts`
