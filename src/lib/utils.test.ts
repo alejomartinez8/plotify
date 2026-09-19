@@ -3,6 +3,7 @@ import {
   parseLocalDate,
   formatDateForStorage,
   formatDateForDisplay,
+  calculateSimpleLotBalances,
 } from "./utils";
 
 // Regression tests for the "Activo desde" timezone bug: 2026-01-01 was
@@ -64,5 +65,64 @@ describe("date helpers with a raw Date object — server-only contract", () => {
     vi.stubEnv("TZ", "America/Bogota");
     const writtenByAUtcProcess = new Date("2026-01-01T00:00:00.000Z");
     expect(formatDateForStorage(writtenByAUtcProcess)).toBe("2025-12-31");
+  });
+});
+
+describe("calculateSimpleLotBalances — debt breakdown by category", () => {
+  const lots = [
+    { id: "1", lotNumber: "101", owner: "Ana", initialWorksDebt: 0, isExempt: false, exemptionEndDate: null },
+    { id: "2", lotNumber: "102", owner: "Beto", initialWorksDebt: 10000, isExempt: false, exemptionEndDate: null },
+  ];
+
+  const quotaConfigs = [
+    { id: "q1", quotaType: "maintenance", amount: 50000, dueDate: "2026-01-01" },
+    { id: "q2", quotaType: "works", amount: 30000, dueDate: "2026-01-01" },
+  ];
+
+  it("splits debt into maintenance and works, keeping others at 0", () => {
+    const contributions = [
+      { lotId: "2", type: "works", amount: 5000, date: "2026-01-02" },
+    ];
+
+    const [lotOne, lotTwo] = calculateSimpleLotBalances(
+      lots,
+      contributions,
+      quotaConfigs
+    ).sort((a, b) => a.lotId.localeCompare(b.lotId));
+
+    expect(lotOne.debtByCategory).toEqual({
+      maintenance: 50000,
+      works: 30000,
+      others: 0,
+    });
+    expect(lotOne.outstandingBalance).toBe(80000);
+
+    // Lot 2: works quota (30000) + initial works debt (10000) - contribution (5000)
+    expect(lotTwo.debtByCategory).toEqual({
+      maintenance: 50000,
+      works: 35000,
+      others: 0,
+    });
+    expect(lotTwo.outstandingBalance).toBe(85000);
+  });
+
+  it("does not offset unpaid maintenance debt with a works overpayment", () => {
+    const contributions = [
+      // Overpays works by 70000, leaves maintenance untouched.
+      { lotId: "1", type: "works", amount: 100000, date: "2026-01-02" },
+    ];
+
+    const [lotOne] = calculateSimpleLotBalances(
+      lots,
+      contributions,
+      quotaConfigs
+    ).filter((lot) => lot.lotId === "1");
+
+    expect(lotOne.debtByCategory).toEqual({
+      maintenance: 50000,
+      works: 0,
+      others: 0,
+    });
+    expect(lotOne.status).toBe("overdue");
   });
 });
