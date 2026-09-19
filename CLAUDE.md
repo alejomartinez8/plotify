@@ -29,7 +29,7 @@ A Next.js application for community cash management with multi-fund architecture
 
 ## Project Structure
 
-- **Frontend**: Next.js 15.3.5 with React 19.1.0, TypeScript, TailwindCSS
+- **Frontend**: Next.js 16 with React 19.1.0, TypeScript, TailwindCSS
 - **Backend**: Next.js Server Actions with PostgreSQL
 - **Database**: PostgreSQL with Prisma ORM
 - **Deployment**: Vercel (auto-deploy from main branch)
