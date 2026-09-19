@@ -281,16 +281,6 @@ export default function LotCards({
                       <span className="text-primary flex-shrink-0 text-sm font-bold sm:text-base">
                         {lot.lotNumber}
                       </span>
-                      {lot.maintenanceActiveFrom && (
-                        <div className="group relative">
-                          <Info className="h-3 w-3 flex-shrink-0 text-amber-600 sm:h-3.5 sm:w-3.5" />
-                          <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
-                            {translations.labels.maintenanceActiveFrom}:{" "}
-                            {formatDateForDisplay(lot.maintenanceActiveFrom)}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
-                          </div>
-                        </div>
-                      )}
                       {lot.balance ? (
                         <span
                           className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:font-semibold ${getStatusColor(lot.balance.status)}`}
@@ -304,13 +294,16 @@ export default function LotCards({
                           {translations.labels.noData}
                         </span>
                       )}
-                      <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 sm:px-2">
-                        {translations.labels.stage} {lot.stage}
-                      </span>
                     </div>
                     <div className="text-muted-foreground truncate text-xs sm:text-sm">
                       {lot.owner}
                     </div>
+                    {lot.maintenanceActiveFrom && (
+                      <div className="text-muted-foreground text-xs">
+                        {translations.labels.activeSince}:{" "}
+                        {formatDateForDisplay(lot.maintenanceActiveFrom)}
+                      </div>
+                    )}
                     {isAdmin && lot.ownerEmail && (
                       <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
                         <Mail className="h-3 w-3 flex-shrink-0" />

@@ -140,8 +140,10 @@ describe("LotCards", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows each lot's stage to every viewer, admin or not, for transparency on which quotas apply", () => {
+  it("shows each lot's stage in the list view, to every viewer, admin or not, for transparency on which quotas apply", async () => {
+    const user = userEvent.setup();
     renderLotCards(false);
+    await user.click(screen.getByTitle(translations.labels.viewAsList));
 
     expect(
       screen.getByText(`${translations.labels.stage} 1`)

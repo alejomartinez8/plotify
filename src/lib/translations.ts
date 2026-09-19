@@ -126,6 +126,7 @@ export const translations = {
     totalDebt: "Cartera",
     overdueLots: "atrasados",
     maintenanceActiveFrom: "Activo desde (mantenimiento)",
+    activeSince: "Activo",
     noData: "Sin datos",
     contributions: "Aportes",
     outstandingBalance: "Saldo Adeudado",
