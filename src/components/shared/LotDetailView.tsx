@@ -232,9 +232,14 @@ export default function LotDetailView({
           {/* Back Button and Title Row */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-foreground text-2xl font-bold">
-                {translations.labels.lot} {lot.lotNumber}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-foreground text-2xl font-bold">
+                  {translations.labels.lot} {lot.lotNumber}
+                </h1>
+                <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                  {translations.labels.stage} {lot.stage}
+                </span>
+              </div>
               <p className="text-muted-foreground mt-1 text-lg">{lot.owner}</p>
             </div>
             {debtDetail && (

@@ -31,8 +31,8 @@ function makeLot(overrides: Partial<Lot>): Lot {
 }
 
 const lots: Lot[] = [
-  makeLot({ id: "1", lotNumber: "101", owner: "Ana" }),
-  makeLot({ id: "2", lotNumber: "102", owner: "Beto" }),
+  makeLot({ id: "1", lotNumber: "101", owner: "Ana", stage: 1 }),
+  makeLot({ id: "2", lotNumber: "102", owner: "Beto", stage: 2 }),
 ];
 
 const lotBalances: SimpleLotBalance[] = [
@@ -139,6 +139,17 @@ describe("LotCards", () => {
       screen.getByRole("button", {
         name: `${translations.actions.new} ${translations.labels.lot}`,
       })
+    ).toBeInTheDocument();
+  });
+
+  it("shows each lot's stage to every viewer, admin or not, for transparency on which quotas apply", () => {
+    renderLotCards(false);
+
+    expect(
+      screen.getByText(`${translations.labels.stage} 1`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`${translations.labels.stage} 2`)
     ).toBeInTheDocument();
   });
 
