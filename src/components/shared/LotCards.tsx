@@ -17,7 +17,11 @@ import {
 import Link from "next/link";
 import { Lot } from "@/types/lots.types";
 import { Contribution } from "@/types/contributions.types";
-import { getStatusColor, formatCurrency, formatDateForDisplay } from "@/lib/utils";
+import {
+  getStatusColor,
+  formatCurrency,
+  formatDateForDisplay,
+} from "@/lib/utils";
 import { SimpleLotBalance } from "@/types/quotas.types";
 import { translations } from "@/lib/translations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -266,155 +270,161 @@ export default function LotCards({
           <CardContent className="w-full p-0">
             {/* Unified Responsive Layout */}
             <div className="relative w-full">
-              <Link href={`/income/${lot.id}`} className="block hover:bg-muted/30 transition-colors duration-200">
-              <div className="flex min-h-[60px] w-full sm:min-h-[70px]">
-                {/* Main Content Section */}
-                <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden px-4 py-2 sm:px-6 sm:py-3">
-                  <div className="mb-1 flex min-w-0 items-center gap-1 sm:gap-2">
-                    <span className="text-primary flex-shrink-0 text-sm font-bold sm:text-base">
-                      {lot.lotNumber}
-                    </span>
-                    {lot.isExempt && (
-                      <div className="group relative">
-                        <Info className="h-3 w-3 flex-shrink-0 text-amber-600 sm:h-3.5 sm:w-3.5" />
-                        <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
-                          {lot.exemptionReason ||
-                            translations.labels.exempt}
-                          {lot.exemptionEndDate && ` (activo desde ${formatDateForDisplay(lot.exemptionEndDate)})`}
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
+              <Link
+                href={`/income/${lot.id}`}
+                className="hover:bg-muted/30 block transition-colors duration-200"
+              >
+                <div className="flex min-h-[60px] w-full sm:min-h-[70px]">
+                  {/* Main Content Section */}
+                  <div className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden px-4 py-2 sm:px-6 sm:py-3">
+                    <div className="mb-1 flex min-w-0 items-center gap-1 sm:gap-2">
+                      <span className="text-primary flex-shrink-0 text-sm font-bold sm:text-base">
+                        {lot.lotNumber}
+                      </span>
+                      {lot.isExempt && (
+                        <div className="group relative">
+                          <Info className="h-3 w-3 flex-shrink-0 text-amber-600 sm:h-3.5 sm:w-3.5" />
+                          <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 transform rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:block">
+                            {lot.exemptionReason || translations.labels.exempt}
+                            {lot.exemptionEndDate &&
+                              ` (activo desde ${formatDateForDisplay(lot.exemptionEndDate)})`}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {lot.balance ? (
-                      <span
-                        className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:font-semibold ${getStatusColor(lot.balance.status)}`}
-                      >
-                        {lot.balance.status === "current"
-                          ? translations.labels.current
-                          : translations.labels.overdue}
+                      )}
+                      {lot.balance ? (
+                        <span
+                          className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:font-semibold ${getStatusColor(lot.balance.status)}`}
+                        >
+                          {lot.balance.status === "current"
+                            ? translations.labels.current
+                            : translations.labels.overdue}
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 sm:px-2 sm:font-semibold">
+                          {lot.isExempt
+                            ? translations.labels.notApplicable
+                            : translations.labels.noData}
+                        </span>
+                      )}
+                      <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 sm:px-2">
+                        {translations.labels.stage} {lot.stage}
                       </span>
-                    ) : (
-                      <span className="inline-flex rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 sm:px-2 sm:font-semibold">
-                        {lot.isExempt
-                          ? translations.labels.notApplicable
-                          : translations.labels.noData}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-muted-foreground truncate text-xs sm:text-sm">
-                    {lot.owner}
-                  </div>
-                  {isAdmin && lot.ownerEmail && (
-                    <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
-                      <Mail className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">{lot.ownerEmail}</span>
                     </div>
-                  )}
-                  {isAdmin && lot.whatsappPhone && (
-                    <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
-                      <Phone className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">{lot.whatsappPhone}</span>
+                    <div className="text-muted-foreground truncate text-xs sm:text-sm">
+                      {lot.owner}
                     </div>
-                  )}
-                </div>
-
-                {/* Values Section */}
-                <div className="min-w-[140px] flex-shrink-0 px-3 py-2 text-right sm:min-w-[180px] sm:px-5 sm:py-3">
-                  {/* Breakdown by type */}
-                  <div className="mb-1.5 space-y-0.5">
-                    {/* Maintenance */}
-                    {lot.totals.maintenance > 0 && (
-                      <div className="flex items-center justify-end gap-1">
-                        <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                          {translations.labels.maintenance}:
-                        </span>
-                        <span className="text-[11px] text-emerald-600 sm:text-sm">
-                          {formatCurrency(lot.totals.maintenance)}
-                        </span>
+                    {isAdmin && lot.ownerEmail && (
+                      <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
+                        <Mail className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{lot.ownerEmail}</span>
                       </div>
                     )}
-
-                    {/* Works */}
-                    {lot.totals.works > 0 && (
-                      <div className="flex items-center justify-end gap-1">
-                        <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                          {translations.labels.works}:
-                        </span>
-                        <span className="text-[11px] text-emerald-600 sm:text-sm">
-                          {formatCurrency(lot.totals.works)}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Others (only show if > 0) */}
-                    {lot.totals.others > 0 && (
-                      <div className="flex items-center justify-end gap-1">
-                        <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                          {translations.labels.others}:
-                        </span>
-                        <span className="text-[11px] text-emerald-600 sm:text-sm">
-                          {formatCurrency(lot.totals.others)}
-                        </span>
+                    {isAdmin && lot.whatsappPhone && (
+                      <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
+                        <Phone className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{lot.whatsappPhone}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Total with divider */}
-                  {lot.totals.total > 0 && (
-                    <>
-                      <div className="border-muted-foreground/20 my-1 border-t"></div>
+                  {/* Values Section */}
+                  <div className="min-w-[140px] flex-shrink-0 px-3 py-2 text-right sm:min-w-[180px] sm:px-5 sm:py-3">
+                    {/* Breakdown by type */}
+                    <div className="mb-1.5 space-y-0.5">
+                      {/* Maintenance */}
+                      {lot.totals.maintenance > 0 && (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
+                            {translations.labels.maintenance}:
+                          </span>
+                          <span className="text-[11px] text-emerald-600 sm:text-sm">
+                            {formatCurrency(lot.totals.maintenance)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Works */}
+                      {lot.totals.works > 0 && (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
+                            {translations.labels.works}:
+                          </span>
+                          <span className="text-[11px] text-emerald-600 sm:text-sm">
+                            {formatCurrency(lot.totals.works)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Others (only show if > 0) */}
+                      {lot.totals.others > 0 && (
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
+                            {translations.labels.others}:
+                          </span>
+                          <span className="text-[11px] text-emerald-600 sm:text-sm">
+                            {formatCurrency(lot.totals.others)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Total with divider */}
+                    {lot.totals.total > 0 && (
+                      <>
+                        <div className="border-muted-foreground/20 my-1 border-t"></div>
+                        <div className="mb-1 flex items-center justify-end gap-1">
+                          <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
+                            {translations.labels.totalContributions}:
+                          </span>
+                          <span className="text-xs font-bold text-emerald-600 sm:text-sm">
+                            {formatCurrency(lot.totals.total)}
+                          </span>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Initial Debt (only if > 0) */}
+                    {(lot.initialWorksDebt || 0) > 0 && (
                       <div className="mb-1 flex items-center justify-end gap-1">
                         <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                          {translations.labels.totalContributions}:
+                          {translations.labels.initialDebt}:
                         </span>
-                        <span className="text-xs font-bold text-emerald-600 sm:text-sm">
-                          {formatCurrency(lot.totals.total)}
+                        <span className="text-[11px] font-semibold text-amber-600 sm:text-sm">
+                          {formatCurrency(lot.initialWorksDebt || 0)}
                         </span>
                       </div>
-                    </>
-                  )}
+                    )}
 
-                  {/* Initial Debt (only if > 0) */}
-                  {(lot.initialWorksDebt || 0) > 0 && (
-                    <div className="mb-1 flex items-center justify-end gap-1">
+                    {/* Outstanding balance */}
+                    <div className="mt-1 flex items-center justify-end gap-1">
                       <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                        {translations.labels.initialDebt}:
+                        {translations.labels.totalOutstandingDebt}:
                       </span>
-                      <span className="text-[11px] font-semibold text-amber-600 sm:text-sm">
-                        {formatCurrency(lot.initialWorksDebt || 0)}
+                      <span
+                        className={`text-xs font-medium sm:text-sm sm:font-semibold ${
+                          lot.isExempt && !lot.exemptionEndDate
+                            ? "text-gray-500"
+                            : lot.balance?.outstandingBalance &&
+                                lot.balance.outstandingBalance > 0
+                              ? "text-red-600"
+                              : "text-green-600"
+                        }`}
+                      >
+                        {lot.isExempt && !lot.exemptionEndDate
+                          ? "-"
+                          : lot.balance
+                            ? formatCurrency(lot.balance.outstandingBalance)
+                            : formatCurrency(0)}
                       </span>
                     </div>
-                  )}
-
-                  {/* Outstanding balance */}
-                  <div className="mt-1 flex items-center justify-end gap-1">
-                    <span className="text-muted-foreground truncate text-[10px] sm:text-xs">
-                      {translations.labels.totalOutstandingDebt}:
-                    </span>
-                    <span
-                      className={`text-xs font-medium sm:text-sm sm:font-semibold ${
-                        lot.isExempt && !lot.exemptionEndDate
-                          ? "text-gray-500"
-                          : lot.balance?.outstandingBalance &&
-                              lot.balance.outstandingBalance > 0
-                            ? "text-red-600"
-                            : "text-green-600"
-                      }`}
-                    >
-                      {lot.isExempt && !lot.exemptionEndDate
-                        ? "-"
-                        : lot.balance
-                          ? formatCurrency(
-                              lot.balance.outstandingBalance
-                            )
-                          : formatCurrency(0)}
-                    </span>
                   </div>
                 </div>
-              </div>
               </Link>
 
-              <div className={`bg-muted/20 border-muted/30 flex items-center border-t px-2 py-1 sm:px-4 sm:py-1.5 ${isAdmin ? "justify-between lg:justify-end" : "justify-start lg:hidden"}`}>
+              <div
+                className={`bg-muted/20 border-muted/30 flex items-center border-t px-2 py-1 sm:px-4 sm:py-1.5 ${isAdmin ? "justify-between lg:justify-end" : "justify-start lg:hidden"}`}
+              >
                 <Link href={`/income/${lot.id}`} className="lg:hidden">
                   <Button
                     variant="ghost"
@@ -511,10 +521,11 @@ export default function LotCards({
                       }
                     />
                   )}
+                  <span className="inline-flex flex-shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">
+                    {translations.labels.stage} {lot.stage}
+                  </span>
                 </div>
-                <div className="text-muted-foreground text-sm">
-                  {lot.owner}
-                </div>
+                <div className="text-muted-foreground text-sm">{lot.owner}</div>
               </TableCell>
               <TableCell>
                 {lot.balance ? (

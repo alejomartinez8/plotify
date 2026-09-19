@@ -187,10 +187,6 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-600">
-              Uso interno para el cálculo de cuotas de obras, no se muestra a
-              los propietarios.
-            </p>
             {state.errors?.stage && (
               <div className="text-destructive text-sm">
                 {state.errors.stage}
