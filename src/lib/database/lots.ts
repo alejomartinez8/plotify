@@ -76,6 +76,7 @@ export async function createLot(data: {
   ownerEmail?: string | null;
   whatsappPhone?: string | null;
   initialWorksDebt?: number;
+  stage?: number;
   isExempt?: boolean;
   exemptionReason?: string | null;
   exemptionEndDate?: Date | string | null;
@@ -87,6 +88,7 @@ export async function createLot(data: {
       ownerEmail: data.ownerEmail || null,
       whatsappPhone: data.whatsappPhone || null,
       initialWorksDebt: data.initialWorksDebt || 0,
+      stage: data.stage || 1,
       isExempt: data.isExempt || false,
       exemptionReason: data.exemptionReason || null,
       exemptionEndDate: data.exemptionEndDate
@@ -118,6 +120,7 @@ export async function updateLot(
     ownerEmail?: string | null;
     whatsappPhone?: string | null;
     initialWorksDebt?: number;
+    stage?: number;
     isExempt?: boolean;
     exemptionReason?: string | null;
     exemptionEndDate?: Date | string | null;
@@ -135,6 +138,7 @@ export async function updateLot(
       ...(data.initialWorksDebt !== undefined && {
         initialWorksDebt: data.initialWorksDebt,
       }),
+      ...(data.stage !== undefined && { stage: data.stage }),
       ...(data.isExempt !== undefined && { isExempt: data.isExempt }),
       ...(data.exemptionReason !== undefined && {
         exemptionReason: data.exemptionReason,

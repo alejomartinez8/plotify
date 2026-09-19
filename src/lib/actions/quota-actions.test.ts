@@ -97,6 +97,42 @@ describe("createQuotaConfigAction", () => {
     expect(result.success).toBe(false);
     expect(result.message).toContain(translations.errors.database);
   });
+
+  it("does not require a due date for a works quota, and forwards its stages", async () => {
+    mockCheckAdminAccess.mockResolvedValue(null);
+    mockCreateQuotaConfig.mockResolvedValue({ id: "quota-1" });
+
+    const formData = makeFormData({ quotaType: "works", dueDate: "" });
+    formData.append("stages", "1");
+    formData.append("stages", "2");
+
+    const result = await createQuotaConfigAction(
+      { message: null, errors: {} },
+      formData
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockCreateQuotaConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        quotaType: "works",
+        dueDate: null,
+        stages: [1, 2],
+      })
+    );
+  });
+
+  it("rejects a works quota with no stage selected", async () => {
+    mockCheckAdminAccess.mockResolvedValue(null);
+
+    const result = await createQuotaConfigAction(
+      { message: null, errors: {} },
+      makeFormData({ quotaType: "works", dueDate: "" })
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.errors?.stages).toBeDefined();
+    expect(mockCreateQuotaConfig).not.toHaveBeenCalled();
+  });
 });
 
 describe("updateQuotaConfigAction", () => {

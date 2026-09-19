@@ -92,6 +92,29 @@ describe("createLotAction", () => {
     expect(result.errors?.lotNumber).toBeUndefined();
   });
 
+  it("forwards the selected stage, defaulting to 1 when none is provided", async () => {
+    mockCheckAdminAccess.mockResolvedValue(null);
+    mockCreateLot.mockResolvedValue({ id: "lot-1", lotNumber: "001" });
+
+    await createLotAction(
+      { message: null, errors: {} },
+      makeLotFormData({ lotNumber: "001", stage: "2" })
+    );
+
+    expect(mockCreateLot).toHaveBeenCalledWith(
+      expect.objectContaining({ stage: 2 })
+    );
+
+    await createLotAction(
+      { message: null, errors: {} },
+      makeLotFormData({ lotNumber: "002" })
+    );
+
+    expect(mockCreateLot).toHaveBeenLastCalledWith(
+      expect.objectContaining({ stage: 1 })
+    );
+  });
+
   it("does not attempt to create a lot when admin access is denied", async () => {
     mockCheckAdminAccess.mockResolvedValue({
       success: false,

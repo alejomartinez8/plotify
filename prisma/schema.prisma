@@ -14,6 +14,7 @@ model Lot {
   ownerEmail              String?
   whatsappPhone           String?
   initialWorksDebt        Int                      @default(0)
+  stage                   Int                      @default(1)
   isExempt                Boolean                  @default(false)
   exemptionReason         String?
   exemptionEndDate        DateTime?
@@ -93,6 +94,7 @@ model QuotaConfig {
   amount      Int
   description String?
   dueDate     DateTime?
+  stages      Int[]     @default([])
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
 

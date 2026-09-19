@@ -19,6 +19,13 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 import { cn } from "@/lib/utils";
 
 interface LotModalProps {
@@ -53,6 +60,7 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
         whatsappPhone: (formData.get("whatsappPhone") as string) || null,
         initialWorksDebt:
           parseInt(formData.get("initialWorksDebt") as string) || 0,
+        stage: parseInt(formData.get("stage") as string) || 1,
         isExempt: formData.get("isExempt") === "on",
         exemptionReason: (formData.get("exemptionReason") as string) || null,
         exemptionEndDate: (formData.get("exemptionEndDate") as string) || null,
@@ -160,6 +168,36 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="stage">{translations.labels.stage}</Label>
+            <Select
+              name="stage"
+              defaultValue={String(lot?.stage || 1)}
+              disabled={isPending}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">
+                  {translations.titles.quotaStage1}
+                </SelectItem>
+                <SelectItem value="2">
+                  {translations.titles.quotaStage2}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-600">
+              Uso interno para el cálculo de cuotas de obras, no se muestra a
+              los propietarios.
+            </p>
+            {state.errors?.stage && (
+              <div className="text-destructive text-sm">
+                {state.errors.stage}
+              </div>
+            )}
+          </div>
+
           {/* WhatsApp contact */}
           <div className="space-y-2 border-t pt-4">
             <Label htmlFor="whatsappPhone">
@@ -227,12 +265,17 @@ export default function LotModal({ onClose, lot, onSuccess }: LotModalProps) {
                 type="date"
                 name="exemptionEndDate"
                 id="exemptionEndDate"
-                defaultValue={lot?.exemptionEndDate ? formatDateForStorage(lot.exemptionEndDate) : ""}
+                defaultValue={
+                  lot?.exemptionEndDate
+                    ? formatDateForStorage(lot.exemptionEndDate)
+                    : ""
+                }
                 disabled={isPending}
               />
               <p className="text-xs text-gray-600">
-                Si se establece, el lote participará en los cálculos de cuotas a partir de esta fecha.
-                Si se deja vacío (y el lote está marcado como exento), quedará excluido completamente.
+                Si se establece, el lote participará en los cálculos de cuotas a
+                partir de esta fecha. Si se deja vacío (y el lote está marcado
+                como exento), quedará excluido completamente.
               </p>
             </div>
           </div>

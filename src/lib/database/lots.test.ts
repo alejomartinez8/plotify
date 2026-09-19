@@ -26,6 +26,7 @@ function makePrismaLot(overrides: Partial<PrismaLot> = {}): PrismaLot {
     ownerEmail: null,
     whatsappPhone: null,
     initialWorksDebt: 0,
+    stage: 1,
     isExempt: false,
     exemptionReason: null,
     exemptionEndDate: null,
@@ -109,8 +110,8 @@ describe("updateLot", () => {
     );
     mockedLotUpdate.mockRejectedValue(dbError);
 
-    await expect(
-      updateLot("lot-1", { lotNumber: "001" })
-    ).rejects.toBe(dbError);
+    await expect(updateLot("lot-1", { lotNumber: "001" })).rejects.toBe(
+      dbError
+    );
   });
 });

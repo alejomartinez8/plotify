@@ -12,17 +12,50 @@ import { logger } from "@/lib/logger";
 import { checkAdminAccess } from "./helpers";
 import { parseLocalDate } from "@/lib/utils";
 
-const QuotaConfigSchema = z.object({
+const baseQuotaConfigFields = {
   quotaType: z.enum(["maintenance", "works"]),
   amount: z.number().min(0, translations.errors.amountPositive),
   description: z.string().optional().nullable(),
-  dueDate: z.string().min(1, "La fecha de vencimiento es requerida"),
-});
+  dueDate: z.string().optional().nullable(),
+  stages: z.array(z.number()).optional(),
+};
 
-const CreateQuotaConfig = QuotaConfigSchema;
-const UpdateQuotaConfig = QuotaConfigSchema.extend({
-  id: z.string().min(1, translations.errors.required),
-});
+function validateStageAndDueDate(
+  data: {
+    quotaType: "maintenance" | "works";
+    dueDate?: string | null;
+    stages?: number[];
+  },
+  ctx: z.RefinementCtx
+) {
+  // Maintenance quotas are tied to a due date, not to a stage.
+  if (data.quotaType === "maintenance" && !data.dueDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["dueDate"],
+      message: "La fecha de vencimiento es requerida",
+    });
+  }
+  // Works quotas are tied to one or more stages, not to a date.
+  if (data.quotaType === "works" && !data.stages?.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["stages"],
+      message: translations.errors.stagesRequired,
+    });
+  }
+}
+
+const CreateQuotaConfig = z
+  .object(baseQuotaConfigFields)
+  .superRefine(validateStageAndDueDate);
+
+const UpdateQuotaConfig = z
+  .object({
+    id: z.string().min(1, translations.errors.required),
+    ...baseQuotaConfigFields,
+  })
+  .superRefine(validateStageAndDueDate);
 
 export type QuotaState = {
   errors?: {
@@ -30,6 +63,7 @@ export type QuotaState = {
     amount?: string[];
     description?: string[];
     dueDate?: string[];
+    stages?: string[];
   };
   message?: string | null;
   success?: boolean;
@@ -51,7 +85,8 @@ export async function createQuotaConfigAction(
     quotaType: formData.get("quotaType") as string,
     amount: parseInt(formData.get("amount") as string) || 0,
     description: (formData.get("description") as string) || null,
-    dueDate: formData.get("dueDate") as string,
+    dueDate: (formData.get("dueDate") as string) || null,
+    stages: formData.getAll("stages").map((stage) => parseInt(stage as string)),
   };
 
   const validatedFields = CreateQuotaConfig.safeParse(rawData);
@@ -74,7 +109,8 @@ export async function createQuotaConfigAction(
     };
   }
 
-  const { quotaType, amount, description, dueDate } = validatedFields.data;
+  const { quotaType, amount, description, dueDate, stages } =
+    validatedFields.data;
 
   try {
     await createQuotaConfig({
@@ -82,6 +118,7 @@ export async function createQuotaConfigAction(
       amount,
       description,
       dueDate: dueDate ? parseLocalDate(dueDate) : null,
+      stages: quotaType === "works" ? stages : [],
     });
   } catch (error) {
     const errorInstance =
@@ -122,7 +159,8 @@ export async function updateQuotaConfigAction(
     quotaType: formData.get("quotaType") as string,
     amount: parseInt(formData.get("amount") as string) || 0,
     description: (formData.get("description") as string) || null,
-    dueDate: formData.get("dueDate") as string,
+    dueDate: (formData.get("dueDate") as string) || null,
+    stages: formData.getAll("stages").map((stage) => parseInt(stage as string)),
   };
 
   const validatedFields = UpdateQuotaConfig.safeParse(rawData);
@@ -145,7 +183,8 @@ export async function updateQuotaConfigAction(
     };
   }
 
-  const { id, quotaType, amount, description, dueDate } = validatedFields.data;
+  const { id, quotaType, amount, description, dueDate, stages } =
+    validatedFields.data;
 
   try {
     await updateQuotaConfig(id, {
@@ -153,6 +192,7 @@ export async function updateQuotaConfigAction(
       amount,
       description,
       dueDate: dueDate ? parseLocalDate(dueDate) : null,
+      stages: quotaType === "works" ? stages : [],
     });
   } catch (error) {
     const errorInstance =

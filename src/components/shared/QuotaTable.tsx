@@ -164,6 +164,9 @@ export default function QuotaTable({
                     {getSortIcon("description")}
                   </div>
                 </TableHead>
+                <TableHead className="border-border border-b-2 px-6 py-4 text-left font-semibold tracking-wide">
+                  {translations.labels.stage}
+                </TableHead>
                 {isAdmin && (
                   <TableHead className="border-border border-b-2 px-6 py-4 text-center font-semibold tracking-wide">
                     {translations.labels.actions}
@@ -206,6 +209,17 @@ export default function QuotaTable({
                       {quota.description || "-"}
                     </div>
                   </TableCell>
+                  <TableCell className="px-6 py-4">
+                    <div className="text-gray-600">
+                      {quota.quotaType === "works" && quota.stages?.length
+                        ? quota.stages
+                            .slice()
+                            .sort()
+                            .map((stage) => `Etapa ${stage}`)
+                            .join(", ")
+                        : "-"}
+                    </div>
+                  </TableCell>
                   {isAdmin && (
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
@@ -235,7 +249,7 @@ export default function QuotaTable({
               {sortedQuotas.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={isAdmin ? 5 : 4}
+                    colSpan={isAdmin ? 6 : 5}
                     className="px-6 py-12 text-center"
                   >
                     <div className="flex flex-col items-center gap-3">

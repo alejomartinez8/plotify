@@ -35,6 +35,7 @@ const LotSchema = z.object({
     .number()
     .min(0, translations.errors.amountPositive)
     .optional(),
+  stage: z.union([z.literal(1), z.literal(2)]).optional(),
   isExempt: z.boolean().optional(),
   exemptionReason: z.string().nullable().optional(),
   exemptionEndDate: z.string().nullable().optional(),
@@ -58,6 +59,7 @@ export type State = {
     whatsappPhone?: string[];
     lotId?: string[];
     initialWorksDebt?: string[];
+    stage?: string[];
   };
   message?: string | null;
   success?: boolean;
@@ -82,6 +84,7 @@ export async function createLotAction(
     ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     whatsappPhone: (formData.get("whatsappPhone") as string)?.trim() || null,
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+    stage: parseInt(formData.get("stage") as string) || 1,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
       (formData.get("exemptionReason") as string)?.trim() || null,
@@ -104,8 +107,17 @@ export async function createLotAction(
     };
   }
 
-  const { lotNumber, owner, ownerEmail, whatsappPhone, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
-    validatedFields.data;
+  const {
+    lotNumber,
+    owner,
+    ownerEmail,
+    whatsappPhone,
+    initialWorksDebt,
+    stage,
+    isExempt,
+    exemptionReason,
+    exemptionEndDate,
+  } = validatedFields.data;
 
   try {
     await createLot({
@@ -114,6 +126,7 @@ export async function createLotAction(
       ownerEmail,
       whatsappPhone: whatsappPhone || null,
       initialWorksDebt,
+      stage,
       isExempt,
       exemptionReason,
       exemptionEndDate,
@@ -167,6 +180,7 @@ export async function updateLotAction(
     ownerEmail: (formData.get("ownerEmail") as string)?.trim() || null,
     whatsappPhone: (formData.get("whatsappPhone") as string)?.trim() || null,
     initialWorksDebt: parseInt(formData.get("initialWorksDebt") as string) || 0,
+    stage: parseInt(formData.get("stage") as string) || 1,
     isExempt: formData.get("isExempt") === "on",
     exemptionReason:
       (formData.get("exemptionReason") as string)?.trim() || null,
@@ -193,8 +207,18 @@ export async function updateLotAction(
     };
   }
 
-  const { id, lotNumber, owner, ownerEmail, whatsappPhone, initialWorksDebt, isExempt, exemptionReason, exemptionEndDate } =
-    validatedFields.data;
+  const {
+    id,
+    lotNumber,
+    owner,
+    ownerEmail,
+    whatsappPhone,
+    initialWorksDebt,
+    stage,
+    isExempt,
+    exemptionReason,
+    exemptionEndDate,
+  } = validatedFields.data;
 
   try {
     await updateLot(id, {
@@ -203,6 +227,7 @@ export async function updateLotAction(
       ownerEmail,
       whatsappPhone: whatsappPhone || null,
       initialWorksDebt,
+      stage,
       isExempt,
       exemptionReason,
       exemptionEndDate,
@@ -352,4 +377,3 @@ export async function getLotsAction() {
     return [];
   }
 }
-

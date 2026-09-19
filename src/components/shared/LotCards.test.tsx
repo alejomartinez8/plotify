@@ -22,6 +22,7 @@ function makeLot(overrides: Partial<Lot>): Lot {
     ownerEmail: null,
     whatsappPhone: null,
     initialWorksDebt: 0,
+    stage: 1,
     isExempt: false,
     exemptionReason: null,
     exemptionEndDate: null,
@@ -88,9 +89,7 @@ describe("LotCards", () => {
     await user.click(screen.getByTitle(translations.labels.viewAsList));
     expect(screen.getByRole("table")).toBeInTheDocument();
 
-    await user.click(
-      screen.getByTitle(translations.labels.viewAsCards)
-    );
+    await user.click(screen.getByTitle(translations.labels.viewAsCards));
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
@@ -116,7 +115,9 @@ describe("LotCards", () => {
     expect(rowsAsc[1]).toHaveTextContent("Beto");
 
     await user.click(
-      screen.getByText(`${translations.labels.lot} / ${translations.labels.owner}`)
+      screen.getByText(
+        `${translations.labels.lot} / ${translations.labels.owner}`
+      )
     );
 
     const rowsDesc = screen.getAllByRole("row").slice(1);

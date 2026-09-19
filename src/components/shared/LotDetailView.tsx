@@ -51,6 +51,7 @@ interface QuotaConfig {
   amount: number;
   description: string | null;
   dueDate: string | null;
+  stages: number[];
 }
 
 interface LotDetailViewProps {

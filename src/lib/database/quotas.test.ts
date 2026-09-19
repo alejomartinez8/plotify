@@ -35,6 +35,7 @@ function makePrismaQuotaConfig(
     amount: 50000,
     description: null,
     dueDate: null,
+    stages: [],
     isActive: true,
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     ...overrides,
@@ -89,6 +90,20 @@ describe("createQuotaConfig", () => {
     });
 
     expect(result).toBeNull();
+  });
+
+  it("forwards the stages array for a works quota", async () => {
+    mockedCreate.mockResolvedValue(makePrismaQuotaConfig());
+
+    await createQuotaConfig({
+      quotaType: "works",
+      amount: 300000,
+      stages: [1, 2],
+    });
+
+    expect(mockedCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ stages: [1, 2] }),
+    });
   });
 });
 

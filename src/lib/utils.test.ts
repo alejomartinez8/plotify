@@ -70,13 +70,34 @@ describe("date helpers with a raw Date object — server-only contract", () => {
 
 describe("calculateSimpleLotBalances — debt breakdown by category", () => {
   const lots = [
-    { id: "1", lotNumber: "101", owner: "Ana", initialWorksDebt: 0, isExempt: false, exemptionEndDate: null },
-    { id: "2", lotNumber: "102", owner: "Beto", initialWorksDebt: 10000, isExempt: false, exemptionEndDate: null },
+    {
+      id: "1",
+      lotNumber: "101",
+      owner: "Ana",
+      initialWorksDebt: 0,
+      stage: 1,
+      isExempt: false,
+      exemptionEndDate: null,
+    },
+    {
+      id: "2",
+      lotNumber: "102",
+      owner: "Beto",
+      initialWorksDebt: 10000,
+      stage: 1,
+      isExempt: false,
+      exemptionEndDate: null,
+    },
   ];
 
   const quotaConfigs = [
-    { id: "q1", quotaType: "maintenance", amount: 50000, dueDate: "2026-01-01" },
-    { id: "q2", quotaType: "works", amount: 30000, dueDate: "2026-01-01" },
+    {
+      id: "q1",
+      quotaType: "maintenance",
+      amount: 50000,
+      dueDate: "2026-01-01",
+    },
+    { id: "q2", quotaType: "works", amount: 30000, stages: [1] },
   ];
 
   it("splits debt into maintenance and works, keeping others at 0", () => {
@@ -124,5 +145,63 @@ describe("calculateSimpleLotBalances — debt breakdown by category", () => {
       others: 0,
     });
     expect(lotOne.status).toBe("overdue");
+  });
+});
+
+describe("calculateSimpleLotBalances — works quotas are scoped by stage, not by date", () => {
+  const stage1Lot = {
+    id: "1",
+    lotNumber: "101",
+    owner: "Ana",
+    initialWorksDebt: 0,
+    stage: 1,
+    isExempt: false,
+    exemptionEndDate: null,
+  };
+  const stage2Lot = {
+    id: "2",
+    lotNumber: "E2-1",
+    owner: "Beto",
+    initialWorksDebt: 0,
+    stage: 2,
+    isExempt: false,
+    exemptionEndDate: null,
+  };
+
+  it("only charges a stage-1-only works quota (e.g. vías) to stage 1 lots", () => {
+    const quotaConfigs = [
+      { id: "q1", quotaType: "works", amount: 500000, stages: [1] },
+    ];
+
+    const [lotOne, lotTwo] = calculateSimpleLotBalances(
+      [stage1Lot, stage2Lot],
+      [],
+      quotaConfigs
+    ).sort((a, b) => a.lotId.localeCompare(b.lotId));
+
+    expect(lotOne.debtByCategory.works).toBe(500000);
+    expect(lotTwo.debtByCategory.works).toBe(0);
+  });
+
+  it("charges a both-stages works quota (e.g. portón) to every lot regardless of when it joined", () => {
+    const quotaConfigs = [
+      { id: "q1", quotaType: "works", amount: 300000, stages: [1, 2] },
+    ];
+    // A lot that only became active later (activeFrom in the future) would
+    // exclude date-gated quotas, but works quotas are stage-gated, not
+    // date-gated, so it should still owe the full amount.
+    const lateJoiningStage2Lot = {
+      ...stage2Lot,
+      isExempt: true,
+      exemptionEndDate: "2099-01-01",
+    };
+
+    const [lot] = calculateSimpleLotBalances(
+      [lateJoiningStage2Lot],
+      [],
+      quotaConfigs
+    );
+
+    expect(lot.debtByCategory.works).toBe(300000);
   });
 });

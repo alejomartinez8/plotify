@@ -99,6 +99,7 @@ export const translations = {
     quotas: "Cuotas",
     quota: "Cuota",
     dueDate: "Vencimiento",
+    stage: "Etapa",
     status: "Estado",
     current: "Al día",
     overdue: "Debe",
@@ -198,6 +199,9 @@ export const translations = {
     quotaTypesWorks: "Obras",
     quotaAmountPlaceholder: "60000",
     quotaDescriptionPlaceholder: "Descripción de la cuota",
+    quotaStages: "Etapas",
+    quotaStage1: "Etapa 1",
+    quotaStage2: "Etapa 2",
     quotaDeleteConfirmation:
       "¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.",
     noQuotasConfigured: "No hay cuotas configuradas",
@@ -381,9 +385,11 @@ export const translations = {
     dateValid: "Fecha válida es requerida",
     categoryRequired: "La categoría es requerida",
     ownerRequired: "El nombre del propietario es requerido",
-    whatsappPhoneInvalid: "El teléfono debe contener solo dígitos (10-15 caracteres, incluye código de país)",
+    whatsappPhoneInvalid:
+      "El teléfono debe contener solo dígitos (10-15 caracteres, incluye código de país)",
     lotNumberExists: "Ya existe un lote con ese número",
     missingFields: "Campos faltantes",
+    stagesRequired: "Selecciona al menos una etapa",
 
     // Approval workflow errors
     treasurerAccessRequired:
@@ -459,9 +465,11 @@ export const translations = {
 
     // Approval workflow
     approveTitle: "Aprobar registro",
-    approveMessage: "¿Confirmas que esta transacción existió y está correcta? Puedes dejar una nota opcional.",
+    approveMessage:
+      "¿Confirmas que esta transacción existió y está correcta? Puedes dejar una nota opcional.",
     unapproveTitle: "Desaprobar registro",
-    unapproveMessage: "¿Confirmas que quieres revertir la aprobación? El registro volverá a quedar pendiente y podrá editarse o eliminarse.",
+    unapproveMessage:
+      "¿Confirmas que quieres revertir la aprobación? El registro volverá a quedar pendiente y podrá editarse o eliminarse.",
     deleteUser:
       "¿Estás seguro de que quieres eliminar este usuario? Perderá el acceso asociado a su rol.",
   },
@@ -476,7 +484,8 @@ export const translations = {
     reportSeparator: "─────────────────────",
     reportLots: "🏘️ *ESTADO POR LOTE*",
     reportDebtorsList: "📋 *LISTA DE DEUDORES*",
-    reportDebtorsMotivation: "_Su pago oportuno contribuye a la valorización y el bienestar de nuestra Parcela. ¡Gracias por su compromiso!_",
+    reportDebtorsMotivation:
+      "_Su pago oportuno contribuye a la valorización y el bienestar de nuestra Parcela. ¡Gracias por su compromiso!_",
     lotPrefix: "🏡 *Lote",
     ownerPrefix: "👤",
     contributedLabel: "💵 Aportado:",
