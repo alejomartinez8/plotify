@@ -150,6 +150,13 @@
   (`.github/workflows/test.yml`) running lint + `npm run test:coverage`
   on every PR and push to `main`
 
+### ✅ Bug Fixes
+
+- ✅ **WhatsApp lot report drops works quotas** _(2026-09-24)_: the
+  "current year only" filter hid works quotas (e.g. portón) and their
+  payments from previous years. The year filter now applies only to
+  maintenance quotas and non-works payments
+
 ---
 
 ## ⚡ **System Status**
