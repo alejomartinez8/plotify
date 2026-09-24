@@ -113,6 +113,27 @@ type CopyStatus = "idle" | "copied" | "error";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+/**
+ * Limits the report to the given year. Works quotas (e.g. portón) are one-off
+ * obligations, so they and their payments are always included regardless of
+ * year; maintenance quotas and the remaining payments are filtered by year.
+ */
+export function filterReportByYear(
+  quotaBreakdown: QuotaLineStatus[],
+  contributions: Contribution[],
+  year: number
+): { quotaBreakdown: QuotaLineStatus[]; contributions: Contribution[] } {
+  return {
+    quotaBreakdown: quotaBreakdown.filter(
+      (q) => q.quotaType !== "maintenance" || q.year === year
+    ),
+    contributions: contributions.filter(
+      (c) =>
+        c.type === "works" || parseLocalDate(c.date).getFullYear() === year
+    ),
+  };
+}
+
 export default function WhatsAppLotReportButton({
   lotNumber,
   owner,
@@ -124,16 +145,12 @@ export default function WhatsAppLotReportButton({
   const [currentYearOnly, setCurrentYearOnly] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const filteredContributions = currentYearOnly
-    ? contributions.filter((c) => parseLocalDate(c.date).getFullYear() === CURRENT_YEAR)
-    : contributions;
-
-  const filteredQuotaBreakdown = currentYearOnly
-    ? quotaBreakdown.filter((q) => q.quotaType === "initial" || q.year === CURRENT_YEAR)
-    : quotaBreakdown;
+  const filtered = currentYearOnly
+    ? filterReportByYear(quotaBreakdown, contributions, CURRENT_YEAR)
+    : { quotaBreakdown, contributions };
 
   async function handleClick() {
-    const text = generateLotReport(lotNumber, owner, debtDetail, filteredQuotaBreakdown, filteredContributions);
+    const text = generateLotReport(lotNumber, owner, debtDetail, filtered.quotaBreakdown, filtered.contributions);
     try {
       await navigator.clipboard.writeText(text);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
