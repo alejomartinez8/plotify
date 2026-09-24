@@ -502,6 +502,7 @@ export const translations = {
     summaryTitle: "📋 *RESUMEN GENERAL*",
     summaryTotalLots: "Total lotes:",
     summaryOverdue: "En mora:",
+    summaryCurrent: "Al día:",
     summaryDebt: "Cartera total:",
     summaryCashBalance: "💰 Saldo de caja:",
     summaryFooter: "_Generado desde Parcela Jalisco_",

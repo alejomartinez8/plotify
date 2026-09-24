@@ -9,7 +9,7 @@ import { translations } from "@/lib/translations";
 
 const t = translations.whatsapp;
 
-function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBalance: number): string {
+export function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBalance: number): string {
   const today = formatDateForDisplay(new Date());
   const lines: string[] = [];
 
@@ -20,7 +20,7 @@ function generateWhatsAppReport(lotBalances: SimpleLotBalance[], consolidatedBal
   lines.push(`${t.reportTitle} — ${today}`);
   lines.push(t.reportSeparator);
   lines.push(t.summaryTitle);
-  lines.push(`${t.summaryTotalLots} ${lotBalances.length} · ${t.summaryOverdue} 🔴 ${overdueCount} · ✅ ${currentCount}`);
+  lines.push(`${t.summaryTotalLots} ${lotBalances.length} · ${t.summaryOverdue} 🔴 ${overdueCount} · ${t.summaryCurrent} ✅ ${currentCount}`);
   lines.push(`${t.summaryDebt} ${formatCurrency(totalDebt)}`);
   lines.push(`${t.summaryCashBalance} ${formatCurrency(consolidatedBalance)}`);
   lines.push(t.reportSeparator);

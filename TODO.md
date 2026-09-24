@@ -156,6 +156,8 @@
   "current year only" filter hid works quotas (e.g. portón) and their
   payments from previous years. The year filter now applies only to
   maintenance quotas and non-works payments
+- ✅ **WhatsApp general report summary label** _(2026-09-24)_: the current
+  lots count in the summary now carries an "Al día:" label
 
 ---
 
