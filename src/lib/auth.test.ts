@@ -36,6 +36,7 @@ import {
   isTreasurer,
   ownsLot,
   getUserLotIds,
+  getVisibleLotIds,
   requireAdmin,
   requireTreasurer,
   requireLotAccess,
@@ -172,6 +173,40 @@ describe("getUserLotIds", () => {
     mockSession(null);
     expect(await getUserLotIds()).toEqual([]);
     expect(mockedLotFindMany).not.toHaveBeenCalled();
+  });
+});
+
+describe("getVisibleLotIds", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns null (unrestricted) for an admin", async () => {
+    mockSession("admin@example.com");
+    mockGetUserByEmail.mockResolvedValue({ role: "admin" });
+    expect(await getVisibleLotIds()).toBeNull();
+    expect(mockedLotFindMany).not.toHaveBeenCalled();
+  });
+
+  it("returns null (unrestricted) for a treasurer", async () => {
+    mockSession("treasurer@example.com");
+    mockGetUserByEmail.mockResolvedValue({ role: "treasurer" });
+    expect(await getVisibleLotIds()).toBeNull();
+  });
+
+  it("returns only the owned lot ids for an owner", async () => {
+    mockSession("owner@example.com");
+    mockGetUserByEmail.mockResolvedValue(null);
+    mockedLotCount.mockResolvedValue(1);
+    mockedLotFindMany.mockResolvedValue([{ id: "lot-1" }] as never);
+    expect(await getVisibleLotIds()).toEqual(["lot-1"]);
+  });
+
+  it("returns an empty list for a user without a role", async () => {
+    mockSession("stranger@example.com");
+    mockGetUserByEmail.mockResolvedValue(null);
+    mockedLotCount.mockResolvedValue(0);
+    expect(await getVisibleLotIds()).toEqual([]);
   });
 });
 

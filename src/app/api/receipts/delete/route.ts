@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { googleOAuthService } from "@/lib/services/google-oauth-service";
 import { revalidatePath } from "next/cache";
+import { isAdmin } from "@/lib/auth";
 
 export async function DELETE(req: NextRequest) {
   try {
+    // Only admins manage receipts
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // Check if Google OAuth is configured
     if (
       !process.env.GOOGLE_CLIENT_ID ||

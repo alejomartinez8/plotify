@@ -6,20 +6,26 @@ vi.mock("./helpers", () => ({
   checkAdminAccess: (...args: unknown[]) => mockCheckAdminAccess(...args),
 }));
 
+const mockGetVisibleLotIds = vi.fn();
+vi.mock("@/lib/auth", () => ({
+  getVisibleLotIds: (...args: unknown[]) => mockGetVisibleLotIds(...args),
+}));
+
 const mockCreateLot = vi.fn();
 const mockUpdateLot = vi.fn();
+const mockGetLots = vi.fn();
 vi.mock("@/lib/database/lots", () => ({
   createLot: (...args: unknown[]) => mockCreateLot(...args),
   updateLot: (...args: unknown[]) => mockUpdateLot(...args),
   deleteLot: vi.fn(),
-  getLots: vi.fn(),
+  getLots: (...args: unknown[]) => mockGetLots(...args),
 }));
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
-import { createLotAction, updateLotAction } from "./lot-actions";
+import { createLotAction, updateLotAction, getLotsAction } from "./lot-actions";
 import { translations } from "@/lib/translations";
 
 function makeLotFormData(overrides: Record<string, string> = {}): FormData {
@@ -161,5 +167,30 @@ describe("updateLotAction", () => {
     );
 
     expect(result.success).toBe(true);
+  });
+});
+
+describe("getLotsAction", () => {
+  const lots = [
+    { id: "lot-1", lotNumber: "001", owner: "Jane Doe" },
+    { id: "lot-2", lotNumber: "002", owner: "John Roe" },
+  ];
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns every lot for users with full access", async () => {
+    mockGetLots.mockResolvedValue(lots);
+    mockGetVisibleLotIds.mockResolvedValue(null);
+
+    expect(await getLotsAction()).toEqual(lots);
+  });
+
+  it("returns only the owner's lots for an owner", async () => {
+    mockGetLots.mockResolvedValue(lots);
+    mockGetVisibleLotIds.mockResolvedValue(["lot-2"]);
+
+    expect(await getLotsAction()).toEqual([lots[1]]);
   });
 });

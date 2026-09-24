@@ -7,6 +7,7 @@ import Header from "@/components/shared/Header";
 import Navigation from "@/components/shared/Navigation";
 import { translations } from "@/lib/translations";
 import { auth, getUserRole } from "@/lib/auth";
+import { hasFullDataAccess } from "@/lib/data-visibility";
 import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
 
@@ -35,7 +36,12 @@ export default async function RootLayout({
       >
         <SessionProvider session={session}>
           <Header />
-          {session?.user && hasAccess && <Navigation isAdmin={isAdmin} />}
+          {session?.user && hasAccess && (
+            <Navigation
+              isAdmin={isAdmin}
+              showCommunityData={hasFullDataAccess(userRole)}
+            />
+          )}
           <main className="min-h-screen bg-gray-50">
             {children}
             <Analytics />

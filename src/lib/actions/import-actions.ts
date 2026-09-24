@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
@@ -72,7 +72,7 @@ export async function importLotsAction(
   const actionTimer = logger.timer("Import Lots Action");
 
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const rows = parseCSV(csvContent);
     if (rows.length < 2) {
@@ -172,7 +172,7 @@ export async function importIncomesAction(
   const actionTimer = logger.timer("Import Incomes Action");
 
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const rows = parseCSV(csvContent);
     if (rows.length < 2) {
@@ -295,7 +295,7 @@ export async function importExpensesAction(
   const actionTimer = logger.timer("Import Expenses Action");
 
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const rows = parseCSV(csvContent);
     if (rows.length < 2) {

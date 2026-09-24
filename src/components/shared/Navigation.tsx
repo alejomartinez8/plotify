@@ -14,7 +14,11 @@ import { translations } from "@/lib/translations";
 
 interface NavigationProps {
   isAdmin?: boolean;
+  showCommunityData?: boolean;
 }
+
+// Routes with community-wide data, hidden from owners
+const COMMUNITY_ONLY_ROUTES = ["/other-income", "/expenses"];
 
 const navigationItems = [
   { href: "/", label: translations.navigation.home, icon: TrendingUp },
@@ -48,15 +52,23 @@ const adminNavigationItems = [
   },
 ];
 
-export default function Navigation({ isAdmin = false }: NavigationProps) {
+export default function Navigation({
+  isAdmin = false,
+  showCommunityData = false,
+}: NavigationProps) {
   const pathname = usePathname();
+  const visibleItems = showCommunityData
+    ? navigationItems
+    : navigationItems.filter(
+        ({ href }) => !COMMUNITY_ONLY_ROUTES.includes(href)
+      );
 
   return (
     <div className="border-b bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Navigation - Always visible */}
         <nav className="flex space-x-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center sm:space-x-8 [&::-webkit-scrollbar]:hidden">
-          {navigationItems.map(({ href, label, icon: Icon }) => {
+          {visibleItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link

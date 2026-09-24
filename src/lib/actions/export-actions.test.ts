@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 
-const mockRequireAuth = vi.fn();
+const mockRequireAdmin = vi.fn();
 vi.mock("@/lib/auth", () => ({
-  requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
+  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -98,13 +98,38 @@ describe("exportExpensesAction", () => {
   });
 });
 
+describe("export actions authorization", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("does not export incomes for a non-admin", async () => {
+    mockRequireAdmin.mockRejectedValueOnce(new Error("Admin access required"));
+
+    const result = await exportIncomesAction();
+
+    expect(result.success).toBe(false);
+    expect(result.data).toBeUndefined();
+    expect(mockedContributionFindMany).not.toHaveBeenCalled();
+  });
+
+  it("does not export expenses for a non-admin", async () => {
+    mockRequireAdmin.mockRejectedValueOnce(new Error("Admin access required"));
+
+    const result = await exportExpensesAction();
+
+    expect(result.success).toBe(false);
+    expect(mockGetExpenses).not.toHaveBeenCalled();
+  });
+});
+
 describe("exportLotsAction", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("builds a CSV of lots ordered by lot number", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindMany.mockResolvedValue([
       { id: "lot-1", lotNumber: "001", owner: "Jane Doe" },
     ] as never);
@@ -116,8 +141,8 @@ describe("exportLotsAction", () => {
     expect(result.filename).toMatch(/^lotes_.*\.csv$/);
   });
 
-  it("reports failure when the user is not authenticated", async () => {
-    mockRequireAuth.mockRejectedValue(new Error("Authentication required"));
+  it("reports failure when the user is not an admin", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Admin access required"));
 
     const result = await exportLotsAction();
 

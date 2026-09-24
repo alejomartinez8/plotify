@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { createLot, updateLot, deleteLot, getLots } from "@/lib/database/lots";
 import { translations } from "@/lib/translations";
 import { logger } from "@/lib/logger";
+import { getVisibleLotIds } from "@/lib/auth";
+import { filterVisibleLots } from "@/lib/data-visibility";
 import { checkAdminAccess } from "./helpers";
 
 function isDuplicateLotNumberError(error: unknown): boolean {
@@ -349,9 +351,12 @@ export async function getLotsAction() {
   const actionTimer = logger.timer("Get Lots Action");
 
   try {
-    const lots = await getLots();
+    const [lots, visibleLotIds] = await Promise.all([
+      getLots(),
+      getVisibleLotIds(),
+    ]);
     actionTimer.end();
-    return lots;
+    return filterVisibleLots(lots, visibleLotIds);
   } catch (error) {
     const errorInstance =
       error instanceof Error ? error : new Error(String(error));
