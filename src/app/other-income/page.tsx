@@ -3,10 +3,10 @@ import OtherIncomeView from "@/components/shared/OtherIncomeView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
-import { checkLotAccess } from "@/lib/check-lot-access";
+import { checkFullDataAccess } from "@/lib/check-lot-access";
 
 export default async function OtherIncomePage() {
-  await checkLotAccess();
+  await checkFullDataAccess();
 
   let otherIncomes: Awaited<ReturnType<typeof getOtherIncomes>>;
   let userRole: Awaited<ReturnType<typeof getUserRole>>;

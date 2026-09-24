@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 
-const mockRequireAuth = vi.fn();
+const mockRequireAdmin = vi.fn();
 vi.mock("@/lib/auth", () => ({
-  requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
+  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -40,7 +40,7 @@ describe("importLotsAction", () => {
   });
 
   it("rejects a CSV with only a header row", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
 
     const result = await importLotsAction("ID,Número de Lote,Propietario");
 
@@ -48,7 +48,7 @@ describe("importLotsAction", () => {
   });
 
   it("rejects a CSV whose headers don't match what's expected", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
 
     const result = await importLotsAction("ID,Lote,Owner\n1,001,Jane Doe");
 
@@ -56,7 +56,7 @@ describe("importLotsAction", () => {
   });
 
   it("creates a new lot when the lot number does not already exist", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue(null);
     mockedLotCreate.mockResolvedValue({ id: "lot-1" } as never);
 
@@ -72,7 +72,7 @@ describe("importLotsAction", () => {
   });
 
   it("updates the existing lot when the lot number is already present", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue({ id: "lot-1" } as never);
     mockedLotUpdate.mockResolvedValue({ id: "lot-1" } as never);
 
@@ -89,7 +89,7 @@ describe("importLotsAction", () => {
   });
 
   it("records a per-row error and keeps processing the rest", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue(null);
     mockedLotCreate.mockResolvedValue({ id: "lot-2" } as never);
 
@@ -102,8 +102,8 @@ describe("importLotsAction", () => {
     expect(result.errors?.[0]).toContain("Fila 2");
   });
 
-  it("reports failure when the user is not authenticated", async () => {
-    mockRequireAuth.mockRejectedValue(new Error("Authentication required"));
+  it("reports failure when the user is not an admin", async () => {
+    mockRequireAdmin.mockRejectedValue(new Error("Admin access required"));
 
     const result = await importLotsAction(
       "ID,Número de Lote,Propietario\n1,001,Jane Doe"
@@ -123,7 +123,7 @@ describe("importIncomesAction", () => {
   });
 
   it("parses a DD/MM/YYYY date and maps 'Mantenimiento' to maintenance", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue({ id: "lot-1" } as never);
     mockedContributionCreate.mockResolvedValue({ id: 1 } as never);
 
@@ -144,7 +144,7 @@ describe("importIncomesAction", () => {
   });
 
   it("maps any non-Mantenimiento label to works", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue({ id: "lot-1" } as never);
     mockedContributionCreate.mockResolvedValue({ id: 1 } as never);
 
@@ -159,7 +159,7 @@ describe("importIncomesAction", () => {
   });
 
   it("creates the lot first when the lot number isn't found", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedLotFindFirst.mockResolvedValue(null);
     mockedLotCreate.mockResolvedValue({ id: "new-lot" } as never);
     mockedContributionCreate.mockResolvedValue({ id: 1 } as never);
@@ -179,7 +179,7 @@ describe("importIncomesAction", () => {
   });
 
   it("skips a row with a missing or non-numeric amount", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
 
     const result = await importIncomesAction(
       `${headers}\n1,"2026-01-15","001","Jane Doe","Mantenimiento","fee","","not-a-number"`
@@ -204,7 +204,7 @@ describe("importExpensesAction", () => {
     ["Otros", "others"],
     ["Unrecognized", "others"],
   ])("maps the '%s' label to %s", async (label, expected) => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
     mockedExpenseCreate.mockResolvedValue({ id: 1 } as never);
 
     await importExpensesAction(
@@ -218,7 +218,7 @@ describe("importExpensesAction", () => {
   });
 
   it("skips a row with a missing amount", async () => {
-    mockRequireAuth.mockResolvedValue(undefined);
+    mockRequireAdmin.mockResolvedValue(undefined);
 
     const result = await importExpensesAction(
       `${headers}\n1,"2026-01-15","Otros","Cat","desc","","0"`

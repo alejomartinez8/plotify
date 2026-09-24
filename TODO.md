@@ -43,7 +43,7 @@
 
 #### ✅ **Owner Permissions**
 
-- ✅ **Read-Only Access** - Owners can view ALL data (lots, contributions, expenses, collaborators)
+- ✅ **Read-Only Access** - Owners can view ALL data (lots, contributions, expenses, collaborators) — superseded by Phase 10 (owners only see their own lots)
 - ✅ **Edit Restrictions** - Cannot create/edit/delete contributions, expenses, or lots
 - ✅ **Collaborator Management** - Can edit/delete collaborators assigned to their lots only
 - ✅ **UI Adaptation** - Edit/delete buttons hidden for non-editable resources
@@ -150,6 +150,24 @@
   (`.github/workflows/test.yml`) running lint + `npm run test:coverage`
   on every PR and push to `main`
 
+### ✅ Phase 10: Owner Data Isolation - COMPLETED _(2026-09-24)_
+
+> **Business Context**: Owners should only see their own contributions.
+> Community-wide figures are shared with them through WhatsApp.
+
+- ✅ **Visibility helpers** - `getVisibleLotIds()` (auth) and
+  `src/lib/data-visibility.ts` (admin/treasurer unrestricted, owner own lots)
+- ✅ **Dashboard** - Owners see only their lot cards and debt summary; fund
+  balances and monthly chart hidden
+- ✅ **Income** - `/income` lists only the owner's lots and contributions
+  (single-lot owners go straight to their lot); `/income/[id]` returns
+  not found for other owners' lots (metadata included)
+- ✅ **Expenses / Other income** - Admin/treasurer only (owners redirected
+  to `/`), hidden from owner navigation
+- ✅ **Server actions hardening** - CSV export and import now require admin
+  (import previously only required authentication); `getLotsAction`
+  scoped to visible lots; receipt delete API route requires admin
+
 ### ✅ Bug Fixes
 
 - ✅ **WhatsApp lot report drops works quotas** _(2026-09-24)_: the
@@ -183,12 +201,12 @@
 - User access control via ADMIN_EMAILS environment variable
 
 **For Owners:**
-- View all financial data (dashboard, contributions, expenses)
-- View all lots and their details (read-only)
+- View only their own lots, contributions and debt (read-only)
+- No access to expenses, other income, or community fund balances
 - No ability to modify financial data or create new records
 
 **For Treasurers:**
-- View all financial data, same as Owners
+- View all financial data (dashboard, contributions, expenses, other income)
 - Approve or un-approve any income/expense entry, with an optional note
 - View the full approval audit trail (who validated what, and when) per record
 - No ability to create, edit, or delete records — validation only

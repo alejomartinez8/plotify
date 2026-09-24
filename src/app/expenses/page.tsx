@@ -3,10 +3,10 @@ import ExpenseView from "@/components/shared/ExpenseView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
 import { getUserRole } from "@/lib/auth";
-import { checkLotAccess } from "@/lib/check-lot-access";
+import { checkFullDataAccess } from "@/lib/check-lot-access";
 
 export default async function ExpensesPage() {
-  await checkLotAccess();
+  await checkFullDataAccess();
 
   let expenses: Awaited<ReturnType<typeof getExpenses>>;
   let userRole: Awaited<ReturnType<typeof getUserRole>>;

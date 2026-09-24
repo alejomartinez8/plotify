@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({
   redirect: (...args: unknown[]) => mockRedirect(...args),
 }));
 
-import { checkLotAccess } from "./check-lot-access";
+import { checkLotAccess, checkFullDataAccess } from "./check-lot-access";
 
 describe("checkLotAccess", () => {
   afterEach(() => {
@@ -30,6 +30,37 @@ describe("checkLotAccess", () => {
 
     await checkLotAccess();
 
+    expect(mockRedirect).toHaveBeenCalledWith("/unauthorized");
+  });
+});
+
+describe("checkFullDataAccess", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it.each(["admin", "treasurer"])("does not redirect a %s", async (role) => {
+    mockGetUserRole.mockResolvedValue(role);
+
+    await checkFullDataAccess();
+
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("redirects an owner to the dashboard", async () => {
+    mockGetUserRole.mockResolvedValue("owner");
+
+    await checkFullDataAccess();
+
+    expect(mockRedirect).toHaveBeenCalledWith("/");
+  });
+
+  it("redirects a user without a role to /unauthorized", async () => {
+    mockGetUserRole.mockResolvedValue(null);
+
+    await checkFullDataAccess();
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
     expect(mockRedirect).toHaveBeenCalledWith("/unauthorized");
   });
 });

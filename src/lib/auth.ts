@@ -331,6 +331,18 @@ export async function getUserLotIds(): Promise<string[]> {
 }
 
 /**
+ * Lot IDs the current user may see, or null when access is unrestricted.
+ * Admins and treasurers see every lot; owners only their own lots; users
+ * without a role see nothing.
+ */
+export async function getVisibleLotIds(): Promise<string[] | null> {
+  const role = await getUserRole();
+  if (role === "admin" || role === "treasurer") return null;
+  if (role === "owner") return getUserLotIds();
+  return [];
+}
+
+/**
  * Require admin role, throw error if not admin
  */
 export async function requireAdmin(): Promise<void> {

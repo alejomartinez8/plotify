@@ -4,8 +4,13 @@ import { getContributions } from "@/lib/database/contributions";
 import IncomeView from "@/components/shared/IncomeView";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { translations } from "@/lib/translations";
-import { getUserRole } from "@/lib/auth";
+import { getUserRole, getVisibleLotIds } from "@/lib/auth";
 import { checkLotAccess } from "@/lib/check-lot-access";
+import {
+  filterVisibleContributions,
+  filterVisibleLots,
+  isLotVisible,
+} from "@/lib/data-visibility";
 
 interface IncomePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,14 +20,24 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   await checkLotAccess();
 
   const resolvedSearchParams = await searchParams;
+  const visibleLotIds = await getVisibleLotIds();
 
   const lotParam = resolvedSearchParams.lot;
-  if (lotParam && typeof lotParam === "string") {
+  if (
+    lotParam &&
+    typeof lotParam === "string" &&
+    isLotVisible(lotParam, visibleLotIds)
+  ) {
     const lots = await getLots();
     const lotExists = lots.some((lot) => lot.id === lotParam);
     if (lotExists) {
       redirect(`/income/${lotParam}`);
     }
+  }
+
+  // Owners with a single lot go straight to its detail page
+  if (visibleLotIds !== null && visibleLotIds.length === 1) {
+    redirect(`/income/${visibleLotIds[0]}`);
   }
   let allLots: Awaited<ReturnType<typeof getLots>>;
   let contributions: Awaited<ReturnType<typeof getContributions>>;
@@ -48,8 +63,8 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
 
   return (
     <IncomeView
-      lots={allLots}
-      contributions={contributions}
+      lots={filterVisibleLots(allLots, visibleLotIds)}
+      contributions={filterVisibleContributions(contributions, visibleLotIds)}
       isAdmin={userRole === "admin"}
       isTreasurer={userRole === "treasurer"}
     />

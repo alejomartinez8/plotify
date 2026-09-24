@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { getLotWithContributions, getLots } from "@/lib/database/lots";
 import { getQuotaConfigs } from "@/lib/database/quotas";
 import { translations } from "@/lib/translations";
-import { getUserRole } from "@/lib/auth";
+import { getUserRole, getVisibleLotIds } from "@/lib/auth";
+import { filterVisibleLots, isLotVisible } from "@/lib/data-visibility";
 import { checkLotAccess } from "@/lib/check-lot-access";
 import { calculateLotDebtDetail } from "@/lib/utils";
 import LotDetailView from "@/components/shared/LotDetailView";
@@ -15,6 +16,14 @@ interface LotPageProps {
 export default async function LotPage({ params }: LotPageProps) {
   await checkLotAccess();
 
+  const { id } = await params;
+  const visibleLotIds = await getVisibleLotIds();
+
+  // Owners can only open their own lots; hide the existence of others
+  if (!isLotVisible(id, visibleLotIds)) {
+    notFound();
+  }
+
   let lotData: Awaited<ReturnType<typeof getLotWithContributions>>;
   let allLotsData: Awaited<ReturnType<typeof getLots>>;
   let quotaConfigs: Awaited<ReturnType<typeof getQuotaConfigs>>;
@@ -22,9 +31,6 @@ export default async function LotPage({ params }: LotPageProps) {
   let debtDetail: ReturnType<typeof calculateLotDebtDetail>;
 
   try {
-    const resolvedParams = await params;
-    const { id } = resolvedParams;
-
     [lotData, allLotsData, quotaConfigs, userRole] = await Promise.all([
       getLotWithContributions(id),
       getLots(),
@@ -55,7 +61,7 @@ export default async function LotPage({ params }: LotPageProps) {
     <LotDetailView
       lot={lot}
       contributions={lot.contributions}
-      allLots={allLotsData}
+      allLots={filterVisibleLots(allLotsData, visibleLotIds)}
       isAdmin={userRole === "admin"}
       debtDetail={debtDetail}
       quotaConfigs={quotaConfigs}
@@ -68,7 +74,10 @@ export async function generateMetadata({ params }: LotPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const lot = await getLotWithContributions(id);
+  const visibleLotIds = await getVisibleLotIds();
+  const lot = isLotVisible(id, visibleLotIds)
+    ? await getLotWithContributions(id)
+    : null;
 
   if (!lot) {
     return {

@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getExpenses } from "@/lib/database/expenses";
 import { getOtherIncomes } from "@/lib/database/other-income";
 import { translations } from "@/lib/translations";
@@ -26,6 +26,9 @@ export async function exportIncomesAction(): Promise<{
   const actionTimer = logger.timer("Export Incomes Action");
 
   try {
+    // Exports contain community-wide data: admin only
+    await requireAdmin();
+
     // Get contributions with lot information
     const contributionsWithLots = await prisma.contribution.findMany({
       include: {
@@ -103,6 +106,9 @@ export async function exportOtherIncomeAction(): Promise<{
   const actionTimer = logger.timer("Export Other Income Action");
 
   try {
+    // Exports contain community-wide data: admin only
+    await requireAdmin();
+
     const otherIncomes = await getOtherIncomes();
 
     const headers = [
@@ -169,6 +175,9 @@ export async function exportExpensesAction(): Promise<{
   const actionTimer = logger.timer("Export Expenses Action");
 
   try {
+    // Exports contain community-wide data: admin only
+    await requireAdmin();
+
     const expenses = await getExpenses();
 
     // CSV headers
@@ -240,7 +249,7 @@ export async function exportLotsAction(): Promise<{
   error?: string;
 }> {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     // Get lots (basic info only, no contributions)
     const lots = await prisma.lot.findMany({
